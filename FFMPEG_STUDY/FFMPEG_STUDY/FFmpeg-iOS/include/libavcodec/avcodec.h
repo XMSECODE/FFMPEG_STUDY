@@ -5291,6 +5291,16 @@ int avcodec_receive_frame(AVCodecContext *avctx, AVFrame *frame);
  *                         decoder, or requires flush
  *      AVERROR(ENOMEM):   failed to add packet to internal queue, or similar
  *      other errors: legitimate decoding errors
+ 提供一个原始的视频或者音频帧给解码器。使用avcodec_receive_packet()来检索缓存区来输出packets。
+ avctx参数：编解码器上下文
+ frame参数：AVFrame包含用来解码的原始的音频或者视频的帧数据。帧的所有权仍然是属于调用者，解码器不会对帧进行写入。解码器可以创建一个对帧数据的引用指针（或者拷贝帧数据而不改变原始帧数据的引用计数器）。它可以为NULL，在这种情况下，它会被认为是刷新的packet。这标志着stream的结束。假如这个解码器仍然有packets的缓存，解码器会在这次调用之后返回这些包。一旦进入刷新模式，追加的flush packets将会被忽略，发送的帧将会被返AVERROR_EOF。
+    对于音频：
+    如果设置AV_CODEC_CAP_VARIABLE_FRAME_SIZE，这个frame可能拥有任意数量的样本。假如没有设置，frame->nb_samples一定等于avctx->frame_size，对于所有的帧都是如此，最后一个除外。最后一个frame可能小于avctx->frame_size.
+ return:返回0则代表成功。否则就会返回负数:
+ AVERROR(EAGAIN):当前状态不接收输入-用户必须读取avcodec_receive_packet()的输出结果（一旦所有的输出都读取了，这个包将会重新发送，然后就不会发生因为EAGAIN调用失败）。
+ AVERROR_EOF:解码器被flushed，而且没有新的frames被送达到这里。
+ AVERROR(EINVAL):编解码器没有打开，没有设置refcounted_frames，它是一个解码器，或者需要flush
+ AVERROR(ENOMEM):添加packet到内部队列失败，或者类似的其他错误：合法的解码错误
  */
 int avcodec_send_frame(AVCodecContext *avctx, const AVFrame *frame);
 

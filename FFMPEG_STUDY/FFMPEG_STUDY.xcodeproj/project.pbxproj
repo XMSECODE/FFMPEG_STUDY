@@ -20,6 +20,14 @@
 		047B7B961EF2C4CF00E4F0F8 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7B8F1EF2C4CF00E4F0F8 /* libavutil.a */; };
 		047B7B971EF2C4CF00E4F0F8 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7B901EF2C4CF00E4F0F8 /* libswresample.a */; };
 		047B7B981EF2C4CF00E4F0F8 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7B911EF2C4CF00E4F0F8 /* libswscale.a */; };
+		047B7B9B1EF2C79300E4F0F8 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7B9A1EF2C79300E4F0F8 /* libz.tbd */; };
+		047B7B9D1EF2C79D00E4F0F8 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7B9C1EF2C79D00E4F0F8 /* libbz2.tbd */; };
+		047B7B9F1EF2C7A300E4F0F8 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7B9E1EF2C7A300E4F0F8 /* libiconv.tbd */; };
+		047B7BA11EF2C82300E4F0F8 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA01EF2C82300E4F0F8 /* VideoToolbox.framework */; };
+		047B7BA31EF2C83300E4F0F8 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA21EF2C83300E4F0F8 /* AVFoundation.framework */; };
+		047B7BA51EF2C83E00E4F0F8 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA41EF2C83E00E4F0F8 /* CoreMedia.framework */; };
+		047B7BA71EF2C84900E4F0F8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA61EF2C84900E4F0F8 /* CoreGraphics.framework */; };
+		047B7BA91EF2C85500E4F0F8 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA81EF2C85500E4F0F8 /* AudioToolbox.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -146,6 +154,14 @@
 		047B7B8F1EF2C4CF00E4F0F8 /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavutil.a; sourceTree = "<group>"; };
 		047B7B901EF2C4CF00E4F0F8 /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libswresample.a; sourceTree = "<group>"; };
 		047B7B911EF2C4CF00E4F0F8 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libswscale.a; sourceTree = "<group>"; };
+		047B7B9A1EF2C79300E4F0F8 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		047B7B9C1EF2C79D00E4F0F8 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
+		047B7B9E1EF2C7A300E4F0F8 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		047B7BA01EF2C82300E4F0F8 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		047B7BA21EF2C83300E4F0F8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		047B7BA41EF2C83E00E4F0F8 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		047B7BA61EF2C84900E4F0F8 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		047B7BA81EF2C85500E4F0F8 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +169,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				047B7BA91EF2C85500E4F0F8 /* AudioToolbox.framework in Frameworks */,
+				047B7BA71EF2C84900E4F0F8 /* CoreGraphics.framework in Frameworks */,
+				047B7BA51EF2C83E00E4F0F8 /* CoreMedia.framework in Frameworks */,
+				047B7BA31EF2C83300E4F0F8 /* AVFoundation.framework in Frameworks */,
+				047B7BA11EF2C82300E4F0F8 /* VideoToolbox.framework in Frameworks */,
+				047B7B9F1EF2C7A300E4F0F8 /* libiconv.tbd in Frameworks */,
+				047B7B9D1EF2C79D00E4F0F8 /* libbz2.tbd in Frameworks */,
+				047B7B9B1EF2C79300E4F0F8 /* libz.tbd in Frameworks */,
 				047B7B961EF2C4CF00E4F0F8 /* libavutil.a in Frameworks */,
 				047B7B981EF2C4CF00E4F0F8 /* libswscale.a in Frameworks */,
 				047B7B941EF2C4CF00E4F0F8 /* libavfilter.a in Frameworks */,
@@ -171,6 +195,7 @@
 			children = (
 				047B7AFF1EF2C47800E4F0F8 /* FFMPEG_STUDY */,
 				047B7AFE1EF2C47800E4F0F8 /* Products */,
+				047B7B991EF2C79300E4F0F8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -399,6 +424,21 @@
 			path = lib;
 			sourceTree = "<group>";
 		};
+		047B7B991EF2C79300E4F0F8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				047B7BA81EF2C85500E4F0F8 /* AudioToolbox.framework */,
+				047B7BA61EF2C84900E4F0F8 /* CoreGraphics.framework */,
+				047B7BA41EF2C83E00E4F0F8 /* CoreMedia.framework */,
+				047B7BA21EF2C83300E4F0F8 /* AVFoundation.framework */,
+				047B7BA01EF2C82300E4F0F8 /* VideoToolbox.framework */,
+				047B7B9E1EF2C7A300E4F0F8 /* libiconv.tbd */,
+				047B7B9C1EF2C79D00E4F0F8 /* libbz2.tbd */,
+				047B7B9A1EF2C79300E4F0F8 /* libz.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -539,6 +579,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/FFMPEG_STUDY/FFmpeg-iOS/include";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -582,6 +623,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/FFMPEG_STUDY/FFmpeg-iOS/include";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
