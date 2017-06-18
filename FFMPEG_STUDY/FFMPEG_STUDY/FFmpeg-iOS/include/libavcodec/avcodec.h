@@ -4558,12 +4558,14 @@ int avcodec_copy_context(AVCodecContext *dest, const AVCodecContext *src);
  * Allocate a new AVCodecParameters and set its fields to default values
  * (unknown/invalid/0). The returned struct must be freed with
  * avcodec_parameters_free().
+ 分配一个新的AVCodecParameters，然后设置为默认值（unknown/invalid/0）。返回的结构体必须通过avcodec_parameters_free()函数来释放。
  */
 AVCodecParameters *avcodec_parameters_alloc(void);
 
 /**
  * Free an AVCodecParameters instance and everything associated with it and
  * write NULL to the supplied pointer.
+ 释放一个AVCodecParmeters实例和他关联的其他任何对象，然后写入NULL指针到par。
  */
 void avcodec_parameters_free(AVCodecParameters **par);
 
@@ -4572,6 +4574,8 @@ void avcodec_parameters_free(AVCodecParameters **par);
  * replaced with newly allocated duplicates of the corresponding fields in src.
  *
  * @return >= 0 on success, a negative AVERROR code on failure.
+ 拷贝一个src的内容到dst。任何在dst里面分配的字段会被释放掉，取而代之的相应的是新的重复的在src里面的字段。
+ return:大于等于0代表成功，失败则会返回负值。
  */
 int avcodec_parameters_copy(AVCodecParameters *dst, const AVCodecParameters *src);
 
@@ -4581,6 +4585,8 @@ int avcodec_parameters_copy(AVCodecParameters *dst, const AVCodecParameters *src
  * of the corresponding fields in codec.
  *
  * @return >= 0 on success, a negative AVERROR code on failure
+ 基于支持的codec context中的值填满parameters结构体。任何被分配在par里面的字段会被释放掉，取而代之的是在codec里面相应的重复的字段。
+ return:返回大于等于0则代表成功，失败则返回一个负数。
  */
 int avcodec_parameters_from_context(AVCodecParameters *par,
                                     const AVCodecContext *codec);
@@ -4592,6 +4598,7 @@ int avcodec_parameters_from_context(AVCodecParameters *par,
  * Fields in codec that do not have a counterpart in par are not touched.
  *
  * @return >= 0 on success, a negative AVERROR code on failure.
+ 基于codec parameters中的值来填满一个codec context。任何在codec中被分配的字段都有一个相应的在par在par被释放后被取而代之。在codec中的字段在pra中没有相应的字段。
  */
 int avcodec_parameters_to_context(AVCodecContext *codec,
                                   const AVCodecParameters *par);
@@ -4679,6 +4686,7 @@ int avcodec_close(AVCodecContext *avctx);
  * Free all allocated data in the given subtitle struct.
  *
  * @param sub AVSubtitle to free.
+ 释放被给的结构体的所有数据
  */
 void avsubtitle_free(AVSubtitle *sub);
 
@@ -4701,6 +4709,9 @@ void avsubtitle_free(AVSubtitle *sub);
  * must be allocated through other means such as av_new_packet.
  *
  * @see av_new_packet
+ 分配一个AVPacket和设置其字段为默认值。这个返回的结构体必须通过av_packet_free()进行释放。
+ return：成功则返回一个被填满默认值的AVPacket，失败则返回NULL。
+ note：这仅仅分配AVPacket他自己，不包括数据缓存区。这些必须通过其他方法例如av_new_packet进行分配。
  */
 AVPacket *av_packet_alloc(void);
 
@@ -4713,6 +4724,8 @@ AVPacket *av_packet_alloc(void);
  *
  * @see av_packet_alloc
  * @see av_packet_ref
+ 创建一个新的packet并且引用从src一样的数据。这是av_packet_alloc()+av_packet_ref()的快捷方式。
+ return：成功则返回一个新的AVPacket结构体，错误则返回error
  */
 AVPacket *av_packet_clone(const AVPacket *src);
 
@@ -4722,6 +4735,9 @@ AVPacket *av_packet_clone(const AVPacket *src);
  *
  * @param packet packet to be freed. The pointer will be set to NULL.
  * @note passing NULL is a no-op.
+ 是否packet，假如这个pakcet被引用，他首先会解除这个引用。
+ packet参数：被释放的packet，这个指针将会设置成NULL
+ note：传递NULL将不会产生任何操作
  */
 void av_packet_free(AVPacket **pkt);
 
@@ -4732,6 +4748,8 @@ void av_packet_free(AVPacket **pkt);
  * initialized separately.
  *
  * @param pkt packet
+ 初始化packet，设置这个packet的optional为默认值。
+ note：这不会解除到数据和大小，这些必须分别被初始化。
  */
 void av_init_packet(AVPacket *pkt);
 
@@ -4742,6 +4760,8 @@ void av_init_packet(AVPacket *pkt);
  * @param pkt packet
  * @param size wanted payload size
  * @return 0 if OK, AVERROR_xxx otherwise
+ 给一个packet分配有效荷载和初始化字段为默认值。
+ return：返回0则成功，其他则代表失败
  */
 int av_new_packet(AVPacket *pkt, int size);
 
@@ -4750,6 +4770,7 @@ int av_new_packet(AVPacket *pkt, int size);
  *
  * @param pkt packet
  * @param size new size
+ 减少packet大小，正确的归零填充
  */
 void av_shrink_packet(AVPacket *pkt, int size);
 
@@ -4758,6 +4779,8 @@ void av_shrink_packet(AVPacket *pkt, int size);
  *
  * @param pkt packet
  * @param grow_by number of bytes by which to increase the size of the packet
+ 增加packet大小，正确归零填充
+ grow_by：packet增加的大小bytes数目
  */
 int av_grow_packet(AVPacket *pkt, int grow_by);
 
@@ -4773,6 +4796,11 @@ int av_grow_packet(AVPacket *pkt, int grow_by);
  *        size is assumed to be size + AV_INPUT_BUFFER_PADDING_SIZE.
  *
  * @return 0 on success, a negative AVERROR on error
+ 从av_malloc()的数据初始化一个对packet的引用。
+ pkt：用来被初始化的packet，这个方法会被设置数据，大小，缓存和自毁字段，所有其他的都不会接触到。
+ data：通过av_malloc()申请的数据被用来作为packet数据。假如这个方法返回成功，则数据归底层的AVBuffer所有。
+ size：data的大小，没有填充，例如，假定完整的缓冲区大小为size + AV_INPUT_BUFFER_PADDING_SIZE
+ return：返回0则代表成功，错误则返回负值
  */
 int av_packet_from_data(AVPacket *pkt, uint8_t *data, int size);
 
@@ -4782,6 +4810,8 @@ int av_packet_from_data(AVPacket *pkt, uint8_t *data, int size);
  * packet is allocated if it was not really allocated.
  *
  * @deprecated Use av_packet_ref
+ warning：这个是一个hack（黑客）-这个pakcet内存分配的缓存是坏的。packet是被分配的，假如他不是真的被分配。
+ deprecated：使用av_packet_ref
  */
 attribute_deprecated
 int av_dup_packet(AVPacket *pkt);
@@ -4789,6 +4819,8 @@ int av_dup_packet(AVPacket *pkt);
  * Copy packet, including contents
  *
  * @return 0 on success, negative AVERROR on fail
+ 拷贝packet，保存其中包含的内容
+ return：返回0则代表成功，失败则返回AVERROR
  */
 int av_copy_packet(AVPacket *dst, const AVPacket *src);
 
@@ -4796,6 +4828,8 @@ int av_copy_packet(AVPacket *dst, const AVPacket *src);
  * Copy packet side data
  *
  * @return 0 on success, negative AVERROR on fail
+ 拷贝packet里面的数据
+ return：返回0则代表成功，失败则返回AVERROR
  */
 int av_copy_packet_side_data(AVPacket *dst, const AVPacket *src);
 
@@ -4805,6 +4839,8 @@ int av_copy_packet_side_data(AVPacket *dst, const AVPacket *src);
  * @deprecated Use av_packet_unref
  *
  * @param pkt packet to free
+ 释放一个packet
+ deprecated：使用av_packet_unref
  */
 attribute_deprecated
 void av_free_packet(AVPacket *pkt);
