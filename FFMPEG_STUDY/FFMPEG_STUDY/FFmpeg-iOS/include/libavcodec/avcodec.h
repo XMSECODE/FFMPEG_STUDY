@@ -5289,7 +5289,15 @@ int avcodec_decode_video2(AVCodecContext *avctx, AVFrame *picture,
  *                 must be freed with avsubtitle_free if *got_sub_ptr is set.
  * @param[in,out] got_sub_ptr Zero if no subtitle could be decompressed, otherwise, it is nonzero.
  * @param[in] avpkt The input AVPacket containing the input buffer.
- 
+ 解码一个子标题信息
+ 如果错误则返回一个负数，否则返回被使用的字节数长度。
+ 假如没有subtitle被解压，got_sub_ptr是0。否则subtitle被存储在sub中。
+ 注意，AV_CODEC_CAP_DR1对于子标题解码器是不可用的。这是简单的，因为性能差异是可以被忽略的。重新使用get_buffer写入给视频解编码器可能会执行不好，因为有一个潜在的不同的模式。
+ 一些解码器（被标记为CODEC_CAP_DELAY）在输入和输出之间有一个延迟。这就意味着一些packet将不会立即产生解码输出，需要在这个结束时flushed来得到所有的解码数据。flush是通过调用这个方法设置packet的avpkt->data为NULL何svpkt->size为0直到他停止返回subtitles。即使解码器没有被标记为CODEC_CAP_DELAY，flush也是安全的，将不会有任何subtitles被返回。
+ note：AVCodecContext必须通过avcodec_open2()被打开，在给解码器pakcet之前。
+ out sub：预先分配的AVSubtitle将会保存解码处理的subtitle，假如*got_sub_ptr被设置则必须通过avsubtitle_free进行释放。
+ in out got_sub_ptr：假如没有解压出subtitle则是0，否则就不会是0
+ in avpkt：输入的AVPacket包含输入的缓存区。
  */
 int avcodec_decode_subtitle2(AVCodecContext *avctx, AVSubtitle *sub,
                             int *got_sub_ptr,
@@ -5376,6 +5384,14 @@ int avcodec_send_packet(AVCodecContext *avctx, const AVPacket *avpkt);
  *                         no more output frames
  *      AVERROR(EINVAL):   codec not opened, or it is an encoder
  *      other negative values: legitimate decoding errors
+ 从一个解码器输出解码的数据
+ frame参数：通过解码器分配设置一个video或者audio frame（依赖于解码器的类型）的引用计数。注意这个函数在做其他任何事情之前都会调用av_frame_unref(frame)
+ return：
+ 0：表示成功，一个frame将会被返回
+ AVERROR(EAGAIN):在这种状态输出是不可用用，用户必须尝试发送一个新的输入。
+ AVERROR_EOF:这个解码器被flushed，这里不会有更多的输出的frame。
+ AVERROR(EINVAL):编解码器没有被打开，或者他是一个编码器。
+ 其他的负值：合法的解码错误
  */
 int avcodec_receive_frame(AVCodecContext *avctx, AVFrame *frame);
 
@@ -5440,6 +5456,14 @@ int avcodec_send_frame(AVCodecContext *avctx, const AVFrame *frame);
  *                         no more output packets
  *      AVERROR(EINVAL):   codec not opened, or it is an encoder
  *      other errors: legitimate decoding errors
+ 从编码器读取编码数据
+ avpkt：通过编码器分配一个packet的引用计数器。注意，这个函数在做其他任何事之前都会调用av_frame_unref(frame)。
+ return：
+ 0：代表成功，否则其他就是负值错误代码
+ AVERROR(EAGAIN):在这种情况下输出是不可用的-用户必须尝试发送一个输入。
+ AVERROR_EOF:解码器已经flushed，这里不会有任何packet输出
+ AVERROR(EINVAL):编解码器没有被打开，或者他是一个编码器
+ 其他错误：合法的解码错误
  */
 int avcodec_receive_packet(AVCodecContext *avctx, AVPacket *avpkt);
 
@@ -5673,6 +5697,15 @@ AVCodecParserContext *av_parser_init(int codec_id);
  *          decode_frame(data, size);
  *   }
  * @endcode
+ 解析一个packet
+ poutbuf：设置指针给解析的缓存，或者假如没有完成则为NULL
+ poutbuf_size：设置解析缓存的大小，假如没有完成则为0
+ buf：输入缓存
+ buf_size：缓存大小假如没有被填充。例如：完整的缓存区大小是为buf_size + AV_INPUT_BUFFER_PADDING_SIZE。如果有EOF信号，这个应该被设置为0（所以最后的frame可以被输出）
+ pts：输入的时间戳
+ dts：输入被解码的时间戳
+ pos：在stream中输入从位置
+ return：输入的bitstream的被使用的字节数
  */
 int av_parser_parse2(AVCodecParserContext *s,
                      AVCodecContext *avctx,
@@ -5684,6 +5717,8 @@ int av_parser_parse2(AVCodecParserContext *s,
 /**
  * @return 0 if the output buffer is a subset of the input, 1 if it is allocated and must be freed
  * @deprecated use AVBitStreamFilter
+ return：假如输出的缓存是一个输入的子集则返回0，假如是被分配的则返回1，且必须被释放
+ deprecated：使用AVBitStreamFilter
  */
 int av_parser_change(AVCodecParserContext *s,
                      AVCodecContext *avctx,
@@ -5706,6 +5741,7 @@ void av_parser_close(AVCodecParserContext *s);
  *
  * @param id AVCodecID of the requested encoder
  * @return An encoder if one was found, NULL otherwise.
+ 通过匹配codec ID来查找一个已经注册的编码器
  */
 AVCodec *avcodec_find_encoder(enum AVCodecID id);
 
@@ -5714,6 +5750,7 @@ AVCodec *avcodec_find_encoder(enum AVCodecID id);
  *
  * @param name name of the requested encoder
  * @return An encoder if one was found, NULL otherwise.
+ 通过特定的名字查找一个已经注册的编码器
  */
 AVCodec *avcodec_find_encoder_by_name(const char *name);
 
@@ -5756,6 +5793,9 @@ AVCodec *avcodec_find_encoder_by_name(const char *name);
  * @return          0 on success, negative error code on failure
  *
  * @deprecated use avcodec_send_frame()/avcodec_receive_packet() instead
+ 编码一个audio frame
+ 
+ deprecated：使用avcodec_send_frame()/avcodec_receive_packet()进行替代
  */
 attribute_deprecated
 int avcodec_encode_audio2(AVCodecContext *avctx, AVPacket *avpkt,
@@ -5795,6 +5835,7 @@ int avcodec_encode_audio2(AVCodecContext *avctx, AVPacket *avpkt,
  * @return          0 on success, negative error code on failure
  *
  * @deprecated use avcodec_send_frame()/avcodec_receive_packet() instead
+ deprecated：使用avcodec_send_frame()/avcodec_receive_packet()进行替代
  */
 attribute_deprecated
 int avcodec_encode_video2(AVCodecContext *avctx, AVPacket *avpkt,
@@ -5815,6 +5856,8 @@ int avcodec_encode_subtitle(AVCodecContext *avctx, uint8_t *buf, int buf_size,
  * @deprecated use libswresample instead
  *
  * @{
+ lavc_resample audio resampling（重新采样）
+ deprecated：使用libswresampli进行替代
  */
 struct ReSampleContext;
 struct AVResampleContext;
@@ -5977,6 +6020,9 @@ int av_picture_pad(AVPicture *dst, const AVPicture *src, int height, int width, 
  * Miscellaneous utility functions related to both encoding and decoding
  * (or neither).
  * @{
+ 组：lavc_misc实用函数
+ 属于libavc
+ 杂项实用的编码和解码的函数
  */
 
 /**
@@ -5999,6 +6045,11 @@ int av_picture_pad(AVPicture *dst, const AVPicture *src, int height, int width, 
  * @param[out] v_shift store log2_chroma_h
  *
  * @see av_pix_fmt_get_chroma_sub_sample
+ 实用函数从AVPixFmtDescriptor的像素格式中访问log2_chroma_w_chroma_h.
+ 这个函数断言pix_fmt是可用的。看av_pix_fmt_get_chroma_sub_sample从返回的错误code和不可用的pix_fmt。
+ in pix_fmt： pixel的格式
+ out h_shift：存储log2_chroma_w
+ out v_shift:存储log2_chroma_h
  */
 
 void avcodec_get_chroma_sub_sample(enum AVPixelFormat pix_fmt, int *h_shift, int *v_shift);
@@ -6007,6 +6058,7 @@ void avcodec_get_chroma_sub_sample(enum AVPixelFormat pix_fmt, int *h_shift, int
  * Return a value representing the fourCC code associated to the
  * pixel format pix_fmt, or 0 if no associated fourCC code can be
  * found.
+ 返回一个代表fourCC的一个pixel格式为pix_fmt的值，或者假如没有fourCC值没有被发现则返回0。
  */
 unsigned int avcodec_pix_fmt_to_codec_tag(enum AVPixelFormat pix_fmt);
 
