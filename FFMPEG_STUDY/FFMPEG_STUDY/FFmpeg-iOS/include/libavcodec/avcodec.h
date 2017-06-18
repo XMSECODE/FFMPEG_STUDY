@@ -6084,6 +6084,12 @@ int avcodec_get_pix_fmt_loss(enum AVPixelFormat dst_pix_fmt, enum AVPixelFormat 
  * @param[in] has_alpha Whether the source pixel format alpha channel is used.
  * @param[out] loss_ptr Combination of flags informing you what kind of losses will occur.
  * @return The best pixel format to convert to or -1 if none was found.
+ 找到最好的像素格式来转换为给定的像素格式。当从一个像素格式转换为另外一个，可能会发生信息丢失。例如：当从RGB24转换为GRAY时，这个颜色信息将会丢失。相似的，当从一种格式转换为另外一种格式会发生丢失。avcodec_find_best_pix_fmt_of_2()搜索给定的像素格式可以减少丢失的数量。选择的像素格式是通过pix_fmt_list参数决定的。
+ in pix_fmt_list：一个以AV_PIX_FMT_NONE为结束的数组来提供可以选择的像素格式
+ in src_pix_fmt：源像素格式
+ in has_alpha：源像素格式是否使用alpha通道
+ out loss_ptr：组合标志信息告诉你将会发生哪些类型的丢失
+ return：最佳的转换的像素的格式，如果没有发现则返回-1
  */
 enum AVPixelFormat avcodec_find_best_pix_fmt_of_list(const enum AVPixelFormat *pix_fmt_list,
                                             enum AVPixelFormat src_pix_fmt,
@@ -6137,6 +6143,10 @@ void avcodec_string(char *buf, int buf_size, AVCodecContext *enc, int encode);
  * @param codec the codec that is searched for the given profile
  * @param profile the profile value for which a name is requested
  * @return A name for the profile if found, NULL otherwise.
+ 返回一个指定配置的名字，假如是可用的话。
+ codec：通过给定的编解码器来搜索配置文件
+ profile：配置的名字
+ return：假如发现配置则返回一个名字，否则返回NULL
  */
 const char *av_get_profile_name(const AVCodec *codec, int profile);
 
@@ -6150,6 +6160,11 @@ const char *av_get_profile_name(const AVCodec *codec, int profile);
  * @note unlike av_get_profile_name(), which searches a list of profiles
  *       supported by a specific decoder or encoder implementation, this
  *       function searches the list of profiles from the AVCodecDescriptor
+ 返回一个指定配置的名字，假如是可用的话。
+ codec_id参数：用来请求配置的codec的ID
+ profile：配置名称
+ return：假如发现配置则返回一个名字，否则返回NULL
+ note：和av_get_profile_name()不一样，那一个是搜索一个配置列表，支持通过一个指定的解码器或者编码器生成的列表，这个函数是搜索一个来自AVCodecDescriptor的列表
  */
 const char *avcodec_profile_name(enum AVCodecID codec_id, int profile);
 
@@ -6179,6 +6194,17 @@ int avcodec_default_execute2(AVCodecContext *c, int (*func)(AVCodecContext *c2, 
  * @return            >=0 on success, negative error code on failure
  * @todo return the size in bytes required to store the samples in
  * case of success, at the next libavutil bump
+ 填充AVFrame audio 数据和指针的大小
+ 缓存区缓存必须预先分配缓存一个足够大小来装指定的样本数量。这个填充慢的AVFrame数据指针将会指向这个缓存。
+ 假如对planar audio有必要的话，AVFrame extended_data通道的指针将会被分配。
+ frame：AVframe的frame->nb_samples必须被设置之前调用这个函数。这个函数会填满frame->data，frame->extended_data，frame->linesize[0]。
+ nb_channels参数：channel数量
+ sample_fme参数：样本格式
+ buf参数：被用来使用frame data的缓存
+ buf_size参数：buffer的大小
+ align参数：plane样本的大小（default = 0）
+ return：若成功则返回的数大于等于0，失败则返回一个负数
+ todo：在成功的情况下返回下一次libavutil bump需要存储的样本的大小。
  */
 int avcodec_fill_audio_frame(AVFrame *frame, int nb_channels,
                              enum AVSampleFormat sample_fmt, const uint8_t *buf,
