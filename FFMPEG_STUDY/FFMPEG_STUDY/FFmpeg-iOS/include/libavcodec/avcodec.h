@@ -5090,7 +5090,7 @@ unsigned avcodec_get_edge_width(void);
  * padding.
  *
  * May only be used if a codec with AV_CODEC_CAP_DR1 has been opened.
- 改变width和height值会产生一个内存缓存，对于codec是可以接收的，假如你不使用任何水平填充。假如通过AV_CODEC_CAP_DR1的codec被打开，可能被使用。
+ 改变width和height值会产生一个内存缓存，对于codec是可以接收的，假如你不使用任何水平填充。只有通过AV_CODEC_CAP_DR1的codec被打开，才可能被使用。
  */
 void avcodec_align_dimensions(AVCodecContext *s, int *width, int *height);
 
@@ -5100,7 +5100,8 @@ void avcodec_align_dimensions(AVCodecContext *s, int *width, int *height);
  * line sizes are a multiple of the respective linesize_align[i].
  *
  * May only be used if a codec with AV_CODEC_CAP_DR1 has been opened.
- 
+ 改变width和height值，这个产生的结果在一个内存缓存区，假如你可以保证所有的线尺寸是和是linesize_align[i]的和，这样对于codec是可以接受的。
+ 值有当一个codec通过AV_CODEC_CAP_DR1被打开是才可能被使用。
  */
 void avcodec_align_dimensions2(AVCodecContext *s, int *width, int *height,
                                int linesize_align[AV_NUM_DATA_POINTERS]);
@@ -5113,6 +5114,10 @@ void avcodec_align_dimensions2(AVCodecContext *s, int *width, int *height,
  *
  * @param xpos  horizontal chroma sample position
  * @param ypos  vertical   chroma sample position
+ 转换AVChromaLocation到x/y色度的位置。
+ 展示的色度（0，0）位置的的相应的是亮度（0，0），亮度（1，1）则代表256，256
+ xpos：水平色度样品的位置
+ ypos：垂直色度样品的位置
  */
 int avcodec_enum_to_chroma_pos(int *xpos, int *ypos, enum AVChromaLocation pos);
 
@@ -5124,6 +5129,10 @@ int avcodec_enum_to_chroma_pos(int *xpos, int *ypos, enum AVChromaLocation pos);
  *
  * @param xpos  horizontal chroma sample position
  * @param ypos  vertical   chroma sample position
+ 转换色度x/y位置到AVChromaLocation。
+ 展示的色度（0，0）位置的的相应的是亮度（0，0），亮度（1，1）则代表256，256
+ xpos：水平色度样品的位置
+ ypos：垂直色度样品的位置
  */
 enum AVChromaLocation avcodec_chroma_pos_to_enum(int xpos, int ypos);
 
@@ -5179,6 +5188,14 @@ enum AVChromaLocation avcodec_chroma_pos_to_enum(int xpos, int ypos);
  *         AVPacket is returned.
  *
 * @deprecated Use avcodec_send_packet() and avcodec_receive_frame().
+ 解码audio frame，从avpkt->data到avpkt->size，到frame中。
+ 一些解码器可能支持多个frame在单个AVPacket。这样的的解码器只会解码第一个frame，返回值将会小于packet大小。在这种情况下，avcodec_decode_audio4必须再次调用解码AVPacket剩余的数据为了第二个frame等。。。计时没有返回frame，这个packet仍需要解码剩余的数据，直到他被完全消耗掉或者发生错误。
+ 一些解码器（被标记为AV_CODEC_CAP_DELAY）在输入和输出之间有一个延迟。这就意味着一些packet将不会立即产生解码输出，需要在这个结束时flushed来得到所有的解码数据。flush是通过调用这个方法设置packet的avpkt->data为NULL何svpkt->size为0直到他停止返回样本。即使解码器没有被标记为AV_CODEC_CAP_DELAY，flush也是安全的，将不会有任何样本被返回。
+ warning：输入缓存区必须AV_INPUT_BUFFER_PADDING_SIZE 大于实际读取的大小，因为有些优化的比特流阅读者会阅读32或者64bits，可能会超过阅读的界限。
+ out got_frame_ptr: 假如没有frame被解码则返回0，否则就不会是0.注意这个字段被设置为0不意味着一个发生一个错误。对于给解码器设置AV_CODEC_CAP_DELAY，不会保证解码调用产生一个frame。
+ in avpkt:输入的AVPacket包含输入的缓存。最后的avpkt->data和avpkt->size应该被设置。一些解码器可能需要设置一些额外的字段。
+ return：假如在解码期间发生一个错误则返回一个负值，否则会返回输入的AVPacket被消耗的字节数。
+ deprecated：使用 avcodec_send_packet() and avcodec_receive_frame().
  */
 attribute_deprecated
 int avcodec_decode_audio4(AVCodecContext *avctx, AVFrame *frame,
@@ -5272,6 +5289,7 @@ int avcodec_decode_video2(AVCodecContext *avctx, AVFrame *picture,
  *                 must be freed with avsubtitle_free if *got_sub_ptr is set.
  * @param[in,out] got_sub_ptr Zero if no subtitle could be decompressed, otherwise, it is nonzero.
  * @param[in] avpkt The input AVPacket containing the input buffer.
+ 
  */
 int avcodec_decode_subtitle2(AVCodecContext *avctx, AVSubtitle *sub,
                             int *got_sub_ptr,
