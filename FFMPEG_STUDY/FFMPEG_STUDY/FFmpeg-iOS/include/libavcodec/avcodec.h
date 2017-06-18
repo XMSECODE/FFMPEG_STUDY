@@ -4544,7 +4544,11 @@ const AVClass *avcodec_get_subtitle_rect_class(void);
  * to another, use an intermediate AVCodecParameters instance and the
  * avcodec_parameters_from_context() / avcodec_parameters_to_context()
  * functions.
- 
+ 拷贝源AVCodecContext的设置到目标AVCodecContext。这个目的的结果codec context是没有被打开。在你使用这个AVCodecContext来解码或者编码video或者audio之前需要调用avcodec_open2()。
+ dest参数：目标codec context，应该通过avcodec_alloc_context3(NULL)被初始化,除此之外没有其他初始化方法。
+ src参数：源codec context
+ return：返回0则代表成功，否则返回AVERROR()，例如内存分配错误
+ deprecated弃用：这个函数语义不明确，他应该不被使用。假如你需要传输stream parameters从一个codec context到另外一个codec context，使用一个中间的AVCodecParameters实例和avcodec_parameters_from_context() / avcodec_parameters_to_context()函数。
  */
 attribute_deprecated
 int avcodec_copy_context(AVCodecContext *dest, const AVCodecContext *src);
