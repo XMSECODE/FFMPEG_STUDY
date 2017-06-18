@@ -4419,21 +4419,25 @@ typedef struct AVCodecParameters {
  * If c is NULL, returns the first registered codec,
  * if c is non-NULL, returns the next registered codec after c,
  * or NULL if c is the last one.
+ 加入c为NULL，将会返回第一次注册的codec，加入c不是NULL，将会返回在c后面注册的codec。或者如果c是做后一个，则会返回NULL
  */
 AVCodec *av_codec_next(const AVCodec *c);
 
 /**
  * Return the LIBAVCODEC_VERSION_INT constant.
+ 返回LIBAVCODEC_VERSION_INT常量
  */
 unsigned avcodec_version(void);
 
 /**
  * Return the libavcodec build-time configuration.
+ 返回libavcodec构建时的配置
  */
 const char *avcodec_configuration(void);
 
 /**
  * Return the libavcodec license.
+ 返回libavcodec的license（许可证）
  */
 const char *avcodec_license(void);
 
@@ -4444,6 +4448,8 @@ const char *avcodec_license(void);
  * before any other libavcodec functions.
  *
  * @see avcodec_register_all()
+ 注册codec和初始化libavcodec
+ warning：这个函数或者 avcodec_register_all()函数必须被调用一个，在其他任何的libavcodec函数之前。
  */
 void avcodec_register(AVCodec *codec);
 
@@ -4456,6 +4462,7 @@ void avcodec_register(AVCodec *codec);
  * @see avcodec_register
  * @see av_register_codec_parser
  * @see av_register_bitstream_filter
+ 注册所有的codec，parser（解析器）和bitstream filter（过滤器）在启用配置的时候。如果你不调用这个方法，你可以选择准确的你想支持的格式，通过使用单个的注册的函数。
  */
 void avcodec_register_all(void);
 
@@ -4471,12 +4478,15 @@ void avcodec_register_all(void);
  *              important mainly for encoders, e.g. libx264).
  *
  * @return An AVCodecContext filled with default values or NULL on failure.
+ 分配一个AVCodecContext，然后设置他的字段为默认值。产生的结构体应该通过avcodec_free_context()被释放。
+ codec参数：假如不是NULL，分配一个私有数据，并且初始化codec为默认值。在这之后使用不同的codec调用avcodec_open2()是非法的。假如为NULL，这个默认的具体的codec将不会被初始化，这将导致使用次优的默认配置（这对于解码器来说是非常重要的，例如 lib264）
  */
 AVCodecContext *avcodec_alloc_context3(const AVCodec *codec);
 
 /**
  * Free the codec context and everything associated with it and write NULL to
  * the provided pointer.
+ 释放codec context和他关联的一切东西，然后写入NULL指针到avctx。
  */
 void avcodec_free_context(AVCodecContext **avctx);
 
@@ -4485,6 +4495,7 @@ void avcodec_free_context(AVCodecContext **avctx);
  * @deprecated This function should not be used, as closing and opening a codec
  * context multiple time is not supported. A new codec context should be
  * allocated for each new use.
+ deprecated弃用：这个方法不应该被调用，不支持多次关闭和打开一个codec context。每一个新的codec context应该重新被分配。
  */
 int avcodec_get_context_defaults3(AVCodecContext *s, const AVCodec *codec);
 #endif
@@ -4494,6 +4505,7 @@ int avcodec_get_context_defaults3(AVCodecContext *s, const AVCodec *codec);
  * AV_OPT_SEARCH_FAKE_OBJ for examining options.
  *
  * @see av_opt_find().
+ 通过AVCodecContext得到AVClass。他可以用于组合AV_OPT_SEARCH_FAKE_OBJ来检测options。
  */
 const AVClass *avcodec_get_class(void);
 
@@ -4503,6 +4515,7 @@ const AVClass *avcodec_get_class(void);
  * AV_OPT_SEARCH_FAKE_OBJ for examining options.
  *
  * @see av_opt_find().
+ 通过AVFrame得到AVClass。他可以用于组合AV_OPT_SEARCH_FAKE_OBJ来检测options。
  */
 const AVClass *avcodec_get_frame_class(void);
 
@@ -4511,6 +4524,7 @@ const AVClass *avcodec_get_frame_class(void);
  * AV_OPT_SEARCH_FAKE_OBJ for examining options.
  *
  * @see av_opt_find().
+ 通过AVSubtitleRect得到AVClass。他可以用于组合AV_OPT_SEARCH_FAKE_OBJ来检测options。
  */
 const AVClass *avcodec_get_subtitle_rect_class(void);
 
@@ -4530,6 +4544,7 @@ const AVClass *avcodec_get_subtitle_rect_class(void);
  * to another, use an intermediate AVCodecParameters instance and the
  * avcodec_parameters_from_context() / avcodec_parameters_to_context()
  * functions.
+ 
  */
 attribute_deprecated
 int avcodec_copy_context(AVCodecContext *dest, const AVCodecContext *src);
