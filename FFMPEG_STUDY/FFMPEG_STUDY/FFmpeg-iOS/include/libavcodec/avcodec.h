@@ -4852,6 +4852,8 @@ void av_free_packet(AVPacket *pkt);
  * @param type side information type
  * @param size side information size
  * @return pointer to fresh allocated data or NULL otherwise
+ 分配一个新的信息给packet
+ return：刷新后被分配的数据的指针，否则返回NULL
  */
 uint8_t* av_packet_new_side_data(AVPacket *pkt, enum AVPacketSideDataType type,
                                  int size);
@@ -4868,6 +4870,9 @@ uint8_t* av_packet_new_side_data(AVPacket *pkt, enum AVPacketSideDataType type,
  * @return a non-negative number on success, a negative AVERROR code on
  *         failure. On failure, the packet is unchanged and the data remains
  *         owned by the caller.
+ 包装一个现有的数组作为一个packet里面的数据。
+ data：数据数组。必须通过av_malloc()家族函数分配的对象。这个数据的所有权被转移给pkt。
+ return：返回非负数则代表成功，失败则返回AVERROR。如果失败，则packet不会被改变，data的所有权仍然归调用者所用。
  */
 int av_packet_add_side_data(AVPacket *pkt, enum AVPacketSideDataType type,
                             uint8_t *data, size_t size);
@@ -4879,6 +4884,8 @@ int av_packet_add_side_data(AVPacket *pkt, enum AVPacketSideDataType type,
  * @param type side information type
  * @param size new side information size
  * @return 0 on success, < 0 on failure
+ 缩小已经存在的数据缓存
+ return：返回0则代表成功，小于0则代表失败
  */
 int av_packet_shrink_side_data(AVPacket *pkt, enum AVPacketSideDataType type,
                                int size);
@@ -4890,6 +4897,9 @@ int av_packet_shrink_side_data(AVPacket *pkt, enum AVPacketSideDataType type,
  * @param type desired side information type
  * @param size pointer for side information size to store (optional)
  * @return pointer to data if present or NULL otherwise
+ 从packet得到信息
+ size：指针指向的被存储的空间大小
+ return：返回指向数据的指针，否则返回NULL
  */
 uint8_t* av_packet_get_side_data(const AVPacket *pkt, enum AVPacketSideDataType type,
                                  int *size);
@@ -4910,6 +4920,10 @@ const char *av_packet_side_data_name(enum AVPacketSideDataType type);
  * @param dict The dictionary to pack.
  * @param size pointer to store the size of the returned data
  * @return pointer to data if successful, NULL otherwise
+ 为使用side_data包装一个字典
+ dict：用来包装的字典
+ size：用来保存返回数据的指针的指向空间的大小
+ return：假如成功则返回数据的指针，否则返回NULL
  */
 uint8_t *av_packet_pack_dictionary(AVDictionary *dict, int *size);
 /**
@@ -4919,6 +4933,9 @@ uint8_t *av_packet_pack_dictionary(AVDictionary *dict, int *size);
  * @param size size of the data
  * @param dict the metadata storage dictionary
  * @return 0 on success, < 0 on failure
+ 从side_data中解包一个字典
+ dict：存储源数据的字典
+ return：成功则返回0，失败则返回小于0
  */
 int av_packet_unpack_dictionary(const uint8_t *data, int size, AVDictionary **dict);
 
@@ -4928,6 +4945,8 @@ int av_packet_unpack_dictionary(const uint8_t *data, int size, AVDictionary **di
  * All the other fields stay untouched.
  *
  * @param pkt packet
+ 这个函数是为释放所有存储的side data数据。
+ 所有的其他字段不好被接触到。
  */
 void av_packet_free_side_data(AVPacket *pkt);
 
@@ -4946,6 +4965,10 @@ void av_packet_free_side_data(AVPacket *pkt);
  * @param src Source packet
  *
  * @return 0 on success, a negative AVERROR on error.
+ 通过一个给定的packet设置一个新的引用给被描述的数据。
+ 加入src是被引用计数的，设置dst作为一个新的引用到src的缓存。否则分配一个新的缓存给dst，然后从src拷贝数据到新的缓存。
+ 所有的其他字段都是从src拷贝。
+ return：返回0则代表成功，失败则返回AVERROR
  */
 int av_packet_ref(AVPacket *dst, const AVPacket *src);
 
@@ -4956,6 +4979,8 @@ int av_packet_ref(AVPacket *dst, const AVPacket *src);
  * remaining packet fields to their default values.
  *
  * @param pkt The packet to be unreferenced.
+ wipe(擦)packet
+ 通过packet解除缓冲区的引用，重新设置packet其余字段为默认值。
  */
 void av_packet_unref(AVPacket *pkt);
 
@@ -4966,6 +4991,7 @@ void av_packet_unref(AVPacket *pkt);
  *
  * @param src Source packet, will be reset
  * @param dst Destination packet
+ 把src所有字段移动到dst，并重新设置src
  */
 void av_packet_move_ref(AVPacket *dst, AVPacket *src);
 
@@ -4979,6 +5005,9 @@ void av_packet_move_ref(AVPacket *dst, AVPacket *src);
  * @param src Source packet
  *
  * @return 0 on success AVERROR on failure.
+ 仅仅只从src拷贝“properties”到dst。
+ 对于这个函数的目的的属性的所有字段是基于packet的这些字段（缓存，数据，大小）
+ return：返回0则代表成功，失败则返回AVERROR
  */
 int av_packet_copy_props(AVPacket *dst, const AVPacket *src);
 
@@ -4992,6 +5021,10 @@ int av_packet_copy_props(AVPacket *dst, const AVPacket *src);
  *               expressed
  * @param tb_dst destination timebase, to which the timing fields will be
  *               converted
+ 从一个包的有效时间字段转换到另外一个（时间戳、持续时间）。未知值的时间戳将会被忽略（AV_NOPTS_VALUE）。
+ pkt：将会被执行转换的packet
+ tb_src：源时间基础，在pkt中表达的时间字段
+ tb_dst：目标时间基础，将会被转换的时间字段
  */
 void av_packet_rescale_ts(AVPacket *pkt, AVRational tb_src, AVRational tb_dst);
 
@@ -5020,6 +5053,8 @@ AVCodec *avcodec_find_decoder(enum AVCodecID id);
  *
  * @param name name of the requested decoder
  * @return A decoder if one was found, NULL otherwise.
+ 通过指定的名字查找一个已经注册的decoder
+ return：成功则返回一个解码器，否则返回NULL
  */
 AVCodec *avcodec_find_decoder_by_name(const char *name);
 
@@ -5027,6 +5062,7 @@ AVCodec *avcodec_find_decoder_by_name(const char *name);
  * The default callback for AVCodecContext.get_buffer2(). It is made public so
  * it can be called by custom get_buffer2() implementations for decoders without
  * AV_CODEC_CAP_DR1 set.
+ 这个默认会调用AVCodecContext.get_buffer2()。他是公共的，所以他可以调用自定义的get_buffer2()实现，没有设置AV_CODEC_CAP_DR1。
  */
 int avcodec_default_get_buffer2(AVCodecContext *s, AVFrame *frame, int flags);
 
@@ -5040,6 +5076,9 @@ int avcodec_default_get_buffer2(AVCodecContext *s, AVFrame *frame, int flags);
  *
  * @deprecated CODEC_FLAG_EMU_EDGE is deprecated, so this function is no longer
  * needed
+ 返回填充像素的数量，get_buffer回调必须保证这个为codecs的图像的边界周围没有CODEC_FLAG_EMU_EDGE标志。
+ return：需要被填充的像素
+ deprecated：CODEC_FLAG_EMU_EDGE是被弃用的，所以这个函数不会长期使用。
  */
 attribute_deprecated
 unsigned avcodec_get_edge_width(void);
@@ -5051,6 +5090,7 @@ unsigned avcodec_get_edge_width(void);
  * padding.
  *
  * May only be used if a codec with AV_CODEC_CAP_DR1 has been opened.
+ 改变width和height值会产生一个内存缓存，对于codec是可以接收的，假如你不使用任何水平填充。假如通过AV_CODEC_CAP_DR1的codec被打开，可能被使用。
  */
 void avcodec_align_dimensions(AVCodecContext *s, int *width, int *height);
 
@@ -5060,6 +5100,7 @@ void avcodec_align_dimensions(AVCodecContext *s, int *width, int *height);
  * line sizes are a multiple of the respective linesize_align[i].
  *
  * May only be used if a codec with AV_CODEC_CAP_DR1 has been opened.
+ 
  */
 void avcodec_align_dimensions2(AVCodecContext *s, int *width, int *height,
                                int linesize_align[AV_NUM_DATA_POINTERS]);
