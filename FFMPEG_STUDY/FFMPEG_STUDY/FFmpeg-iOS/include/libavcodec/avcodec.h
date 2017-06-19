@@ -6591,6 +6591,7 @@ typedef struct AVBSFList AVBSFList;
  * or finalized by av_bsf_list_finalize().
  *
  * @return Pointer to @ref AVBSFList on success, NULL in case of failure
+ 分配有个空的bitstream过滤器list。这个list最好必须由av_list_free()进行释放或者通过bsf_list_finalize()完成。
  */
 AVBSFList *av_bsf_list_alloc(void);
 
@@ -6598,6 +6599,7 @@ AVBSFList *av_bsf_list_alloc(void);
  * Free list of bitstream filters.
  *
  * @param lst Pointer to pointer returned by av_bsf_list_alloc()
+ 释放有个bitstream过滤器list。
  */
 void av_bsf_list_free(AVBSFList **lst);
 
@@ -6608,6 +6610,8 @@ void av_bsf_list_free(AVBSFList **lst);
  * @param bsf Filter context to be appended
  *
  * @return >=0 on success, negative AVERROR in case of failure
+ 把bitstream过滤器拼接到bitstream过滤器list后面。
+ return：成功则返回0，失败则返回AVERROR。
  */
 int av_bsf_list_append(AVBSFList *lst, AVBSFContext *bsf);
 
@@ -6620,6 +6624,8 @@ int av_bsf_list_append(AVBSFList *lst, AVBSFContext *bsf);
  * @param options  Options for the bitstream filter, can be set to NULL
  *
  * @return >=0 on success, negative AVERROR in case of failure
+ 给一个name和options构造有个新的bitstream filter context，并拼接到bitstream filter list后面。
+ return：成功则返回0，失败则返回AVERROR
  */
 int av_bsf_list_append2(AVBSFList *lst, const char * bsf_name, AVDictionary **options);
 /**
@@ -6637,6 +6643,11 @@ int av_bsf_list_append2(AVBSFList *lst, const char * bsf_name, AVDictionary **op
  *                 representing the chain of bitstream filters
  *
  * @return >=0 on success, negative AVERROR in case of failure
+ 完成bitstream filter list
+ 这个方法将会把AVBSFList为单个的AVSFContext，所以整个的bitstream filter链可以看做为通过av_bsf_alloc()分配的filter。假如调用成功，AVBSFList结构体会被释放，lst会被设置为NULL。在失败的情况下，调用者有责任通过调用av_bsf_list_free()来释放结构体。
+ lst参数：被转换的filter list 结构体
+ out bsf参数：指向设置了新的AVBSFContext结构体链条的bitstream filter的指针
+ return：成功则返回0，失败则返回AVERROR
  */
 int av_bsf_list_finalize(AVBSFList **lst, AVBSFContext **bsf);
 
@@ -6652,6 +6663,10 @@ int av_bsf_list_finalize(AVBSFList **lst, AVBSFContext **bsf);
  *                 representing the chain of bitstream filters
  *
  * @return >=0 on success, negative AVERROR in case of failure
+ 解析字符串描述的bitstream filter列表，创建单个的描述bitstream filter的链的AVBSFContext。创建的AVBSFContext可以和其他任何通过av_bsf_alloc()创建的AVBSFContext一样使用。
+ str：描述bitstream filter链的字符串，
+ bsf：指向设置了新的AVBSFContext结构体链条的bitstream filter的指针
+ return：成功则返回0，失败则返回AVERROR
  */
 int av_bsf_list_parse_str(const char *str, AVBSFContext **bsf);
 
@@ -6661,6 +6676,8 @@ int av_bsf_list_parse_str(const char *str, AVBSFContext **bsf);
  * @param[out] bsf Pointer to be set to new instance of pass-through bitstream filter
  *
  * @return
+ 得到null或者通过bitstream filter
+ out bsf：指向通过bitstream filter的新的实例
  */
 int av_bsf_get_null_filter(AVBSFContext **bsf);
 
@@ -6672,12 +6689,14 @@ int av_bsf_get_null_filter(AVBSFContext **bsf);
  *
  * In addition the whole buffer will initially and after resizes
  * be 0-initialized so that no uninitialized data will ever appear.
+ 和av_fast_malloc有一样的行为，但是缓存有额外的AV_INPUT_BUFFER_PADDING_SIZE，在末尾总是为0.除了整个缓存区将会被初始化和重新设置尺寸，这样的话不会有未初始化的数据出现。
  */
 void av_fast_padded_malloc(void *ptr, unsigned int *size, size_t min_size);
 
 /**
  * Same behaviour av_fast_padded_malloc except that buffer will always
  * be 0-initialized after call.
+ 和av_fast_padded_malloc一样的行为，除了被调用以后缓存区会被初始化为0.
  */
 void av_fast_padded_mallocz(void *ptr, unsigned int *size, size_t min_size);
 
@@ -6687,6 +6706,10 @@ void av_fast_padded_mallocz(void *ptr, unsigned int *size, size_t min_size);
  * @param s buffer to write to; must be at least (v/255+1) bytes long
  * @param v size of extradata in bytes
  * @return number of bytes written to the buffer.
+ 给缓存编码器额外的数据的长度。给xiph编解码器使用。
+ s参数：用来写缓存的，必须不少于(v/255+1)字节长度
+ v参数：extradata的byte大小
+ return：写入缓存区的字节数
  */
 unsigned int av_xiphlacing(unsigned char *s, unsigned int v);
 
@@ -6703,6 +6726,7 @@ unsigned int av_xiphlacing(unsigned char *s, unsigned int v);
  * message which tells the user how to report samples to the development
  * mailing list.
  * @deprecated Use avpriv_report_missing_feature() instead.
+ 
  */
 attribute_deprecated
 void av_log_missing_feature(void *avc, const char *feature, int want_sample);
@@ -6722,6 +6746,7 @@ void av_log_ask_for_sample(void *avc, const char *msg, ...) av_printf_format(2, 
 
 /**
  * Register the hardware accelerator hwaccel.
+ 注册hwaccel硬件加速器
  */
 void av_register_hwaccel(AVHWAccel *hwaccel);
 
@@ -6729,6 +6754,7 @@ void av_register_hwaccel(AVHWAccel *hwaccel);
  * If hwaccel is NULL, returns the first registered hardware accelerator,
  * if hwaccel is non-NULL, returns the next registered hardware accelerator
  * after hwaccel, or NULL if hwaccel is the last one.
+ 假如hwaccel是NULL，返回第一个注册的硬件加速器。假如hwaccel不是NULL，返回下一个硬件加速器。假如hwaccel是最后一个硬件加速器，则返回NULL。
  */
 AVHWAccel *av_hwaccel_next(const AVHWAccel *hwaccel);
 
@@ -6765,38 +6791,46 @@ enum AVLockOp {
  *           mechanism (i.e. do not use a single static object to
  *           implement your lock manager). If cb is set to NULL the
  *           lockmgr will be unregistered.
+ 注册一个提供用户管理锁的，支持指定的AVLockOp操作。这个给函数的互斥的参数指针：锁管理者应该存储或者去除一个指针指向用户分配的互斥。在AV_LOCK_CREATE上面是NULL，等价于剩下的其他的所有操作。假如锁管理者不能执行这个操作，他应该舍弃这个互斥，在当他被调用时返回一个非0值时也应该也有舍弃这个互斥。然而，当调用了AV_LOCK_DESTROY，这个互斥总是会被成功销毁。假如av_lockmgr_register成功，他会返回一个非负值，假如失败则会返回一个负数并且销毁所有的互斥和回调取消所有的注册。av_lockmgr_register不是线程安全的。他在任何保证锁使用前必须被单个线程调用。
+ cb参数：用户定义的回调函数。av_lockmgr_register调用这个回调和以前注册的回调。这个回调函数将会被使用来创建多个互斥，每一个互斥都有自己潜在的锁机制（例如不要使用单个的静态的对象来生成你的lock manager）。假如cb被设置为NULL，这个lockmgr将不会被注册。
  */
 int av_lockmgr_register(int (*cb)(void **mutex, enum AVLockOp op));
 
 /**
  * Get the type of the given codec.
+ 得到给的codec的类型
  */
 enum AVMediaType avcodec_get_type(enum AVCodecID codec_id);
 
 /**
  * Get the name of a codec.
  * @return  a static string identifying the codec; never NULL
+ 得到codec的名字
  */
 const char *avcodec_get_name(enum AVCodecID id);
 
 /**
  * @return a positive value if s is open (i.e. avcodec_open2() was called on it
  * with no corresponding avcodec_close()), 0 otherwise.
+ 假如s是打开的则返回正值（例如：avcodec_open2()被调用，没有调用相应的avcodec_close()），否则返回0
  */
 int avcodec_is_open(AVCodecContext *s);
 
 /**
  * @return a non-zero number if codec is an encoder, zero otherwise
+ 假如这个codec是一个编码器则返回一个非零数，否则返回0
  */
 int av_codec_is_encoder(const AVCodec *codec);
 
 /**
  * @return a non-zero number if codec is a decoder, zero otherwise
+ 假如这个codec是解码器则返回一个非零数，否则返回0
  */
 int av_codec_is_decoder(const AVCodec *codec);
 
 /**
  * @return descriptor for given codec ID or NULL if no descriptor exists.
+ 返回给的codec ID的描述，或者假如描述不存在则返回0
  */
 const AVCodecDescriptor *avcodec_descriptor_get(enum AVCodecID id);
 
@@ -6806,12 +6840,16 @@ const AVCodecDescriptor *avcodec_descriptor_get(enum AVCodecID id);
  * @param prev previous descriptor. NULL to get the first descriptor.
  *
  * @return next descriptor or NULL after the last descriptor
+ 遍历所有的libavcodec知道的codec 描述
+ prev参数：上一个描述。第一次则为NULL。
+ return：返回下一个描述，最后一个则返回NULL
  */
 const AVCodecDescriptor *avcodec_descriptor_next(const AVCodecDescriptor *prev);
 
 /**
  * @return codec descriptor with the given name or NULL if no such descriptor
  *         exists.
+ 返回给定名字的codec的描述，如果没有找到则返回NULL
  */
 const AVCodecDescriptor *avcodec_descriptor_get_by_name(const char *name);
 
@@ -6823,6 +6861,9 @@ const AVCodecDescriptor *avcodec_descriptor_get_by_name(const char *name);
  *             here. This is useful for embedding it in side data.
  *
  * @return the newly allocated struct or NULL on failure
+ 分配一个CPB属性的结构体，并初始化为默认字段。
+ size参数：假如为NULL，这个分配的结构体将会被写在这里。这是使用来嵌入有用的数据。
+ return：分配的新的结构体，失败则返回NULL。
  */
 AVCPBProperties *av_cpb_properties_alloc(size_t *size);
 
