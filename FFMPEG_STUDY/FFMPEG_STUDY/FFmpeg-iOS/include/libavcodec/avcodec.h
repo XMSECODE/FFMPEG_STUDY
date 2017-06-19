@@ -6218,6 +6218,8 @@ int avcodec_fill_audio_frame(AVFrame *frame, int nb_channels,
  * this invalidates the frames previously returned from the decoder. When
  * refcounted frames are used, the decoder just releases any references it might
  * keep internally, but the caller's reference remains valid.
+ 重新设置内部解码器状态/刷新内部缓冲区。应该被调用，例如当探索或者改变一个不同的stream的时候。
+ note：当引用的frame是没有被使用（例如avctx->refcounted_frames 是 0），这个解码器之前返回的帧将是无效的。当引用的frame是被使用了，这个解码器仅仅会释放所有在内部持有的引用的，但是这个调用者的引用仍然是有效的。
  */
 void avcodec_flush_buffers(AVCodecContext *avctx);
 
@@ -6226,6 +6228,8 @@ void avcodec_flush_buffers(AVCodecContext *avctx);
  *
  * @param[in] codec_id the codec
  * @return Number of bits per sample or zero if unknown for the given codec.
+ 返回codec的每一个样本的bits比特数
+ return：返回每一个样本的bits，如果给的codec是未知的则返回0
  */
 int av_get_bits_per_sample(enum AVCodecID codec_id);
 
@@ -6234,6 +6238,9 @@ int av_get_bits_per_sample(enum AVCodecID codec_id);
  * @param be  endianness, 0 for little, 1 for big,
  *            -1 (or anything else) for native
  * @return  AV_CODEC_ID_PCM_* or AV_CODEC_ID_NONE
+ 返回PCM codec相关的样本格式
+ be参数：字节顺序，0是最小的，1是最大，-1或者其他任何是自然的
+ return：AV_CODEC_ID_PCM_* or AV_CODEC_ID_NONE
  */
 enum AVCodecID av_get_pcm_codec(enum AVSampleFormat fmt, int be);
 
@@ -6244,6 +6251,8 @@ enum AVCodecID av_get_pcm_codec(enum AVSampleFormat fmt, int be);
  *
  * @param[in] codec_id the codec
  * @return Number of bits per sample or zero if unknown for the given codec.
+ 返回codec的每一个样本的bits比特数。只有在每一个样本的bits是完全正确的，而不是近似的才不会返回0.
+ return：返回每一个样本的bits，如果给的codec是未知的则返回0
  */
 int av_get_exact_bits_per_sample(enum AVCodecID codec_id);
 
@@ -6254,12 +6263,15 @@ int av_get_exact_bits_per_sample(enum AVCodecID codec_id);
  * @param frame_bytes  size of the frame, or 0 if unknown
  * @return             frame duration, in samples, if known. 0 if not able to
  *                     determine.
+ 返回audio frame的持续时间
+ return：frame样本的持续时间，假如没有持续时间则返回0
  */
 int av_get_audio_frame_duration(AVCodecContext *avctx, int frame_bytes);
 
 /**
  * This function is the same as av_get_audio_frame_duration(), except it works
  * with AVCodecParameters instead of an AVCodecContext.
+ 这个函数和av_get_audio_frame_duration()一样，特别的是他是把AVCodecContext换成AVCodecParameters。
  */
 int av_get_audio_frame_duration2(AVCodecParameters *par, int frame_bytes);
 
@@ -6458,6 +6470,7 @@ AVBitStreamFilter *av_bitstream_filter_next(const AVBitStreamFilter *f);
 /**
  * @return a bitstream filter with the specified name or NULL if no such
  *         bitstream filter exists.
+ return：一个指定名字的bitstream过滤器，假如没有这样的过滤器存在则返回NULL
  */
 const AVBitStreamFilter *av_bsf_get_by_name(const char *name);
 
@@ -6469,6 +6482,9 @@ const AVBitStreamFilter *av_bsf_get_by_name(const char *name);
  *
  * @return the next registered bitstream filter or NULL when the iteration is
  *         finished
+ 遍历所有注册的bitstream过滤器。
+ opaque参数：一个存储libavcodec遍历的状态指针。开始遍历的时候必须指向NULL。
+ return：下一个注册的bitstream过滤器，当遍历完成是返回NULL。
  */
 const AVBitStreamFilter *av_bsf_next(void **opaque);
 
@@ -6483,12 +6499,17 @@ const AVBitStreamFilter *av_bsf_next(void **opaque);
  *            filtering is done.
  *
  * @return 0 on success, a negative AVERROR code on failure
+ 给一个bitstream过滤器分配一个context。调用者必须填满context文档中描述的参数，在给过滤器发送任何数据之前必须调用av_bsf_init()。
+ filter参数：分配的一个过滤器实例
+ ctx参数：一个指向一个指向新分配的用来写入的context的指针的指针。他在过滤后必须被av_bsf_free()释放。
+ return：返回0则成功，失败则返回AVERROR。
  */
 int av_bsf_alloc(const AVBitStreamFilter *filter, AVBSFContext **ctx);
 
 /**
  * Prepare the filter for use, after all the parameters and options have been
  * set.
+ 准备过滤器来使用，然后所有的参数和选项会被设置。
  */
 int av_bsf_init(AVBSFContext *ctx);
 
@@ -6507,6 +6528,10 @@ int av_bsf_init(AVBSFContext *ctx);
  * may have buffered internally.
  *
  * @return 0 on success, a negative AVERROR on error.
+ 给过滤器提交一个packet。
+ 在发送每个packet的时候，这个过滤器必须完成排除所有数据，通过重复调用av_bsf_receive_packet()直到他返回AVERROR(EAGAIN) or AVERROR_EOF.
+ pkt参数：用来给过滤器的packet。pkt必须包含一些有效负载（例如data或者side data 必须在pkt中）。bitstream过滤器将会是packet的拥有者，会重新设置packet的内容。假如发生任何错误则不会接触到pkt。在stream末尾的时候这个参数可以为NULL（没有更多的packet会被发送）。任何拥有内部缓存区的packet都将会导致过滤器输出数据。
+ return：成功则返回0，错误则返回AVERROR。
  */
 int av_bsf_send_packet(AVBSFContext *ctx, AVPacket *pkt);
 
@@ -6533,12 +6558,15 @@ int av_bsf_send_packet(AVBSFContext *ctx, AVPacket *pkt);
  * repeatedly until it stops returning 0. It is also possible for a filter to
  * output fewer packets than were sent to it, so this function may return
  * AVERROR(EAGAIN) immediately after a successful av_bsf_send_packet() call.
+ 检索一个已经过滤后的packet。
+ out pkt：这个结构体将会填满过滤后packet的内容。他将会被调用者拥有，当他不需要使用时必须使用av_packet_unref()进行释放。当这个方法被调用时这个参数必须被清除（例如，通过av_packet_alloc()来刷新分配或者通过av_packet_unref()来解除引用）。假如这个函数返回成功，pkt的内容将会被完整填满返回的数据。如果失败，则不会接触到pkt。
  */
 int av_bsf_receive_packet(AVBSFContext *ctx, AVPacket *pkt);
 
 /**
  * Free a bitstream filter context and everything associated with it; write NULL
  * into the supplied pointer.
+ 释放一个bitstream过滤器上下午和相关联的所有对象，写入NULL到这个指针。
  */
 void av_bsf_free(AVBSFContext **ctx);
 
@@ -6547,6 +6575,7 @@ void av_bsf_free(AVBSFContext **ctx);
  * AV_OPT_SEARCH_FAKE_OBJ for examining options.
  *
  * @see av_opt_find().
+ 从AVBSFContext得到AVClass。它可以结合AV_OPT_SEARCH_FAKE_OBJ用于检查选项
  */
 const AVClass *av_bsf_get_class(void);
 
