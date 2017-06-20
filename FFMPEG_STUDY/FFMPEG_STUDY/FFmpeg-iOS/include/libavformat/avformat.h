@@ -312,6 +312,15 @@
  * @{
  * @}
  * @}
+ Libavformat（lavf）是一个用来处理各种各样media容器格式的库。他主要有两个目标是demuxing-例如分割一个media文件为stream组成，和反向muxing-写入支持的数据到指定的容器格式。他也有一个lavf_io“I/O module”，支持一个访问数据的协议（例如:文件，tcp，http和其他）。在使用lavf之前，你需要调用av_register_all()来注册所有的编译的muxers，demuxer和协议。除非你绝对确认你不要使用libavformat的network功能，否则你应该调用avformat_network_init().
+ 在AVInputFormat结构体里面描述支持的输入格式，相反的输出格式是在AVOutputFormat结构体里。你可以使用av_iformat_next()遍历所有注册的input、output 格式。协议层不是公共API的一部分，所以你只能通过avio_enum_protocols()得到被支持协议的名字。
+ 被muxing和demuxing两个使用的主要的lavf结构体是AVFormatContext，表示文件读或者写的所有的信息。和大多数Libavformat结构体原因，他的大小不是公共ABI的一部分，所以不能给分配在stack栈或者直接av_malloc()。创建一个AVFormatContext，使用av_format_alloc_context()（一些方法，像avformat_open_input()对于你来说也可以做）。
+ 最重要的AVFormatContext包含的是：AVFormatContext.iformat，或者AVFormatContext.oformat来输出format。他是自动检测的或者是用户输入设置的，对于输出总是用户设置。
+ 一个AVFormatContext.streams的数组AVStreams，描述存储在文件中的每一个streams元素。AVStreams通常是指使用这个数组的下标。
+ 一个AVFormatContext.pb“I/O context”。他是通过lavf打开或者是使用用户输入的设置，输出总是用户设置（除非你是处理一个AVFMT_NOFILE格式）.
+ lavf_options是通过设置muxers的选项。
+ 使用avoptions机制来配置lavf muxers和demuxers是可能的。通用的（独立的格式）libavformat options 是AVFormatContext提供，他们可以通过av_opt_next()/av_opt_find()在一个分配的AVFormatContext（或者是来自avformat_get_class()的AVClass）上检查用户的程序。
+ 
  */
 
 #include <time.h>
