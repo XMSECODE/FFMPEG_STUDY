@@ -52,21 +52,25 @@
 
 /**
  * Return the LIBAVDEVICE_VERSION_INT constant.
+ 返回LIBAVDEVICE_VERSION_INT常量
  */
 unsigned avdevice_version(void);
 
 /**
  * Return the libavdevice build-time configuration.
+ 返回libavdevice编译的配置
  */
 const char *avdevice_configuration(void);
 
 /**
  * Return the libavdevice license.
+ 返回libavdevice许可证
  */
 const char *avdevice_license(void);
 
 /**
  * Initialize libavdevice and register all the input and output devices.
+ 初始化libavdevice和注册所有的输入与输出设备。
  */
 void avdevice_register_all(void);
 
@@ -76,6 +80,7 @@ void avdevice_register_all(void);
  * If d is NULL, returns the first registered input audio/video device,
  * if d is non-NULL, returns the next registered input audio/video device after d
  * or NULL if d is the last one.
+ audio 输入设备的迭代器。假如d是NULL，返回第一个注册的输入audio、vider设备，假如d不是NULL，返回d的下一个注册的输入audio、video设备。假如返回NULL，则d是最后一个。
  */
 AVInputFormat *av_input_audio_device_next(AVInputFormat  *d);
 
@@ -85,6 +90,7 @@ AVInputFormat *av_input_audio_device_next(AVInputFormat  *d);
  * If d is NULL, returns the first registered input audio/video device,
  * if d is non-NULL, returns the next registered input audio/video device after d
  * or NULL if d is the last one.
+ video 输入设备的迭代器。假如d是NULL，返回第一个注册的输入audio、vider设备，假如d不是NULL，返回d的下一个注册的输入audio、video设备。假如返回NULL，则d是最后一个。
  */
 AVInputFormat *av_input_video_device_next(AVInputFormat  *d);
 
@@ -94,6 +100,7 @@ AVInputFormat *av_input_video_device_next(AVInputFormat  *d);
  * If d is NULL, returns the first registered output audio/video device,
  * if d is non-NULL, returns the next registered output audio/video device after d
  * or NULL if d is the last one.
+ audio 输出设备的迭代器。假如d是NULL，返回第一个注册的输出audio、vider设备，假如d不是NULL，返回d的下一个注册的输出audio、video设备。假如返回NULL，则d是最后一个。
  */
 AVOutputFormat *av_output_audio_device_next(AVOutputFormat *d);
 
@@ -103,6 +110,7 @@ AVOutputFormat *av_output_audio_device_next(AVOutputFormat *d);
  * If d is NULL, returns the first registered output audio/video device,
  * if d is non-NULL, returns the next registered output audio/video device after d
  * or NULL if d is the last one.
+ video 输出设备的迭代器。假如d是NULL，返回第一个注册的输出audio、vider设备，假如d不是NULL，返回d的下一个注册的输出audio、video设备。假如返回NULL，则d是最后一个。
  */
 AVOutputFormat *av_output_video_device_next(AVOutputFormat *d);
 
@@ -302,6 +310,7 @@ enum AVDevToAppMessageType {
  * @param data_size size of message data.
  * @return >= 0 on success, negative on error.
  *         AVERROR(ENOSYS) when device doesn't implement handler of the message.
+ 从应用发送一个控制消息给设备。
  */
 int avdevice_app_to_dev_control_message(struct AVFormatContext *s,
                                         enum AVAppToDevMessageType type,
@@ -316,6 +325,7 @@ int avdevice_app_to_dev_control_message(struct AVFormatContext *s,
  * @param data_size size of message data.
  * @return >= 0 on success, negative on error.
  *         AVERROR(ENOSYS) when application doesn't implement handler of the message.
+ 从device发送一个控制消息给应用。
  */
 int avdevice_dev_to_app_control_message(struct AVFormatContext *s,
                                         enum AVDevToAppMessageType type,
