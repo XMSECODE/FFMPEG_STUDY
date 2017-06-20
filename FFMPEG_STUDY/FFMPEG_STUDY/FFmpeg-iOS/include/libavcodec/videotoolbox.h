@@ -88,6 +88,8 @@ typedef struct AVVideotoolboxContext {
  * object and free the Videotoolbox context using av_free().
  *
  * @return the newly allocated context or NULL on failure
+ 分配和初始化一个Videotoolbox context。这个方法应该在当用户调用get_format()选择AV_PIX_FMT_VIDETOOLBOX样式时回调调用。调用者必须创建一个将用于Videotoolbox-accelerated解码的解码器对象（使用libavcodec提供的回调输出）。
+ 当Videotoolbox完成解码是，调用者必须使用销毁decoder对象，使用av_free()释放Videotoolbox context。
  */
 AVVideotoolboxContext *av_videotoolbox_alloc_context(void);
 
