@@ -191,6 +191,7 @@ typedef struct AVVDAContext {
  * object and free the VDA context using av_free().
  *
  * @return the newly allocated context or NULL on failure
+ 分配和初始化一个VDA context。当调用者选择AV_PIX_FMT_VDA格式时，在get_format()回调时应该调用这个方法。调用者必须创建用来AVD-accelerated解码的解码器对象(使用libavcodec提供的回调输出)。当完成VDA解码时。调用者必须销毁解码器对象，使用av_free()释放VDA context。
  */
 AVVDAContext *av_vda_alloc_context(void);
 
@@ -201,6 +202,7 @@ AVVDAContext *av_vda_alloc_context(void);
  * @param avctx the corresponding codec context
  *
  * @return >= 0 on success, a negative AVERROR code on failure
+ 这个是一个使用内部实现创建和设置VDA context的便利方法。
  */
 int av_vda_default_init(AVCodecContext *avctx);
 
@@ -212,6 +214,7 @@ int av_vda_default_init(AVCodecContext *avctx);
  * @param vdactx the VDA context to use
  *
  * @return >= 0 on success, a negative AVERROR code on failure
+ 这个是一个使用内部实现创建和设置VDA context的便利方法。
  */
 int av_vda_default_init2(AVCodecContext *avctx, AVVDAContext *vdactx);
 
@@ -220,6 +223,7 @@ int av_vda_default_init2(AVCodecContext *avctx, AVVDAContext *vdactx);
  * av_vda_default_init().
  *
  * @param avctx the corresponding codec context
+ 这个方法用来释放通过av_vda_default_init()创建的VDA context。
  */
 void av_vda_default_free(AVCodecContext *avctx);
 

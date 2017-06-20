@@ -123,6 +123,8 @@ typedef struct AVDiracSeqHeader {
  * @param buf_size the size of the data buffer in bytes
  * @param log_ctx if non-NULL, this function will log errors here
  * @return 0 on success, a negative AVERROR code on failure
+ 解析一个Dirac序列头
+ dsh参数：这个函数会分配和填满一个AVDiracSeqHeader结构体，写入这个指针。调用者必须使用av_free()释放他。
  */
 int av_dirac_parse_sequence_header(AVDiracSeqHeader **dsh,
                                    const uint8_t *buf, size_t buf_size,

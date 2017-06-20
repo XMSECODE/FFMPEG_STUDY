@@ -165,6 +165,12 @@ void av_vdpau_hwaccel_set_render2(AVVDPAUContext *, AVVDPAU_Render2);
  * @param flags zero of more OR'd AV_HWACCEL_FLAG_* flags
  *
  * @return 0 on success, an AVERROR code on failure.
+ 把一个VDPAU设备和一个硬件加速器的codec context进行关联。这个方法意味着从get_format()回调被调用或者更早。他也可以在avcodec_flush_buffers()前调用来改变潜在的AVPAU设备的mid-stream(例如：恢复取代不透明的展示)。
+ note：假如这个方法调用成功，则get_format()必须返回AV_PIX_FMT_VDPAU。
+ avctx参数：被get_format()调用的的 decde context。
+ device参数：使用来进行硬件加速的VDPAU设备句柄
+ get_proc_address参数：VDPAU设备地址
+ flags参数：0或者AV_HWACCEL_FLAG_*标志
  */
 int av_vdpau_bind_context(AVCodecContext *avctx, VdpDevice device,
                           VdpGetProcAddress *get_proc_address, unsigned flags);
@@ -185,6 +191,13 @@ int av_vdpau_bind_context(AVCodecContext *avctx, VdpDevice device,
  *              (or NULL to ignore)
  *
  * @return 0 on success, a negative AVERROR code on failure.
+ 使用参数来创建一个给codec conext用来VDPAU硬件解码加速的VDPAU video surface。
+ note：假如context使用av_udpau_bind_context()没有成功绑定一个VDPAU设备则行为是不会被定义的。
+ avctx参数：使用来解码stream的codec context
+ type：存储VDPAU video surface的浓度类型（或者忽略为NULL）
+ width：存储VDPAU video surface像素的宽度（忽略则为NULL)
+ height：存储VDPAU video surface像素的高度（忽略则为NULL)
+reutrn：成功则返回0，失败则返回AVERROR
  */
 int av_vdpau_get_surface_parameters(AVCodecContext *avctx, VdpChromaType *type,
                                     uint32_t *width, uint32_t *height);
@@ -193,6 +206,7 @@ int av_vdpau_get_surface_parameters(AVCodecContext *avctx, VdpChromaType *type,
  * Allocate an AVVDPAUContext.
  *
  * @return Newly-allocated AVVDPAUContext or NULL on failure.
+ 分配一个AVVDPAUContext。
  */
 AVVDPAUContext *av_vdpau_alloc_context(void);
 

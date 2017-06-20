@@ -46,6 +46,7 @@ typedef struct AVMediaCodecContext {
  * MediaCodec context with av_mediacodec_default_free.
  *
  * @return a pointer to a newly allocated AVMediaCodecContext on success, NULL otherwise
+ 分配和初始化一个MediaCodec context。当MediaCodec完成解码时，调用者必须通过av_mediacodec_default_free来释放MediaCodec context。
  */
 AVMediaCodecContext *av_mediacodec_alloc_context(void);
 
@@ -56,6 +57,7 @@ AVMediaCodecContext *av_mediacodec_alloc_context(void);
  * @param ctx MediaCodec context to initialize
  * @param surface reference to an android/view/Surface
  * @return 0 on success, < 0 otherwise
+ 设置MediaCodec context的便利方法。
  */
 int av_mediacodec_default_init(AVCodecContext *avctx, AVMediaCodecContext *ctx, void *surface);
 
@@ -63,7 +65,8 @@ int av_mediacodec_default_init(AVCodecContext *avctx, AVMediaCodecContext *ctx, 
  * This function must be called to free the MediaCodec context initialized with
  * av_mediacodec_default_init().
  *
- * @param avctx codec context
+ * @param avctx codec context‘
+ 这个方法必须被调用来释放通过av_mediacodec_default_init()生成的MediaCodec context。
  */
 void av_mediacodec_default_free(AVCodecContext *avctx);
 
@@ -82,6 +85,10 @@ typedef struct MediaCodecBuffer AVMediaCodecBuffer;
  * @param render 1 to release and render the buffer to the surface or 0 to
  * discard the buffer
  * @return 0 on success, < 0 otherwise
+ 释放一个MediaCodec的缓存，渲染的和解码器关联的surface。这个函数在给的一个缓存时仅仅被调用一次，一旦释放了潜在的缓存，就会返回到codc，因此后续调用对这个函数没有影响。
+ buffer参数：用来渲染的缓存
+ reder参数：1代表释放和渲染这个缓存到surface。0的话是丢弃缓存
+ return：成功则返回0，否则返回负数
  */
 int av_mediacodec_release_buffer(AVMediaCodecBuffer *buffer, int render);
 
