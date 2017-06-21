@@ -319,8 +319,86 @@
  一个AVFormatContext.streams的数组AVStreams，描述存储在文件中的每一个streams元素。AVStreams通常是指使用这个数组的下标。
  一个AVFormatContext.pb“I/O context”。他是通过lavf打开或者是使用用户输入的设置，输出总是用户设置（除非你是处理一个AVFMT_NOFILE格式）.
  lavf_options是通过设置muxers的选项。
- 使用avoptions机制来配置lavf muxers和demuxers是可能的。通用的（独立的格式）libavformat options 是AVFormatContext提供，他们可以通过av_opt_next()/av_opt_find()在一个分配的AVFormatContext（或者是来自avformat_get_class()的AVClass）上检查用户的程序。
- 
+ 使用avoptions机制来配置lavf muxers和demuxers是可能的。通用的（独立的格式）libavformat options 是AVFormatContext提供，他们可以通过av_opt_next()/av_opt_find()在一个分配的AVFormatContext（或者是来自avformat_get_class()的AVClass）上检查用户的程序。私有（指定格式）选项是通过AVFormatContext.priv_data提供，假如AVInputFormat.priv_class/AVOutputFormat.priv_class对应的格式结构体是不为NULL的。更多的选项可以通过AVFormatContext。pb”I/O context”提供，假如他的AVClass不是NULL，并且在协议层。看嵌套在avoption文档的讨论来学习怎么样接触到这些。
+ Url：在libavformat中的字符串是一个方案/协议，一个“：”和一个指定方案的字符串。本地文件的URL没有scheme和“：”是被支持的，但是已经被弃用了，本地文件使用“file：”。
+ 重要的是不会检查这个scheme字符串是不是来自不信任的来源。
+ Note：一下scheme/protocol是相当强大的，允许访问本地和远程的文件，他们的一部分，连接他们，本地的audio和vider设备也是一样的。
+ Demuxer读取一个media文件，分割他到数据块（packet）。ygAVPacket“packet”包含一个或者多个解码了的frame，属于一个单个基本的stream。lavf API的这个过程是avformat_open_input()函数打开一个文件,av_read_frame()阅读一个包，最后avformat_close_input(),并清理。
+ lavf_decoding_open:打开一个media文件。打开一个文件的最小的信息是他的URL，他是传递给avformat_open_input()的，例如下列代码：
+ @code
+ * const char    *url = "file:in.mp3";
+ * AVFormatContext *s = NULL;
+ * int ret = avformat_open_input(&s, url, NULL, NULL);
+ * if (ret < 0)
+ *     abort();
+ * @endcode
+ 以上的代码尝试分配一个AVFormatContext，打开一个指定的文件（自动检测格式），读取头部，导出存储的信息到s。一些格式没有header或者没有存储足够的信息，所以建议你调用avformat_find_stream_info()这个函数尝试阅读和解码少量的frame来找到丢失的信息。
+ 有某些情况下，你可能想使用avformat_alloc_context()预分配一个AVFormatContext给自己，在传递他给avformat_opn_input()函数之前做一些调整。一种情况就是当你想使用自定义的函数来读取输入数据来太多lavf内部的I/O层。要做到这一点，通过avio_alloc_context()创建你自己的AVIOContext，给他传递你的读取回调。然后设置pb字段到你的AVFormatContext的一个新的创建好的AVIOContext。
+ 在avformat_open_input()返回的打开文件的格式是一般的不是不知道的格式，在与分配的context设置demuxer私有的选项是不可能的。却而代之的是，这个传递给avformat_open_input()的选项应该包装在一个AVDictionary里面。代码：
+ @code
+ * AVDictionary *options = NULL;
+ * av_dict_set(&options, "video_size", "640x480", 0);
+ * av_dict_set(&options, "pixel_format", "rgb24", 0);
+ *
+ * if (avformat_open_input(&s, url, NULL, &options) < 0)
+ *     abort();
+ * av_dict_free(&options);
+ * @endcode
+ 这个代码通过私有选项”video_size”和”pixel_format”来demuxer。这是有必要的例如：rawvideo demuxer，否则他不能知道怎么解释raw video数据。假如这个格式打开和raw video有些不一样，这些选项将不会得到demuxer认可，因此不会有任何被应用。如此不被认可的选项是被返回在options dictionary中的（被认可的选项会被消耗掉）。但愿这个调用的程序可以处理这样的不被认可的选项，例如：
+ * @code
+ * AVDictionaryEntry *e;
+ * if (e = av_dict_get(options, "", NULL, AV_DICT_IGNORE_SUFFIX)) {
+ *     fprintf(stderr, "Option %s not recognized by the demuxer.\n", e->key);
+ *     abort();
+ * }
+ * @endcode
+ 在你完成读取文件后，你必须通过avformat_close_input()来关闭它。它将是否文件关联的任何对象。
+ lavf_decoding_read 从打开的文件中读取。从打开的AVFormatContext读取数据时通过重复调用av_read_frame()。每一次调用，假如成功，将会返回一个包含一个AVStream的编码数据的AVPacket，通过AVPacket.stream_index来进行定义。假如调用者希望解码这个数据这个packet可以直接进入labavcodec的avcodec_send_packet()函数，或者avcodec_decode_subtitle2()。
+ 假如知道AVPacket.pts，AVPacket.dts，AVPacket.duration 时间信息则会被设置。假如stream没有提供这些信息他们也可能不被设置（例如AV_NOPTS_VALUE 给pts/dts,duration设置为0）。这些时间信息将会在AVStream.time_base中，例如，他必须乘以时间时间基数转换为秒。
+ 假如返回的AVPacket.buf被设置，这个packet是动态分配的，使用者持有他的indefinitely。否则，假如AVPacket.buf是NULL，返回的packet数据是一个静态的存储在demuxer内部的，packet仅仅是有效期直到到av_read_frame()被调用或者关闭文件。假如调用者需要一个长的生命周期，av_dup_packet()将会拷贝av_malloc()ed的packet。
+ 在这两种情况下，这个packet不被使用时必须通过av_packet_unref()来释放。
+ lavf_encoding Muxing。muxers解码从AVpacket的数据，写入到文件或者输出到指定容器格式的bytestream。
+ Muxing主要的函数是avformat_write_header()来写入文件header，av_write_frame()/av_interleaved_write_frame()来写入到packet，av_write_trailer()来完成这个文件。
+ 在muxe程序开始时，调用者必须首先调用avformat_alloc_context()来创建一个muxe context。调用者通过向这个context填充各式各样的字段来设置这个muxer。
+ AVFormatContext.oformat“oformat”字段必须设置来选择将要被使用的muxer。
+ 除非这个format是AVMT_NOFILE类型，AVFormatContext.pb”pb”字段必须被设置来打开 IO context,或者从avio_open2()返回，或者自定义一个。
+ 除非format是AVFMT是AVFMT_NOSTREAMS类型，在最后一个stream必须是被avformat_new_stream()函数创建的。调用者应该填满这个AVStream.codecpar”stream codec parameters”信息，例如codec的AVCodecParameters.codec_type“type”,AvcodecParameters.codec_id”id”,和其他参数（例如，宽、高，像素，样本的格式等）知道的。AVStream.time_base”stream timebase”应该设置基本时间，调用者想使用这个stream(note：这个muxer时间基线实际上是不同的，将在稍后描述)。
+ 我们建议手动初始化时仅仅AVCodecParameters相关的字段，而不是在remuxing中使用avcodec_parameters_copy()：这里不能保证codec context仍然是可用的对于输入和输出format context。
+ 调用者可用填写额外的信息，比如AVFormatContext.metadata”global”或者AVStream.metadata”per-stream”元数据,AVFormatContext.chapters”chapters”,AVFormatContext.programs”programs”等，在AVFormatContext文档里描述的。这些信息是否存储在输入依赖于format包含的内容和muxer支持的内容。
+ 当muxer context填满设置时，调用者必须调用avformat_write_header()来初始化muxer内部和写入文件头。任何实际是否写入到IO context中这一步依靠于这个muxer，但是这个函数必须总是被调用。任何的muxer的私有设置必须以options参数传递给这个函数。
+ 通过重复调用av_write_frame()来发生数据给muxer，或者av_interleaved_write_frame()（查阅这些函数的文档来讨论他们的不同，他们之中只能一个被使用单个的muxe context，他们不应该被混合）。note：发生给muxer的packet的时间信息必须有相应的AVStream的基本时间。这些时间是通过muxer设置（在avformat_write_header()设置的）,可能和调用者请求的基础时间不同。
+ 一旦所有的数据被写入，调用者必须调用av_write_trailer()来刷新缓存的packet和完成输出文件，然后关闭IO context，使用avformat_free_context()来释放muxe context。
+ lavf_io I/O Read/Write
+ lavf_io_dirlist：文件夹列表
+ 这个文件夹列表API可以列出远程服务器上的files list。
+ 一些可用的用例：
+ 一个“打开文件”对话框来选择远程来选择文件。
+ 一个递归媒体发现者提供一个播放器可以播放给定的文件夹里面的所有文件。
+ lavf_io_dirlist_open:打开一个文件夹
+ 首先，这个文件夹必须调用avio_open_dir()进行打开，支持URL，可选的,：：AVDictionary包含指定的协议参数。这个函数成功返回0或者正整数，分配AVIODirContext。
+ * @code
+ * AVIODirContext *ctx = NULL;
+ * if (avio_open_dir(&ctx, "smb://example.com/some_dir", NULL) < 0) {
+ *     fprintf(stderr, "Cannot open directory.\n");
+ *     abort();
+ * }
+ * @endcode
+ 这些代码试图打开一个使用smb协议的没有其他任何额外参数的样本文件夹。
+ lavf_io_dirlist_read Reading entries(条目)
+ 每一个文件夹条目（例如：文件，其他文件夹，其他任何存在的：::AVIODirEntryType）是通过AVIODirEntry展示的。从一个打开的AVIODirContext阅读连续的条目是通过重复调用avio_read_dir()来做。每一次调用成功则返回0或者正值。阅读在NULL条目被阅读后可以被正确的停止—它意味着这里没有条目用来阅读。下面的代码从一个文件夹关联的cts阅读所有的条目和大于条目的名字来进行标准输出。
+ * @code
+ * AVIODirEntry *entry = NULL;
+ * for (;;) {
+ *     if (avio_read_dir(ctx, &entry) < 0) {
+ *         fprintf(stderr, "Cannot list directory.\n");
+ *         abort();
+ *     }
+ *     if (!entry)
+ *         break;
+ *     printf("%s\n", entry->name);
+ *     avio_free_directory_entry(&entry);
+ * }
+ * @endcode
  */
 
 #include <time.h>
