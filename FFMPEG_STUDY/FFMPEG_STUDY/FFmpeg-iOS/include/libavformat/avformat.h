@@ -495,7 +495,39 @@ struct AVDeviceCapabilitiesQuery;
  元数据接口属于libavformat来当demuxing时导出元数据tag给客户端应用的。相反的他是属于一个客户端应用当muxing时来设置元数据。
  元数据是已经导出的或者是在AVFormatContext，AVStream,AVChapter,AVProgram机构体使用lavu_dict“AVDictionary”API的“metadata”字段中作为key/value键值对字符串存在。像在FFmpeg中的所有字符串一样，元数据被假定使用UTF-8编码的。note：在大多数情况下，通过demuxer导出的元数据时不会被检查是否为UTF-8的。
  需要保存在大脑中的概念：
- Key是独特的；
+ Key是独特的； 这里不会有两个tag有相同的key。这在意味着在语义上例如一个demuxer不应该故意制造一些字面上不同但是语义相同的key。例如key=Author5,key=Author6.在这个例子里，所有的作者必须使用一样的tag。
+ 元数据是一样的，不是分层的；这里没有子tag。假如你想存储，例如制片商Alice和演员Bob的孩子的email地址，可以使用key=alice_and_bobs_childs_email_address。
+ 这几个修饰符可以用到tag的名字上。通过拼接破折号“-”和修饰符的名字顺序来列出所属，例如foo-eng-sort,而不是foo-sort-eng.语言--特定的本地化语言的值标签是通过 ISO639-2/B 3-letter语言编码。排序--一个修改的tag版本应该使用sorting“-sort”进行拼接。例如artist="the beatles"为artist-sort="Beatles,The"
+ 一些协议和demuxers支持元数据更新。在一个av_read_packet()成功调用后，假如元数据更新了，AVFormatContext.event_flags或者AVStream.event_flags将会更新来表明。为了检测一个stream的元数据的改变，你需要在AVFormatContext循环所有的streams，检车他们的每个的event_flags.
+ Demuxers尝试在通用格式导出元数据，然而没有通用等价物的标签存储在容器中的。下面李处了通用tag的名字：
+ @verbatim
+ album        -- 标记为谁工作的名字
+ album_artist -- 假如来自不同的艺术家，设置不同的主要创作者。
+ e.g. "Various Artists" for compilation albums.
+ artist       -- 这个作品的创作者名字
+ comment      -- 这个文件的额外的描述.
+ composer     -- 假如是不同的艺术家，表明谁组成这个作品。
+ copyright    -- 版权所有者的名字.
+ creation_time-- 文件的创建时间，最好是基于ISO 8601.
+ date         -- 文件的创建日期，最好是基于ISO 8601.
+ disc         -- 子集的数量, e.g. disc in a multi-disc collection.
+ encoder      -- 生成的文件的软件、硬件的名字或者设置。.
+ encoded_by   -- 谁创建了这个文件
+ filename     -- 文件的原始名字.
+ genre        -- <不证自明的>.
+ language     -- 这个作品的最明显的语言, 最好的
+ 在ISO 639-2格式中，多种语言可以把comment进行指定的分离。
+ performer    -- 这个作品的表演者, 假如有不同的艺术家.
+ E.g for "Also sprach Zarathustra", artist would be "Richard
+ Strauss" and performer "London Philharmonic Orchestra".
+ publisher    -- 出版社的名字.
+ service_name     -- 广播服务的名字 (channel name).
+ service_provider -- 提供广播服务的名字.
+ title        -- 这个作品的名字.
+ track        -- 这个作品设置的书面,可以是现在的或者是全部的.
+ variant_bitrate -- 比特率的总比特率变异,当前流的一部分
+ @endverbatim
+ 在示例部分寻找应用程序如何使用元数据API的示例。
  */
 
 /* packet functions */
