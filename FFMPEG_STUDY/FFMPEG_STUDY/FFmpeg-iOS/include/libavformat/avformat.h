@@ -491,6 +491,11 @@ struct AVDeviceCapabilitiesQuery;
  * Look in the examples section for an application example how to use the Metadata API.
  *
  * @}
+ metadata_api 公共的元数据接口
+ 元数据接口属于libavformat来当demuxing时导出元数据tag给客户端应用的。相反的他是属于一个客户端应用当muxing时来设置元数据。
+ 元数据是已经导出的或者是在AVFormatContext，AVStream,AVChapter,AVProgram机构体使用lavu_dict“AVDictionary”API的“metadata”字段中作为key/value键值对字符串存在。像在FFmpeg中的所有字符串一样，元数据被假定使用UTF-8编码的。note：在大多数情况下，通过demuxer导出的元数据时不会被检查是否为UTF-8的。
+ 需要保存在大脑中的概念：
+ Key是独特的；
  */
 
 /* packet functions */
