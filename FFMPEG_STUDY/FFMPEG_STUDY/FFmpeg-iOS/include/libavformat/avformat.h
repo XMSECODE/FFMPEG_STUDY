@@ -2923,6 +2923,7 @@ int av_get_output_timestamp(struct AVFormatContext *s, int stream,
  *
  * Miscellaneous utility functions related to both muxing and demuxing
  * (or neither).
+ 和muxing，demuxing两个相关联的各种各样的有效的函数
  */
 
 /**
@@ -2933,6 +2934,8 @@ int av_get_output_timestamp(struct AVFormatContext *s, int stream,
  * @param size buffer size
  *
  * @see av_hex_dump_log, av_pkt_dump2, av_pkt_dump_log2
+ 发送一个完好的十六进制转存储到指定的stream文件。
+ f参数：被发送转存的文件stream指针。
  */
 void av_hex_dump(FILE *f, const uint8_t *buf, int size);
 
@@ -2947,6 +2950,7 @@ void av_hex_dump(FILE *f, const uint8_t *buf, int size);
  * @param size buffer size
  *
  * @see av_hex_dump, av_pkt_dump2, av_pkt_dump_log2
+ 发送一个完好的十六进制转存给一个log的缓存。
  */
 void av_hex_dump_log(void *avcl, int level, const uint8_t *buf, int size);
 
