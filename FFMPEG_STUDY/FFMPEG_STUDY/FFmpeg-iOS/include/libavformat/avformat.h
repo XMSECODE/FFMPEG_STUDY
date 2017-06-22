@@ -2552,7 +2552,12 @@ int av_read_frame(AVFormatContext *s, AVPacket *pkt);
  *        or, if no stream is specified, in AV_TIME_BASE units.
  * @param flags flags which select direction and seeking mode
  * @return >= 0 on success
- 
+ 在时间戳搜索关键帧。在stream_index中的时间戳。
+ s参数：media文件句柄。
+ stream_index参数：假如stream_index是-1，一个默认的stream会被选择，时间戳是自动从AV_TIME_BASE单位转换到stream指定的time_base。
+ timestamp参数：在AVStream中的时间戳。time_base单位或者加入没有指定stream，使用AV_TIME_BASE单位。
+ flags参数：选择的方向和搜索类型
+ return:成功则返回大于等于0
  */
 int av_seek_frame(AVFormatContext *s, int stream_index, int64_t timestamp,
                   int flags);
@@ -2584,6 +2589,20 @@ int av_seek_frame(AVFormatContext *s, int stream_index, int64_t timestamp,
  * @note This is part of the new seek API which is still under construction.
  *       Thus do not use this yet. It may change at any time, do not expect
  *       ABI compatibility yet!
+ 搜索时间戳ts。
+ 搜索会被执行，所以来自所有活动表达成功的stream指针将会最靠近ts和min/max_ts。活动的stream是所有AVStream.discard<AVDISCARD_ALL的stream.
+ 假如flagc包含AVSEEK_FLAG_BYTE，所有的时间戳是在字节和文件的位置（这不是所有的demuxer都支持）。
+ 假如flag包含AVSEEK_FLAG_FRAME,所有的时间戳是在frame在stream的stream_index中（不是所有的demuxer都支持）。
+ 否则所有的时间戳是被选择的stream的stream_index的单位。，或者加入stream_index是-1，则是AV_TIME_BASE单位。
+ 假如flags包含AVSEEK_FLAG_ANY，则没有关键帧是被对待成关键帧（这不是所有的demuxer都支持）。
+ 假如flags包含AVSEEK_FLAG_BACKWARD,则他会被忽略。
+ s参数：media文件句柄。
+ stream_index参数：被用来作为时间戳的stream引用的下标
+ min_ts参数：可接受的最小的时间戳
+ ts参数：目标时间戳
+ max_ts参数：可接受的最大的时间戳。
+ return：成功则返回0，失败者返回其他
+ note：这是一个新的seekAPI，他仍然在被维护。因此不要使用它。它随时都可能发生改变，不要期望他的兼容性。
  */
 int avformat_seek_file(AVFormatContext *s, int stream_index, int64_t min_ts, int64_t ts, int64_t max_ts, int flags);
 
@@ -2602,12 +2621,17 @@ int avformat_seek_file(AVFormatContext *s, int stream_index, int64_t min_ts, int
  *
  * @param s media file handle
  * @return >=0 on success, error code otherwise
+ 丢弃所有内部的缓存数据。这是有用的，在处理所有的不连续的byte stream。通常的工作仅仅格式可以被重新同步。这包括headerless格式例如MPEG-TS/TS，但是一样应该和NUT，Ogg和在一个限制的AVI通道例子一起工作。
+ 设置stream，检测持续时间，stream参数，当调用这个函数是codec不能发生改变，假如你想完成重新设置，最好是打开一个新的AVFormatContext。
+ 这不会刷新AVIOContext（s->pb)。如果需要，在调用这个函数之前调用avio_flush(s->pb)。
+ return：成功则返回大于等于0，否则返回error。
  */
 int avformat_flush(AVFormatContext *s);
 
 /**
  * Start playing a network-based stream (e.g. RTSP stream) at the
  * current position.
+ 从当前的位置开始播放一个基于网络的stream（例如TRSP stream）
  */
 int av_read_play(AVFormatContext *s);
 
@@ -2615,6 +2639,8 @@ int av_read_play(AVFormatContext *s);
  * Pause a network-based stream (e.g. RTSP stream).
  *
  * Use av_read_play() to resume it.
+ 暂停一个基于网络的stream（例如：RTSP stream）
+ 使用av_read_play()来继续它。
  */
 int av_read_pause(AVFormatContext *s);
 
@@ -2719,6 +2745,10 @@ int avformat_init_output(AVFormatContext *s, AVDictionary **options);
  * @return < 0 on error, = 0 if OK, 1 if flushed and there is no more data to flush
  *
  * @see av_interleaved_write_frame()
+ 把一个packet写到一个输出的media文件中。
+ 这个函数直接传递这个packet倒muxer。没有任何缓存或者排序。调用者有责任正确的交叉packet，假如格式需要的话。想libavformat来处理交叉的调用者应该调用av_interleaved_write_frame()来替代这个函数。
+ pkt参数：包含被写入数据的packet。note：不像av_interleaved_write_frame()函数，这个函数不会持有这个传递的packet（即使有些muxer会有一个内部的引用到这个输入的packet）。<br>这个参数可以为NULL（任何时候，但不要在末尾），为了保证muxer立即flush数据缓冲区，muxer在写入他到输出之前要更新缓冲区<br>AVPacket.stream_index"stream_index"字段必须设置相应的stream在AVFormatContext.streams（s->streams）中的index。<br>时间戳（AVPacket.pts,AVPacket.dts）必须在stream的timebase设置正确的值（除非输出格式是标志为AVFMT_NOTIMESTAMPS，他们可以被设置为AV_NOPTS_VALUE）。后续的传递给这个函数的packet的dts必须严格的增长当对比他们各自的timebase时（除非输出被标记为AVFMT_TS_NONSTRICT,他们仅仅是不减少的）。AVPacket.duration应该被设置知道的话。
+ return：小于0则发生错误，等于0则是成功，假如flushed或者没有过多的数据进行flush则返回1.
  */
 int av_write_frame(AVFormatContext *s, AVPacket *pkt);
 
@@ -2764,6 +2794,11 @@ int av_write_frame(AVFormatContext *s, AVPacket *pkt);
  *         take care of freeing the packet, even if this function fails.
  *
  * @see av_write_frame(), AVFormatContext.max_interleave_delta
+ 写入应该packet到输出的media文件，并保证正确的交叉。
+ 这个函数会内部缓存packet来保证packet在输出文件是正确的交叉，保证dts增长。调用者自己交叉则应该调用av_write_frame()来替代这个函数。
+ 使用这个函数来代替av_write_frame()可以给muxers建议知道未来的packet，改善例如：mp4的muxer行为目视破碎内容模式。
+ pkt参数：包含被写入数据的packet。<br>假如packet是被引用的，这个函数将会从拥有者中引用它，当它认为合适的时候就会释放引用。调用者在这个函数返回后通过这个引用一定不能访问这个数据。假如这个packet是没有被引用，libavformat将会做一个拷贝<br>这个参数可以是NULL（任何时候，但不要在结束的时候），刷新交叉的队列<br>AVPacket.stream_index"stream_index"字段必须设置相应的stream在AVFormatContext.streams（s->streams）中的index<br>时间戳（AVPacket.pts,AVPacket.dts）必须在stream的timebase设置正确的值（除非输出格式是标志为AVFMT_NOTIMESTAMPS，他们可以被设置为AV_NOPTS_VALUE）。后续的传递给这个函数的packet的dts必须严格的增长当对比他们各自的timebase时（除非输出被标记为AVFMT_TS_NONSTRICT,他们仅仅是不减少的）。AVPacket.duration应该被设置知道的话。
+ return：成功则返回0，失败则返回AVERROR。libavformat总会释放这个packet，即使这个函数返回失败。
  */
 int av_interleaved_write_frame(AVFormatContext *s, AVPacket *pkt);
 
@@ -2774,6 +2809,8 @@ int av_interleaved_write_frame(AVFormatContext *s, AVPacket *pkt);
  * specification; if not, then av_interleaved_write_frame() must be used.
  *
  * See av_interleaved_write_frame() for details.
+ 写入一个没有编码的frame到一个输出的media文件。
+ 这个frame必须被正确的交叉，根据规范的内容。假如没有，av_interleaved_write_frame()必须被使用。阅读av_interleaved_writed_frame()详细信息。
  */
 int av_write_uncoded_frame(AVFormatContext *s, int stream_index,
                            AVFrame *frame);
@@ -2793,6 +2830,8 @@ int av_write_uncoded_frame(AVFormatContext *s, int stream_index,
  * afterwards.
  *
  * @return  >=0 for success, a negative code on error
+ 写入应该没编码的frame到输出的media文件。假如muxer是支持的，这个函数是可以直接写入一个AVFrame结构体，没有把他编码到一个packet。他对于设备和类似的特殊的使用raw video或者PCM数据和不会序列号一个字节流的的muxers是极有用的。使用av_write_uncoded_frame_query()测试他他是否使用它给一个muxer和stream。调用者放弃frame的所有权，并且必须访问他。
+ return：成功则返回大于0，失败则返回负数。
  */
 int av_interleaved_write_uncoded_frame(AVFormatContext *s, int stream_index,
                                        AVFrame *frame);
@@ -2802,6 +2841,8 @@ int av_interleaved_write_uncoded_frame(AVFormatContext *s, int stream_index,
  *
  * @return  >=0 if an uncoded frame can be written to that muxer and stream,
  *          <0 if not
+ 测试一个muxer是否支持没有编码的frame。
+ return：假如这个没有编码的frame可以被写入到muxer和stream则返回大于等于0，否则返回小于0.
  */
 int av_write_uncoded_frame_query(AVFormatContext *s, int stream_index);
 
@@ -2813,6 +2854,8 @@ int av_write_uncoded_frame_query(AVFormatContext *s, int stream_index);
  *
  * @param s media file handle
  * @return 0 if OK, AVERROR_xxx on error
+ 写入stream到一个输出的media文件和释放文件提供的数据。
+ 只能在调用avformat_write_header成功后调用。
  */
 int av_write_trailer(AVFormatContext *s);
 
@@ -2827,6 +2870,10 @@ int av_write_trailer(AVFormatContext *s);
  * extensions of the registered formats
  * @param mime_type if non-NULL checks if mime_type matches with the
  * MIME type of the registered formats
+ 通过提供参数返回在所有的注册的格式中的最合适的输出格式，假如没有匹配到则返回NULL。
+ short_name参数：假如不为NULL，检查他和注册的format是否匹配。
+ filename参数：假如不为NULL，，检查文件终止的扩展名来匹配注册的format。
+ mime_tye参数：假如不为NULL，检查注册的format的MIME type和mime_type是否匹配。
  */
 AVOutputFormat *av_guess_format(const char *short_name,
                                 const char *filename,
@@ -2853,6 +2900,12 @@ enum AVCodecID av_guess_codec(AVOutputFormat *fmt, const char *short_name,
  * @return  0 if OK, AVERROR(ENOSYS) if the format does not support it
  * Note: some formats or devices may not allow to measure dts and wall
  * atomically.
+ 从当前输出的数据中得到时间信息。
+ 确切意味着“currently output”依赖于format。他主要是关联有内部缓存或者实时工作的设备的。
+ out dts参数：stream最后输出的packet的DTS，使用stream的time_base单位。
+ out wall参数：当packet输出成果是的绝对时间，使用微妙。
+ return：成果则返回0，假如是不支持的格式则返回AVERROR(ENOSYS)。
+ note：一些格式或者设备可能不允许保证dts和自动wall。
  */
 int av_get_output_timestamp(struct AVFormatContext *s, int stream,
                             int64_t *dts, int64_t *wall);
