@@ -541,6 +541,8 @@ struct AVDeviceCapabilitiesQuery;
  * @param pkt packet
  * @param size desired payload size
  * @return >0 (read size) if OK, AVERROR_xxx otherwise
+ 分配和阅读一个packet的有效荷载，初始化他的字段为默认值
+ return：成功则返回0，失败则返回AVERROR
  */
 int av_get_packet(AVIOContext *s, AVPacket *pkt, int size);
 
@@ -558,6 +560,7 @@ int av_get_packet(AVIOContext *s, AVPacket *pkt, int size);
  * @param size amount of data to read
  * @return >0 (read size) if OK, AVERROR_xxx otherwise, previous data
  *         will not be lost even if an error occurs.
+ 阅读数据并拼接它到当前的AVPacket的内容里面。假如pkt->size是0，则是和av_get_packet是一样的。note：这是使用av_grow_packet和涉及效率低下。这个方法仅仅在没有合理的方法知道最后的大小才被使用。
  */
 int av_append_packet(AVIOContext *s, AVPacket *pkt, int size);
 
@@ -1377,6 +1380,8 @@ void  av_stream_set_recommended_encoder_configuration(AVStream *s, char *configu
  * Returns the pts of the last muxed packet + its duration
  *
  * the retuned value is undefined when used with a demuxer.
+ 返回最后一个nuxed packet的（pts + duration）
+ 当时应该demuxer时，这个返回值是没有定义的。
  */
 int64_t    av_stream_get_end_pts(const AVStream *st);
 
@@ -1427,6 +1432,7 @@ typedef struct AVChapter {
 
 /**
  * Callback used by devices to communicate with application.
+ 使用来连接设备和应用的回调
  */
 typedef int (*av_format_control_message)(struct AVFormatContext *s, int type,
                                          void *data, size_t data_size);
@@ -2070,6 +2076,7 @@ attribute_deprecated void av_format_set_open_cb(AVFormatContext *s, AVOpenCallba
 /**
  * This function will cause global side data to be injected in the next packet
  * of each stream as well as after any subsequent seek.
+ 这个函数将会导致一个全局数据注入到接下来的每个packet的stream中及后续的需求中。
  */
 void av_format_inject_global_side_data(AVFormatContext *s);
 
@@ -2097,16 +2104,19 @@ typedef struct AVPacketList {
 
 /**
  * Return the LIBAVFORMAT_VERSION_INT constant.
+ 返回LIBAVFORMAT_VERSION_INT内容
  */
 unsigned avformat_version(void);
 
 /**
  * Return the libavformat build-time configuration.
+ 返回libavformat编译时的配置
  */
 const char *avformat_configuration(void);
 
 /**
  * Return the libavformat license.
+ 返回libavformat许可证
  */
 const char *avformat_license(void);
 
@@ -2131,11 +2141,14 @@ void av_register_output_format(AVOutputFormat *format);
  *
  * Calling this function will become mandatory if using network
  * protocols at some major version bump.
+ 一个全局的网络组件的初始化。这是可选的，但是记住，他会为每个会话避免隐形的开销。
+ 调用这个函数将会变成强制性的，假如在一些主要的版本使用网络协议。
  */
 int avformat_network_init(void);
 
 /**
  * Undo the initialization done by avformat_network_init.
+ 撤销avformat_network_init()做的初始化操作。
  */
 int avformat_network_deinit(void);
 
@@ -2143,6 +2156,7 @@ int avformat_network_deinit(void);
  * If f is NULL, returns the first registered input format,
  * if f is non-NULL, returns the next registered input format after f
  * or NULL if f is the last one.
+ 假如f是NULL，则会返回第一个注册的输入的format。假如f不是NULL，返回的就是f的下一个注册的format。假如f是最后一个则返回NULL。
  */
 AVInputFormat  *av_iformat_next(const AVInputFormat  *f);
 
@@ -2150,6 +2164,7 @@ AVInputFormat  *av_iformat_next(const AVInputFormat  *f);
  * If f is NULL, returns the first registered output format,
  * if f is non-NULL, returns the next registered output format after f
  * or NULL if f is the last one.
+ 假如f是NULL，则会返回第一个注册的输出的format。假如f不是NULL，返回的就是f的下一个注册的format。假如f是最后一个则返回NULL。
  */
 AVOutputFormat *av_oformat_next(const AVOutputFormat *f);
 
@@ -2157,12 +2172,14 @@ AVOutputFormat *av_oformat_next(const AVOutputFormat *f);
  * Allocate an AVFormatContext.
  * avformat_free_context() can be used to free the context and everything
  * allocated by the framework within it.
+ 分配一个AVFormatContext。avofrmat_free_context()可以被用来使用释放这个context和他分配的所有的对象。
  */
 AVFormatContext *avformat_alloc_context(void);
 
 /**
  * Free an AVFormatContext and all its streams.
  * @param s context to free
+ 释放一个AVFormatContext和他的stream。
  */
 void avformat_free_context(AVFormatContext *s);
 
@@ -2171,6 +2188,7 @@ void avformat_free_context(AVFormatContext *s);
  * AV_OPT_SEARCH_FAKE_OBJ for examining options.
  *
  * @see av_opt_find().
+ 得到AVFormatContext的AVClass。他可以组合AV_OPT_SEARCH_OBJ来检查选项。
  */
 const AVClass *avformat_get_class(void);
 
@@ -2192,6 +2210,11 @@ const AVClass *avformat_get_class(void);
  * defaults to be set, so codec should be provided if it is known.
  *
  * @return newly created stream or NULL on error.
+ 添加一个新的stream到一个media文件。
+ 当demuxing时，在使用之前应该调用avformat_write_header()。用户需要调用avcodec_close()和avformat_free_context()来清理通过avformat_new_stream()分配的AVStream。
+ s：media文件句柄
+ c：假如不为NULL，AVCodecContext对于的新的stream将会被这个codec初始化。这是必要的，例如指定的codec默认被设置，假如是知道的就应该提供codec。
+ return:成功则返回创建的stream，失败则返回NULL
  */
 AVStream *avformat_new_stream(AVFormatContext *s, const AVCodec *c);
 
@@ -2206,6 +2229,9 @@ AVStream *avformat_new_stream(AVFormatContext *s, const AVCodec *c);
  * @param size side information size
  * @return zero on success, a negative AVERROR code on failure. On failure,
  *         the stream is unchanged and the data remains owned by the caller.
+ 包装应该存在的stream side data数组。
+ data参数：数据数组。他必须是通过av_malloc()家族函数分配的。这个数据的拥有权转移到st。
+ return：成功则返回0，失败则返回负数。如果失败，则stream不会被改变，data的所有权仍然输入调用者。
  */
 int av_stream_add_side_data(AVStream *st, enum AVPacketSideDataType type,
                             uint8_t *data, size_t size);
@@ -2217,6 +2243,9 @@ int av_stream_add_side_data(AVStream *st, enum AVPacketSideDataType type,
  * @param type desired side information type
  * @param size side information size
  * @return pointer to fresh allocated data or NULL otherwise
+ 从stream分配一个新的信息。
+ type参数：需要的信息类型
+ return：指向刷新的分配的数据或者返回NULL
  */
 uint8_t *av_stream_new_side_data(AVStream *stream,
                                  enum AVPacketSideDataType type, int size);
@@ -2258,6 +2287,12 @@ AVProgram *av_new_program(AVFormatContext *s, int id);
  * context, may be NULL
  * @return >= 0 in case of success, a negative AVERROR code in case of
  * failure
+ 从输出的format分配一个AVFormatContext。可以使用avformat_free_context()来释放这个context和这个库分配的相关的一切对象。
+ *ctx参数：用来设置创建的format context，失败则为NULL。
+ oformat参数：用来分配context的format，假如为NULL，format_name和filename可以替代。
+ format_name参数：用来分配context的format名字，假如为NULL，filename可以替代。
+ filename:用来分配context的文件名字，可以为NULL。
+ return：成功则返回0，失败则返回一个负值。
  */
 int avformat_alloc_output_context2(AVFormatContext **ctx, AVOutputFormat *oformat,
                                    const char *format_name, const char *filename);
@@ -2269,6 +2304,7 @@ int avformat_alloc_output_context2(AVFormatContext **ctx, AVOutputFormat *oforma
 
 /**
  * Find AVInputFormat based on the short name of the input format.
+ 通过short name查找AVInputFormat。
  */
 AVInputFormat *av_find_input_format(const char *short_name);
 
@@ -2278,6 +2314,9 @@ AVInputFormat *av_find_input_format(const char *short_name);
  * @param pd        data to be probed
  * @param is_opened Whether the file is already opened; determines whether
  *                  demuxers with or without AVFMT_NOFILE are probed.
+ 猜测file的format。
+ pd参数：被探测的数据
+ is_opened参数：这个文件是否被打开；确定是否demuxer或者没有AVFMT_NOFILE是被探测的。
  */
 AVInputFormat *av_probe_input_format(AVProbeData *pd, int is_opened);
 
@@ -2292,6 +2331,10 @@ AVInputFormat *av_probe_input_format(AVProbeData *pd, int is_opened);
  *                  score afterwards.
  *                  If the score is <= AVPROBE_SCORE_MAX / 4 it is recommended
  *                  to retry with a larger probe buffer.
+ 猜猜文件的格式
+ pd：被探测的数据。
+ is_opened:文件是否已经被打开。确定是否demuxer或者没有AVFMT_NOFILE是被探测的。
+ score_max:一个探测大的分数，这是需要接受探测的，变量被设置为实际检测的得分。假如得分是小于等于AVPROBE_SCORE_MAX/4，他会建议尝试更大的探测缓冲。
  */
 AVInputFormat *av_probe_input_format2(AVProbeData *pd, int is_opened, int *score_max);
 
@@ -2301,6 +2344,9 @@ AVInputFormat *av_probe_input_format2(AVProbeData *pd, int is_opened, int *score
  * @param is_opened Whether the file is already opened; determines whether
  *                  demuxers with or without AVFMT_NOFILE are probed.
  * @param score_ret The score of the best detection.
+ 猜测文件格式
+ is_opened参数：文件是否已经被打开。确定是否demuxer或者没有AVFMT_NOFILE是被探测的。
+ score_ret参数：最佳的探测分数。
  */
 AVInputFormat *av_probe_input_format3(AVProbeData *pd, int is_opened, int *score_ret);
 
@@ -2319,6 +2365,14 @@ AVInputFormat *av_probe_input_format3(AVProbeData *pd, int is_opened, int *score
  * @return the score in case of success, a negative value corresponding to an
  *         the maximal score is AVPROBE_SCORE_MAX
  * AVERROR code otherwise
+ 探测一个bytestream来确定输入的格式。每一次探测都会返回一个比较低的分数，探测的缓存大小是减少的，另一个尝试。当达到最大的探测尺寸，这个输入的格式的最高分将会被返回。
+ pb参数：被探测的bytestream
+ fmt参数：输入的格式
+ url参数：stream的url
+ logctx参数:log的上下文
+ offset参数：bytestream中探测的偏移量
+ max_probe_size参数：探测的最大缓存大小
+ return:成功则返回分数，正数则相应的是一个最大的分数AVPROBE_SCORE_MAX，否则返回AVERROR
  */
 int av_probe_input_buffer2(AVIOContext *pb, AVInputFormat **fmt,
                            const char *url, void *logctx,
@@ -2326,6 +2380,7 @@ int av_probe_input_buffer2(AVIOContext *pb, AVInputFormat **fmt,
 
 /**
  * Like av_probe_input_buffer2() but returns 0 on success
+ 和av_probe_input_buffer2()是一样的，但是返回0则代成功。
  */
 int av_probe_input_buffer(AVIOContext *pb, AVInputFormat **fmt,
                           const char *url, void *logctx,
@@ -2402,6 +2457,11 @@ int avformat_find_stream_info(AVFormatContext *ic, AVDictionary **options);
  * @param s     stream index
  * @return the next program which belongs to s, NULL if no program is found or
  *         the last program is not among the programs of ic.
+ 从给的stream找到program。
+ ic参数：media文件句柄
+ last参数：最后发现的program，搜索将会在这个program开始，假如为NULL，则会从头开始。
+ s参数：stream下标
+ return:属于s的下一个program，假如没有发现program被发现则为NULL，或者last是最后一个program也返回NULL。
  */
 AVProgram *av_find_program_from_stream(AVFormatContext *ic, AVProgram *last, int s);
 
@@ -2430,6 +2490,16 @@ void av_program_add_stream_index(AVFormatContext *ac, int progid, unsigned int i
  *          AVERROR_DECODER_NOT_FOUND if streams were found but no decoder
  * @note  If av_find_best_stream returns successfully and decoder_ret is not
  *        NULL, then *decoder_ret is guaranteed to be set to a valid AVCodec.
+ 在file中查找最好的stream。
+ 最好的stream决定于根据各式各样的启发式的可能是用户最期望的。假如decoder参数不是NULL，av_find_best_stream将会给这个stream的codec找到默认的decoder；没有发现decoder的stream会被忽略。
+ ic参数：media文件句柄
+ type参数：video，audio，subtitles等
+ wanted_stream_nb参数：用户请求的stream的数量，-1则为自动选择。
+ related_stream参数：试图找到一个stream来关联这个，-1则表示没有
+ decoder_ret参数：假如不是NULL，返回decoder选择的stream
+ flags参数：当前没有定义
+ return:成功则返回一个非负数。假如没有被请求的类型的stream被发现，则返回AVERROR_STREAM_NOT_FOUND，假如发现streams但没有decoder则返回AVERROR_DECODER_NOT_FOUND。
+ note：假如av_find_best_stream返回成功，decoder_ret不是NULL，*decoder_ret通常是被设置为一个可用的AVCodec.
  */
 int av_find_best_stream(AVFormatContext *ic,
                         enum AVMediaType type,
@@ -2482,6 +2552,7 @@ int av_read_frame(AVFormatContext *s, AVPacket *pkt);
  *        or, if no stream is specified, in AV_TIME_BASE units.
  * @param flags flags which select direction and seeking mode
  * @return >= 0 on success
+ 
  */
 int av_seek_frame(AVFormatContext *s, int stream_index, int64_t timestamp,
                   int flags);
