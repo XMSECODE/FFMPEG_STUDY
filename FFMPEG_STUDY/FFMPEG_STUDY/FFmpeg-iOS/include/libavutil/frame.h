@@ -612,6 +612,12 @@ const char *av_get_colorspace_name(enum AVColorSpace val);
  * @note this only allocates the AVFrame itself, not the data buffers. Those
  * must be allocated through other means, e.g. with av_frame_get_buffer() or
  * manually.
+ *
+ *分配一个AVFrame，设置他的字段为默认值。这个结构体必须被av_frame_free()释放。
+ *
+ *return:一个填满默认值的AVFrame，失败则返回NULL。
+ *
+ *note：这个仅仅是分配一个AVFrame，没有缓冲数据。这个必须通过其他方法进行分配，例如：av_frame_get_buffer()或者手动的。
  */
 AVFrame *av_frame_alloc(void);
 
@@ -621,6 +627,10 @@ AVFrame *av_frame_alloc(void);
  * unreferenced first.
  *
  * @param frame frame to be freed. The pointer will be set to NULL.
+ *
+ *释放一个frame和动态分配在他里面的对象，例如：extended_data.假如frame被引用着，他首先会接除引用。
+ *
+ *frame参数：被释放的frame。这个指针会被设置为NULL.
  */
 void av_frame_free(AVFrame **frame);
 
@@ -684,6 +694,23 @@ void av_frame_move_ref(AVFrame *dst, AVFrame *src);
  * @param align required buffer size alignment
  *
  * @return 0 on success, a negative AVERROR on error.
+ *
+ *分配一个新的buffer给audio或者video data。
+ *
+ *在调用这个函数之前必须要先设置frame的下面这些字段：
+ *-format(video的pixel格式，audio的样本格式)
+ *-vider的width和height
+ *-audio的nb_samples和channel_layout
+ *
+ *这个函数会填满AVFrame.data和AVFrame.buf数组，假如有必要，分配和填满AVFrame.extended_data和AVFrame.extended_buf。对于planar格式，对于每一个plane都会分配一个缓冲。
+ *
+ *warning：假如frame已经被分配，调用这个函数会有内存泄漏。额外的，在某些情况下会发生未定义的行为。
+ *
+ *frame参数：被用来存储新的缓存的frame
+ *
+ *align参数：需要对其的缓存大小
+ *
+ *return：成功则返回0，失败者返回AVERROR
  */
 int av_frame_get_buffer(AVFrame *frame, int align);
 

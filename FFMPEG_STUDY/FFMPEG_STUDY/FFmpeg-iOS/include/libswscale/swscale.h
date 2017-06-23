@@ -182,6 +182,18 @@ void sws_freeContext(struct SwsContext *swsContext);
  * @return a pointer to an allocated context, or NULL in case of error
  * @note this function is to be removed after a saner alternative is
  *       written
+ *
+ *分配和返回一个swsContext。你需要sws_scale()来执行拓展、转换选项。
+ *srcW参数：源图片宽度
+ *srcH参数：源图片高度
+ *srcFormat参数:源图片格式
+ *dstW参数：目标图片宽度
+ *dstH参数：目标图片高度
+ *dstFormat参数：目标图片格式
+ *flags参数：使用指定的算法和选项来进行拓展
+ *param参数：额外的参数调优和选项来拓展SWS_BICUBIC param[0]和[1]调优形状的基础方法，param[0]调优f(1),param[1]调优f'(1),SWS_GAUSS的param[0]调优指数和截止频率。
+ *return:一个指向分配的context的指针，发生错误则返回NULL。
+ *noto：这个函数在写入后移除是一个理智的选择。
  */
 struct SwsContext *sws_getContext(int srcW, int srcH, enum AVPixelFormat srcFormat,
                                   int dstW, int dstH, enum AVPixelFormat dstFormat,
@@ -213,6 +225,26 @@ struct SwsContext *sws_getContext(int srcW, int srcH, enum AVPixelFormat srcForm
  * @param dstStride the array containing the strides for each plane of
  *                  the destination image
  * @return          the height of the output slice
+ *
+ *在srcSlice测量图片，把拓展的图片的结果保存在dst。一片是一个序列的连续的行的图片。
+ *
+ *slices不得不按序列提供，要么自上而下，要么自下而上。假如slices提供是没有序列的，这个函数是没有定义这样的行为的。
+ *
+ *c参数：之前使用sws_getContext()得到的scaling context。
+ *
+ *srcSlice参数：包含源slice的planes的指针的数组
+ *
+ *srcStride参数：包含每原图片的plane的strides的数组
+ *
+ *srcSliceY参数：源图片在切成片过程中的位置，这个数值是从这个图片的slice的第一行开始的（从0开始）。
+ *
+ *srcSliceH参数：源slice的高度，就是slice的行数
+ *
+ *dst参数：包含目标图片的planes的指针的数组
+ *
+ *dstStride参数：包含目标图片的每一个plane的strides的数组
+ *
+ *return：输出的slice的高度
  */
 int sws_scale(struct SwsContext *c, const uint8_t *const srcSlice[],
               const int srcStride[], int srcSliceY, int srcSliceH,

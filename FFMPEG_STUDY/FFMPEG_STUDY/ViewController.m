@@ -12,7 +12,7 @@
 #import "swscale.h"
 #import "OpenGLView20.h"
 
-#define FRAMECOUNT 50
+#define FRAMECOUNT 50000
 const char *filepath = "/Users/shiming/ffmpegResearch/FFmpeg-Tutorial/ss1-part.mp4";
 const char *imagePath = "file:///Users/xiangmingsheng/Downloads/ss";
 
@@ -160,30 +160,57 @@ const char *imagePath = "file:///Users/xiangmingsheng/Downloads/ss";
 - (void)saveImageWith:(AVFrame *)frame width:(int)width height:(int)height frmae:(int)iFrame {
     FILE *pFile;
     
-    NSString *fileStr = [NSString stringWithFormat:@"/Users/xiang/Desktop/tem/%d.ppm",iFrame];
+    NSString *fileStr = [NSString stringWithFormat:@"/Users/xiangmingsheng/Downloads/ss/%d.ppm",iFrame];
     const char *szFilename = [fileStr cStringUsingEncoding:NSUTF8StringEncoding];
     
     pFile=fopen(szFilename, "w");
     if(pFile==NULL) {
-        NSLog(@"写入失败");
+        NSLog(@"打开文件失败");
+        printf("%s\n",szFilename);
         return;
     }
-    // Write header
+    
+    if (frame->format == 0) {
+        printf("format  :   AV_PIX_FMT_YUV420P\n");
+    }
+    printf("数据类型：%d\n",frame->format);
+    
+    
+//    img_convert_ctx = sws_getContext(pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height, PIX_FMT_RGB24, SWS_BICUBIC, NULL, NULL, NULL);
+    
+//    sws_scale(img_convert_ctx, (const uint8_t* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height, pFrameYUV->data, pFrameYUV->linesize);
+//    fwrite(pFrameYUV->data[0],(pCodecCtx->width)*(pCodecCtx->height)*3,1,output);
+    
+    struct SwsContext *swsContext = sws_getContext(frame->width, frame->height, AV_PIX_FMT_YUV420P, frame->width, frame->height, AV_PIX_FMT_RGB24, SWS_BICUBIC, NULL, NULL, NULL);
+    
+    AVFrame *RGBFrame = av_frame_alloc();
+    
+    int result_height = sws_scale(swsContext, (const uint8_t* const*)frame->data, frame->linesize, 0, frame->height, RGBFrame->data, RGBFrame->linesize);
+    if (result_height == 0) {
+        printf("result_height == 0\n");
+        fclose(pFile);
+        return;
+    }
+    printf("result_height = %d",result_height);
+    
+    fwrite(RGBFrame->data[0], RGBFrame->width * RGBFrame->height * 3, 1, pFile);
+    
+    
+    // Write header AVPixelFormat
     fprintf(pFile, "P6\n%d %d\n255\n", width, height);
     
     // Write pixel data
     for(int y=0; y<height; y++) {
         
-        printf("%zd\n",frame->data[0]);
+//        printf("%zd\n",frame->data[0]);
         
-        printf("%d\n",y * frame->linesize[0]);
+//        printf("%d\n",y * frame->linesize[0]);
     
-        printf("%s\n",frame->data[0] + y * frame->linesize[0]);
+//        printf(" %p ",frame->data[0] + y * frame->linesize[0]);
         
-        fwrite(frame->data[0]+y*frame->linesize[0],  width*3,1, pFile);
+//        fwrite(frame->data[0]+y*frame->linesize[0],  1,width * 3, pFile);
     }
     
-
     //write frame
 //    for(y=0; y<height ; y++)
 //        fwrite(frame->data[0]+y*frame->linesize[0], 1, width, pFile);
