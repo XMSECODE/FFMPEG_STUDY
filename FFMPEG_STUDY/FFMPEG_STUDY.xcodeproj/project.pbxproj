@@ -28,6 +28,7 @@
 		047B7BA51EF2C83E00E4F0F8 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA41EF2C83E00E4F0F8 /* CoreMedia.framework */; };
 		047B7BA71EF2C84900E4F0F8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA61EF2C84900E4F0F8 /* CoreGraphics.framework */; };
 		047B7BA91EF2C85500E4F0F8 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA81EF2C85500E4F0F8 /* AudioToolbox.framework */; };
+		F0295F041EFCBE3400301784 /* OpenGLView20.m in Sources */ = {isa = PBXBuildFile; fileRef = F0295F031EFCBE3400301784 /* OpenGLView20.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -162,6 +163,8 @@
 		047B7BA41EF2C83E00E4F0F8 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		047B7BA61EF2C84900E4F0F8 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		047B7BA81EF2C85500E4F0F8 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		F0295F021EFCBE3400301784 /* OpenGLView20.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLView20.h; sourceTree = "<group>"; };
+		F0295F031EFCBE3400301784 /* OpenGLView20.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenGLView20.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -215,6 +218,7 @@
 				047B7B041EF2C47800E4F0F8 /* AppDelegate.m */,
 				047B7B061EF2C47800E4F0F8 /* ViewController.h */,
 				047B7B071EF2C47800E4F0F8 /* ViewController.m */,
+				F0295F011EFCBE3400301784 /* OpenGLView */,
 				047B7B091EF2C47800E4F0F8 /* Main.storyboard */,
 				047B7B0C1EF2C47800E4F0F8 /* Assets.xcassets */,
 				047B7B0E1EF2C47800E4F0F8 /* LaunchScreen.storyboard */,
@@ -439,6 +443,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		F0295F011EFCBE3400301784 /* OpenGLView */ = {
+			isa = PBXGroup;
+			children = (
+				F0295F021EFCBE3400301784 /* OpenGLView20.h */,
+				F0295F031EFCBE3400301784 /* OpenGLView20.m */,
+			);
+			path = OpenGLView;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -513,6 +526,7 @@
 				047B7B081EF2C47800E4F0F8 /* ViewController.m in Sources */,
 				047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */,
 				047B7B021EF2C47800E4F0F8 /* main.m in Sources */,
+				F0295F041EFCBE3400301784 /* OpenGLView20.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

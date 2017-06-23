@@ -4482,8 +4482,8 @@ void avcodec_register_all(void);
  *              important mainly for encoders, e.g. libx264).
  *
  * @return An AVCodecContext filled with default values or NULL on failure.
- 分配一个AVCodecContext，然后设置他的字段为默认值。产生的结构体应该通过avcodec_free_context()被释放。
- codec参数：假如不是NULL，分配一个私有数据，并且初始化codec为默认值。在这之后使用不同的codec调用avcodec_open2()是非法的。假如为NULL，这个默认的具体的codec将不会被初始化，这将导致使用次优的默认配置（这对于解码器来说是非常重要的，例如 lib264）
+ * 分配一个AVCodecContext，然后设置他的字段为默认值。产生的结构体应该通过avcodec_free_context()被释放。
+ * codec参数：假如不是NULL，分配一个私有数据，并且初始化codec为默认值。在这之后使用不同的codec调用avcodec_open2()是非法的。假如为NULL，这个默认的具体的codec将不会被初始化，这将导致使用次优的默认配置（这对于解码器来说是非常重要的，例如 lib264）
  */
 AVCodecContext *avcodec_alloc_context3(const AVCodec *codec);
 
@@ -5046,9 +5046,9 @@ void av_packet_rescale_ts(AVPacket *pkt, AVRational tb_src, AVRational tb_dst);
  *
  * @param id AVCodecID of the requested decoder
  * @return A decoder if one was found, NULL otherwise.
- 查找一个已经在注册的匹配解码ID的解码器
- id参数：请求解码器的AVCodecID
- return：如果找到则返回一个解码器，否则返回NULL
+ * 查找一个已经在注册的匹配解码ID的解码器
+ * id参数：请求解码器的AVCodecID
+ * return：如果找到则返回一个解码器，否则返回NULL
  */
 AVCodec *avcodec_find_decoder(enum AVCodecID id);
 
