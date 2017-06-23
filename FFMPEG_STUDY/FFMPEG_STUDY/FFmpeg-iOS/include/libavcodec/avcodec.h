@@ -4267,10 +4267,14 @@ typedef struct AVSubtitle {
 typedef struct AVCodecParameters {
     /**
      * General type of the encoded data.
+     *
+     * 编码数据的一般的类型
      */
     enum AVMediaType codec_type;
     /**
      * Specific type of the encoded data (the codec used).
+     *
+     * 编码数据指定的类型
      */
     enum AVCodecID   codec_id;
     /**
@@ -5352,18 +5356,18 @@ int avcodec_decode_subtitle2(AVCodecContext *avctx, AVSubtitle *sub,
  *      AVERROR(EINVAL):   codec not opened, it is an encoder, or requires flush
  *      AVERROR(ENOMEM):   failed to add packet to internal queue, or similar
  *      other errors: legitimate decoding errors
- 
- 提供原始的packet数据到一个解码器。
- 内部的，这里将会拷贝AVCodecContext相关的字段，将会影响解码每一个包的字段，当packet被正真解码的时候就会用到他们。（例如，AVCodecContext.skip_frame，可能会直接的告诉解码器来放弃发送到这个函数的packet包含的一些frame）
- warning：输入缓存，avpkt->data的AV_INPUT_BUFFER_PADDING_SIZE必须大于实际的可读的字节数，因为有些优化的比特流阅读者会阅读32或者64bits，可能会超过阅读的界限。
- note：AVCodecContext在给packets解码钱必须是通过avcodec_open2()打开的。
- avctx：编解码器上下文
- [in]avpkt：输入的AVPacket。通常，这将会是一个单一的video frame，或者是几个完整的audio frame。packet的所有权仍然是属于调用者，解码器不会对packet进行写入。decoder可能会创建一个引用到这个packet data（或者copy it假如这个packet没有引用计数器）。不像old API，packet总是被完全消耗，假如他包含多个frame（例如有些audio codec），在你发送新的packet之前需要你调用avcodec_receive_frame()多次。这个参数可以为NULL（或者预估AVPacket的数据设置为NULL，size设置为0），在这种情况下，会被考虑为一个flush packet，标着这stream的结束。发送第一个flush packet将会成功。随后的发送时不会成功的，并且会返回AVERROR_EOF错误。假如解码器仍然有一些frames缓存，他会在发送一个flush packet后返回他们。
- return：返回0代表成功，其他会返回负数：
- AVERROR(EAGAIN):当前状态不接收输入-用户必须读取avcodec_receive_frame()的输出结果（一旦所有的输出都读取了，这个包将会重新发送，然后就不会发生因为EAGAIN调用失败）。
- AVERROR_EOF:编码器被flushed，而且没有新的packets被送达到这里。
- AVERROR(EINVAL):编解码器没有打开，它是一个编码器，或者需要flush
- AVERROR(ENOMEM):添加packet到内部队列失败，或者类似的其他错误：合法的解码错误
+ *
+ * 提供原始的packet数据到一个解码器。
+ * 内部的，这里将会拷贝AVCodecContext相关的字段，将会影响解码每一个包的字段，当packet被正真解码的时候就会用到他们。（例如，AVCodecContext.skip_frame，可能会直接的告诉解码器来放弃发送到这个函数的packet包含的一些frame）
+ * warning：输入缓存，avpkt->data的AV_INPUT_BUFFER_PADDING_SIZE必须大于实际的可读的字节数，因为有些优化的比特流阅读者会阅读32或者64bits，可能会超过阅读的界限。
+ * note：AVCodecContext在给packets解码钱必须是通过avcodec_open2()打开的。
+ * avctx：编解码器上下文
+ * [in]avpkt：输入的AVPacket。通常，这将会是一个单一的video frame，或者是几个完整的audio frame。packet的所有权仍然是属于调用者，解码器不会对packet进行写入。decoder可能会创建一个引用到这个packet data（或者copy it假如这个packet没有引用计数器）。不像old API，packet总是被完全消耗，假如他包含多个frame（例如有些audio codec），在你发送新的packet之前需要你调用avcodec_receive_frame()多次。这个参数可以为NULL（或者预估AVPacket的数据设置为NULL，size设置为0），在这种情况下，会被考虑为一个flush packet，标着这stream的结束。发送第一个flush packet将会成功。随后的发送时不会成功的，并且会返回AVERROR_EOF错误。假如解码器仍然有一些frames缓存，他会在发送一个flush packet后返回他们。
+ * return：返回0代表成功，其他会返回负数：
+ * AVERROR(EAGAIN):当前状态不接收输入-用户必须读取avcodec_receive_frame()的输出结果（一旦所有的输出都读取了，这个包将会重新发送，然后就不会发生因为EAGAIN调用失败）。
+ * AVERROR_EOF:编码器被flushed，而且没有新的packets被送达到这里。
+ * AVERROR(EINVAL):编解码器没有打开，它是一个编码器，或者需要flush
+ * AVERROR(ENOMEM):添加packet到内部队列失败，或者类似的其他错误：合法的解码错误
  */
 int avcodec_send_packet(AVCodecContext *avctx, const AVPacket *avpkt);
 
@@ -5384,14 +5388,14 @@ int avcodec_send_packet(AVCodecContext *avctx, const AVPacket *avpkt);
  *                         no more output frames
  *      AVERROR(EINVAL):   codec not opened, or it is an encoder
  *      other negative values: legitimate decoding errors
- 从一个解码器输出解码的数据
- frame参数：通过解码器分配设置一个video或者audio frame（依赖于解码器的类型）的引用计数。注意这个函数在做其他任何事情之前都会调用av_frame_unref(frame)
- return：
- 0：表示成功，一个frame将会被返回
- AVERROR(EAGAIN):在这种状态输出是不可用用，用户必须尝试发送一个新的输入。
- AVERROR_EOF:这个解码器被flushed，这里不会有更多的输出的frame。
- AVERROR(EINVAL):编解码器没有被打开，或者他是一个编码器。
- 其他的负值：合法的解码错误
+ * 从一个解码器输出解码的数据
+ * frame参数：通过解码器分配设置一个video或者audio frame（依赖于解码器的类型）的引用计数。注意这个函数在做其他任何事情之前都会调用av_frame_unref(frame)
+ * return：
+ * 0：表示成功，一个frame将会被返回
+ * AVERROR(EAGAIN):在这种状态输出是不可用用，用户必须尝试发送一个新的输入。
+ * AVERROR_EOF:这个解码器被flushed，这里不会有更多的输出的frame。
+ * AVERROR(EINVAL):编解码器没有被打开，或者他是一个编码器。
+ * 其他的负值：合法的解码错误
  */
 int avcodec_receive_frame(AVCodecContext *avctx, AVFrame *frame);
 

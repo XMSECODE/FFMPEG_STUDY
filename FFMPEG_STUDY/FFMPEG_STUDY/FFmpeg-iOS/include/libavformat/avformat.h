@@ -1366,6 +1366,12 @@ typedef struct AVStream {
      * - demuxing: filled by libavformat on stream creation or in
      *             avformat_find_stream_info()
      * - muxing: filled by the caller before avformat_write_header()
+     *
+     *关于这个stream的codec参数。分配和释放分别是通过libavformat的avformat_new_stream()和avformat_free_context()。
+     *
+     *- demuxing：由stream创建或者是libavformat中的avformat_find_stream_info()创建。
+     *
+     *- muxing：在创建以前调用avformat_write_header()。
      */
     AVCodecParameters *codecpar;
 } AVStream;
@@ -1521,6 +1527,9 @@ typedef struct AVFormatContext {
      * Number of elements in AVFormatContext.streams.
      *
      * Set by avformat_new_stream(), must not be modified by any other code.
+     *
+     *AVFormatContext.streams中的元素的数量。
+     *通过avformat_new_stream()进行设置，不能通过其他代码改变。
      */
     unsigned int nb_streams;
     /**
@@ -1533,6 +1542,13 @@ typedef struct AVFormatContext {
      * - muxing: streams are created by the user before avformat_write_header().
      *
      * Freed by libavformat in avformat_free_context().
+     *
+     *文件中的所有stream列表。新的streams是通过avformat_new_stream()创建的。
+     *
+     *-demuxing：streams是通过libavformat中的avformat_open_input()创建的。假如AVFMTCTX_NOHEADER是设置ctx_flags，这个心的streams也可能出现在av_read_frame()中。
+     *
+     *-muxing：streams在用户创建之前使用avformat_write_header()。
+     *通过libavformat的avformat_free_context()进行释放。
      */
     AVStream **streams;
 
@@ -2531,12 +2547,12 @@ int av_find_best_stream(AVFormatContext *ic,
  * decompress the payload.
  *
  * @return 0 if OK, < 0 on error or end of file
- 
- 从一个流中返回下一帧。
- 这个方法返回的是存在文件中的东西，并且不会验证这个对于解码器来说是否是有效的。他会分开这些存储在文件中的帧，并且在每次调用时返回一帧。他不会忽略到在可用的帧中存在的不可用的数据，保证给解码器最大的可以用到的解码信息。
- 假如pct->buf是NULL，然后这个packet是有效的，直到下一个av_read_frame()或者avformat_close_input()才会失效；否则packet就会永远有效。在这两种情况下，当packet长时间不再使用时必须使用av_packet_unref进行释放。对于video，这个packet包含精确的帧。对于audio，他讲包含一个整数的帧，假如每个帧有一个已知的固定大小（例如MPEG audio），他就会包含一个帧。
- 在AVStream的time_base units（基本时间单位中）（假如这个format不能够正确提供这些，则猜测他们）中 pkt->pts，pkt->dts ,pkt->duration 这几个属性总是设置正确的值。pkt->pts可以是AV_NOPTS_VALUE 假如这个video格式有B帧，所以如果你不加压缩有效的负载则最好依赖于 pkt->dts；
- return：返回0则代表成功，否则错误
+ *
+ * 从一个流中返回下一帧。
+ * 这个方法返回的是存在文件中的东西，并且不会验证这个对于解码器来说是否是有效的。他会分开这些存储在文件中的帧，并且在每次调用时返回一帧。他不会忽略到在可用的帧中存在的不可用的数据，保证给解码器最大的可以用到的解码信息。
+ * 假如pct->buf是NULL，然后这个packet是有效的，直到下一个av_read_frame()或者avformat_close_input()才会失效；否则packet就会永远有效。在这两种情况下，当packet长时间不再使用时必须使用av_packet_unref进行释放。对于video，这个packet包含精确的帧。对于audio，他讲包含一个整数的帧，假如每个帧有一个已知的固定大小（例如MPEG audio），他就会包含一个帧。
+ * 在AVStream的time_base units（基本时间单位中）（假如这个format不能够正确提供这些，则猜测他们）中 pkt->pts，pkt->dts ,pkt->duration 这几个属性总是设置正确的值。pkt->pts可以是AV_NOPTS_VALUE 假如这个video格式有B帧，所以如果你不加压缩有效的负载则最好依赖于 pkt->dts；
+ * return：返回0则代表成功，否则错误
  */
 int av_read_frame(AVFormatContext *s, AVPacket *pkt);
 
