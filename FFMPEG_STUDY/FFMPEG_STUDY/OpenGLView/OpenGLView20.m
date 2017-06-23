@@ -395,10 +395,10 @@ void main(void)\
 - (void)displayYUV420pData:(void *)data width:(NSInteger)w height:(NSInteger)h
 {
     //_pYuvData = data;
-    if (!self.window)
-    {
-        return;
-    }
+//    if (!self.window)
+//    {
+//        return;
+//    }
     @synchronized(self)
     {
         if (w != _videoW || h != _videoH)

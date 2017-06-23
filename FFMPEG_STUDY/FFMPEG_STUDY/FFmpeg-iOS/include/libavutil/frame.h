@@ -183,6 +183,18 @@ typedef struct AVFrameSideData {
  * Fields can be accessed through AVOptions, the name string used, matches the
  * C structure field name for fields accessible through AVOptions. The AVClass
  * for AVFrame can be obtained from avcodec_get_frame_class()
+ *
+ *这个结构体是用来描述解码后的audio和video数据。
+ *
+ *AVFrame必须是使用av_frame_alloc()进行分配的。noto：这是仅仅分配AVFrame他自己，数据缓存区必须通过其他方法进行管理。AVFrame必须通过av_frame_free()进行释放。
+ *
+ *AVFrame通常被分配一次，可以多次使用处理不同的数据（例如：单个的AVFrame处理从一个解码器接收到的数据）。在这种情况下，av_frame_unref()将会释放任何frame的引用和重新设置他到之前的初始状态。
+ *
+ *被AVFrame描述的数据通常是通过AVBuffer API引用的。下面缓存引用是被存储在AVFrame.buf/AVFrame.extended_buf。一个AVFrame是被引用计数的，假如最后一个引用被设置，例如：假如AVFrame.buf[0] != NULL,在这种情况下，任何一个单个的平行数据必须包含在一个AVFrame.buf或者AVFrame.extended_buf的缓存中。这可以单个的缓存包含所有的数据，或者一个分开的缓存保存每一个平行的数据，或者中间的任何事物。
+ *
+ *sizeof(AVFrame)不是公共API的一部分，所以可以在末尾加一个小的字段块。
+ *
+ *字段可以通过AVOptions访问，使用名字字符串，通过AVOptions来访问匹配C结构体字段名字。AVFrame的AVClass可以从avcodec_get_frame_class()获得
  */
 typedef struct AVFrame {
 #define AV_NUM_DATA_POINTERS 8
@@ -197,6 +209,12 @@ typedef struct AVFrame {
      *
      * NOTE: Except for hwaccel formats, pointers not needed by the format
      * MUST be set to NULL.
+     *
+     *指向计划的图片、频道的指针。第一次分配的字节可能是不同的。
+     *
+     *一些解码器访问0区域，-width，height，请看avcodec_align_dimensions2().一些过滤器和渲染可以读取计划外的16个字节，假如这些滤镜被使用，必须分配额外的16个字节。
+     *
+     *NOTE：除了hwaccel格式，指针不需要的格式必须被设置为NULL。
      */
     uint8_t *data[AV_NUM_DATA_POINTERS];
 
@@ -214,6 +232,15 @@ typedef struct AVFrame {
      *
      * @note The linesize may be larger than the size of usable data -- there
      * may be extra padding present for performance reasons.
+     *
+     *对于video，每一个picture line的字节数
+     *对于audio，每一个频道的字节数
+     *
+     *对于audio，仅仅linesize[0]可能被设置。对于planar audio，每一个通道必须是一样的大小
+     *
+     *对于video，linesizes应该是CPU对齐偏好的倍数，桌面CPU是16或者32.一些code需要这样对齐，没有正确对齐会导致变慢，然而其他没区别。
+     *
+     *note：linesize可能会大于可以使用的数据的大小--这就是要拼接额外数据来展示的原因。
      */
     int linesize[AV_NUM_DATA_POINTERS];
 
@@ -230,6 +257,14 @@ typedef struct AVFrame {
      * Note: Both data and extended_data should always be set in a valid frame,
      * but for planar audio with more channels that can fit in data,
      * extended_data must be used in order to access all channels.
+     *
+     *指向planes、channels数据的指针
+     *
+     *对于video，这应该是简单的指向数据数组。
+     *
+     *对于planar audio，每一个channel通过指针分割数据，linesize[0]包含每一个channel缓存的大小。对于包装的audio，这里只有一个数据指针，linesize[0]包含所有channels的缓存的所有大小。
+     *
+     *note：data和extended_data两者在一个可用的frame中应该总是被设置，但是对于planar audio更多的channel，可用填满数据，extended_data必须使用来访问所有的channel。
      */
     uint8_t **extended_data;
 
@@ -240,6 +275,8 @@ typedef struct AVFrame {
 
     /**
      * number of audio samples (per channel) described by this frame
+     *
+     *描述这个frame的audio样本数量
      */
     int nb_samples;
 
@@ -247,6 +284,8 @@ typedef struct AVFrame {
      * format of the frame, -1 if unknown or unset
      * Values correspond to enum AVPixelFormat for video frames,
      * enum AVSampleFormat for audio)
+     *
+     *这个frame的格式，-1则是未知或者是没有设置。
      */
     int format;
 
