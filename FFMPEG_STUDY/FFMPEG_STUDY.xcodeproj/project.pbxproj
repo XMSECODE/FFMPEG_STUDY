@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		047B7B021EF2C47800E4F0F8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 047B7B011EF2C47800E4F0F8 /* main.m */; };
 		047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 047B7B041EF2C47800E4F0F8 /* AppDelegate.m */; };
 		047B7B081EF2C47800E4F0F8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 047B7B071EF2C47800E4F0F8 /* ViewController.m */; };
 		047B7B0B1EF2C47800E4F0F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 047B7B091EF2C47800E4F0F8 /* Main.storyboard */; };
@@ -28,12 +27,16 @@
 		047B7BA51EF2C83E00E4F0F8 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA41EF2C83E00E4F0F8 /* CoreMedia.framework */; };
 		047B7BA71EF2C84900E4F0F8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA61EF2C84900E4F0F8 /* CoreGraphics.framework */; };
 		047B7BA91EF2C85500E4F0F8 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA81EF2C85500E4F0F8 /* AudioToolbox.framework */; };
-		F0295F041EFCBE3400301784 /* OpenGLView20.m in Sources */ = {isa = PBXBuildFile; fileRef = F0295F031EFCBE3400301784 /* OpenGLView20.m */; };
+		0495E8C91EFE483E00958C4F /* ECSwsscaleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8C81EFE483E00958C4F /* ECSwsscaleManager.m */; };
+		0495E8CD1EFE485200958C4F /* OpenGLView20.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8CC1EFE485200958C4F /* OpenGLView20.m */; };
+		0495E8CF1EFE488500958C4F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8CE1EFE488500958C4F /* main.m */; };
+		0495E8D41EFE497A00958C4F /* NSError+ECError.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8D31EFE497A00958C4F /* NSError+ECError.m */; };
+		0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */; };
+		0495E8DB1EFE5DE500958C4F /* UIView+XMSView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		047B7AFD1EF2C47800E4F0F8 /* FFMPEG_STUDY.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FFMPEG_STUDY.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		047B7B011EF2C47800E4F0F8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		047B7B031EF2C47800E4F0F8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		047B7B041EF2C47800E4F0F8 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		047B7B061EF2C47800E4F0F8 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
@@ -163,8 +166,18 @@
 		047B7BA41EF2C83E00E4F0F8 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		047B7BA61EF2C84900E4F0F8 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		047B7BA81EF2C85500E4F0F8 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		F0295F021EFCBE3400301784 /* OpenGLView20.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLView20.h; sourceTree = "<group>"; };
-		F0295F031EFCBE3400301784 /* OpenGLView20.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenGLView20.m; sourceTree = "<group>"; };
+		0495E8C71EFE483E00958C4F /* ECSwsscaleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSwsscaleManager.h; sourceTree = "<group>"; };
+		0495E8C81EFE483E00958C4F /* ECSwsscaleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSwsscaleManager.m; sourceTree = "<group>"; };
+		0495E8CB1EFE485200958C4F /* OpenGLView20.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLView20.h; sourceTree = "<group>"; };
+		0495E8CC1EFE485200958C4F /* OpenGLView20.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenGLView20.m; sourceTree = "<group>"; };
+		0495E8CE1EFE488500958C4F /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		0495E8D11EFE495D00958C4F /* Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Header.h; sourceTree = "<group>"; };
+		0495E8D21EFE497A00958C4F /* NSError+ECError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+ECError.h"; sourceTree = "<group>"; };
+		0495E8D31EFE497A00958C4F /* NSError+ECError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+ECError.m"; sourceTree = "<group>"; };
+		0495E8D61EFE5D3700958C4F /* JPFPSStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPFPSStatus.h; sourceTree = "<group>"; };
+		0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPFPSStatus.m; sourceTree = "<group>"; };
+		0495E8D91EFE5DE500958C4F /* UIView+XMSView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+XMSView.h"; sourceTree = "<group>"; };
+		0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+XMSView.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,7 +231,10 @@
 				047B7B041EF2C47800E4F0F8 /* AppDelegate.m */,
 				047B7B061EF2C47800E4F0F8 /* ViewController.h */,
 				047B7B071EF2C47800E4F0F8 /* ViewController.m */,
-				F0295F011EFCBE3400301784 /* OpenGLView */,
+				0495E8C31EFE482100958C4F /* class */,
+				0495E8C41EFE482100958C4F /* other */,
+				0495E8C51EFE482100958C4F /* third */,
+				0495E8C61EFE482100958C4F /* tool */,
 				047B7B091EF2C47800E4F0F8 /* Main.storyboard */,
 				047B7B0C1EF2C47800E4F0F8 /* Assets.xcassets */,
 				047B7B0E1EF2C47800E4F0F8 /* LaunchScreen.storyboard */,
@@ -231,7 +247,6 @@
 		047B7B001EF2C47800E4F0F8 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				047B7B011EF2C47800E4F0F8 /* main.m */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -443,13 +458,68 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		F0295F011EFCBE3400301784 /* OpenGLView */ = {
+		0495E8C31EFE482100958C4F /* class */ = {
 			isa = PBXGroup;
 			children = (
-				F0295F021EFCBE3400301784 /* OpenGLView20.h */,
-				F0295F031EFCBE3400301784 /* OpenGLView20.m */,
+			);
+			path = class;
+			sourceTree = "<group>";
+		};
+		0495E8C41EFE482100958C4F /* other */ = {
+			isa = PBXGroup;
+			children = (
+				0495E8D11EFE495D00958C4F /* Header.h */,
+				0495E8CE1EFE488500958C4F /* main.m */,
+			);
+			path = other;
+			sourceTree = "<group>";
+		};
+		0495E8C51EFE482100958C4F /* third */ = {
+			isa = PBXGroup;
+			children = (
+				0495E8D51EFE5D3700958C4F /* JPFPSStatus */,
+				0495E8CA1EFE485200958C4F /* OpenGLView */,
+			);
+			path = third;
+			sourceTree = "<group>";
+		};
+		0495E8C61EFE482100958C4F /* tool */ = {
+			isa = PBXGroup;
+			children = (
+				0495E8D01EFE48DF00958C4F /* category */,
+				0495E8C71EFE483E00958C4F /* ECSwsscaleManager.h */,
+				0495E8C81EFE483E00958C4F /* ECSwsscaleManager.m */,
+			);
+			path = tool;
+			sourceTree = "<group>";
+		};
+		0495E8CA1EFE485200958C4F /* OpenGLView */ = {
+			isa = PBXGroup;
+			children = (
+				0495E8CB1EFE485200958C4F /* OpenGLView20.h */,
+				0495E8CC1EFE485200958C4F /* OpenGLView20.m */,
 			);
 			path = OpenGLView;
+			sourceTree = "<group>";
+		};
+		0495E8D01EFE48DF00958C4F /* category */ = {
+			isa = PBXGroup;
+			children = (
+				0495E8D91EFE5DE500958C4F /* UIView+XMSView.h */,
+				0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */,
+				0495E8D21EFE497A00958C4F /* NSError+ECError.h */,
+				0495E8D31EFE497A00958C4F /* NSError+ECError.m */,
+			);
+			path = category;
+			sourceTree = "<group>";
+		};
+		0495E8D51EFE5D3700958C4F /* JPFPSStatus */ = {
+			isa = PBXGroup;
+			children = (
+				0495E8D61EFE5D3700958C4F /* JPFPSStatus.h */,
+				0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */,
+			);
+			path = JPFPSStatus;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -523,10 +593,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0495E8D41EFE497A00958C4F /* NSError+ECError.m in Sources */,
+				0495E8CF1EFE488500958C4F /* main.m in Sources */,
+				0495E8DB1EFE5DE500958C4F /* UIView+XMSView.m in Sources */,
+				0495E8C91EFE483E00958C4F /* ECSwsscaleManager.m in Sources */,
 				047B7B081EF2C47800E4F0F8 /* ViewController.m in Sources */,
+				0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */,
 				047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */,
-				047B7B021EF2C47800E4F0F8 /* main.m in Sources */,
-				F0295F041EFCBE3400301784 /* OpenGLView20.m in Sources */,
+				0495E8CD1EFE485200958C4F /* OpenGLView20.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

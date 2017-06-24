@@ -13,13 +13,17 @@
 #import "OpenGLView20.h"
 #import "imgutils.h"
 #import "opt.h"
+#import "Header.h"
 
-#define FRAMECOUNT 500
-const char *filepath = "/Users/shiming/ffmpegResearch/FFmpeg-Tutorial/ss1-part.mp4";
+#import "ECSwsscaleManager.h"
+
+#define FRAMECOUNT 50000
+
 const char *imagePath = "file:///Users/xiangmingsheng/Downloads/ss";
 
 
 @interface ViewController ()
+@property (weak, nonatomic) IBOutlet UIImageView *showImageView;
 
 @end
 
@@ -35,8 +39,12 @@ const char *imagePath = "file:///Users/xiangmingsheng/Downloads/ss";
     [self initFFMPEG];
     [self initFFMPEGNET];
     
-        [self loadFFMpegWithURL:@"file:///Users/xiangmingsheng/Downloads/QQ20170613-085300-HD.mp4"];
-//    [self loadFFMpegWithURL:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+    
+    __weak __typeof(self)weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+//                [weakSelf loadFFMpegWithURL:@"file:///Users/xiangmingsheng/Downloads/QQ20170613-085300-HD.mp4"];
+        [weakSelf loadFFMpegWithURL:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+    });
     
     
 }
@@ -110,10 +118,18 @@ const char *imagePath = "file:///Users/xiangmingsheng/Downloads/ss";
                 case 0://成功
                     printf("got a frame !\n");
                     if (i < FRAMECOUNT) {
-//                        [self converFormat:frame];
-                        [self saveImageWith:frame width:codecParameters->width height:codecParameters->height frmae:i];
+                        [ECSwsscaleManager getImageFromAVFrame:frame success:^(UIImage *image) {
+                            self.showImageView.image = image;
+                            static dispatch_once_t onceToken;
+                            dispatch_once(&onceToken, ^{
+                                int scale = [UIScreen mainScreen].scale;
+                                self.showImageView.W = image.size.width / scale;
+                                self.showImageView.H = image.size.height / scale;
+                            });
+                        } failure:^(NSError *error) {
+                            NSLog(@"%@",error.localizedDescription);
+                        }];
                         i++;
-
                     }
                 
                     break;
@@ -160,71 +176,4 @@ const char *imagePath = "file:///Users/xiangmingsheng/Downloads/ss";
     });
 }
 
-- (void)saveImageWith:(AVFrame *)frame width:(int)width height:(int)height frmae:(int)iFrame {
-    FILE *pFile;
-    
-    NSString *fileStr = [NSString stringWithFormat:@"/Users/xiangmingsheng/Downloads/ss/%d.ppm",iFrame];
-    const char *szFilename = [fileStr cStringUsingEncoding:NSUTF8StringEncoding];
-    
-    pFile=fopen(szFilename, "w");
-    if(pFile==NULL) {
-        NSLog(@"打开文件失败");
-        printf("%s\n",szFilename);
-        return;
-    }
-    
-    if (frame->format == 0) {
-        printf("format  :   AV_PIX_FMT_YUV420P\n");
-    }
-    printf("数据类型：%d\n",frame->format);
-    
-    struct SwsContext *swsContext = sws_getContext(frame->width, frame->height, AV_PIX_FMT_YUV420P, frame->width, frame->height, AV_PIX_FMT_RGB24, SWS_BICUBIC, NULL, NULL, NULL);
-    
-    AVFrame *RGBFrame = av_frame_alloc();
-    int result = av_image_alloc(RGBFrame->data, RGBFrame->linesize, frame->width, frame->height, AV_PIX_FMT_RGB24, 1);
-    if (result< 0) {
-        printf( "Could not allocate destination image\n");
-        return;
-    }
-    
-    int result_height = sws_scale(swsContext, (const uint8_t* const*)frame->data, frame->linesize, 0, frame->height, RGBFrame->data, RGBFrame->linesize);
-    if (result_height == 0) {
-        printf("result_height == 0\n");
-        fclose(pFile);
-        return;
-    }
-    printf("result_height = %d\n",result_height);
-    
-    fprintf(pFile, "P6\n%d %d\n255\n", width, height);
-
-    fwrite(RGBFrame->data[0], frame->width * frame->height * 3, 1, pFile);
-    
-    
-    av_frame_free(&RGBFrame);
-    sws_freeContext(swsContext);
-    
-    // Write header AVPixelFormat
-//    fprintf(pFile, "P6\n%d %d\n255\n", width, height);
-    
-    // Write pixel data
-//    for(int y=0; y<height; y++) {
-    
-//        printf("%zd\n",frame->data[0]);
-        
-//        printf("%d\n",y * frame->linesize[0]);
-    
-//        printf(" %p ",frame->data[0] + y * frame->linesize[0]);
-        
-//        fwrite(frame->data[0]+y*frame->linesize[0],  1,width * 3, pFile);
-
-//    }
-    
-    // Close file
-    fclose(pFile);
-}
-
-
 @end
-
-
-
