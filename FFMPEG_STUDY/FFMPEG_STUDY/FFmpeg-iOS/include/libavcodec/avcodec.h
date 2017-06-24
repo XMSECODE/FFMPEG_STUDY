@@ -6232,8 +6232,8 @@ void avcodec_flush_buffers(AVCodecContext *avctx);
  *
  * @param[in] codec_id the codec
  * @return Number of bits per sample or zero if unknown for the given codec.
- 返回codec的每一个样本的bits比特数
- return：返回每一个样本的bits，如果给的codec是未知的则返回0
+ * 返回codec的每一个样本的bits比特数
+ * return：返回每一个样本的bits，如果给的codec是未知的则返回0
  */
 int av_get_bits_per_sample(enum AVCodecID codec_id);
 
