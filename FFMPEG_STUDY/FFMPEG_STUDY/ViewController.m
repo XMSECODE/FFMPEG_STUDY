@@ -52,7 +52,7 @@
 - (void)playWithImageView {
     __weak __typeof(self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [[FFmpegManager sharedManager] openURL:@"rtmp://live.hkstv.hk.lxdns.com/live/hks" success:^(AVFrame *frame) {
+        [[FFmpegManager sharedManager] openURL:@"rtmp://live.hkstv.hk.lxdns.com/live/hks" videoSuccess:^(AVFrame *frame) {
             @autoreleasepool {
                 UIImage *image = [ECSwsscaleManager getImageFromAVFrame:frame];
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -65,6 +65,8 @@
                     });
                 });
             }
+        } audioSuccess:^(AVFrame *frame) {
+//            NSLog(@"===%p",frame);
         } failure:^(NSError *error) {
             NSLog(@"error == %@",error.localizedDescription);
         }];
