@@ -136,37 +136,39 @@ static FFmpegManager *staticFFmpegManager;
     AVFrame *audioFrame = av_frame_alloc();
     
     while (av_read_frame(formatContext, packet) >= 0) {
-        if(packet->stream_index == videoStreamID) {
-            printf("video\n");
-            avcodec_send_packet(videoCodecContext, packet);
-            result = avcodec_receive_frame(videoCodecContext, videoFrame);
-            switch (result) {
-                case 0:{
-                    videoSuccess(videoFrame);
+        {
+            if(packet->stream_index == videoStreamID) {
+//                printf("video\n");
+                avcodec_send_packet(videoCodecContext, packet);
+                result = avcodec_receive_frame(videoCodecContext, videoFrame);
+                switch (result) {
+                    case 0:{
+                        videoSuccess(videoFrame);
+                    }
+                        break;
+                        
+                    case AVERROR_EOF:
+                        printf("the decoder has been fully flushed,\
+                               and there will be no more output frames.\n");
+                        break;
+                        
+                    case AVERROR(EAGAIN):
+                        printf("Resource temporarily unavailable\n");
+                        break;
+                        
+                    case AVERROR(EINVAL):
+                        printf("Invalid argument\n");
+                        break;
+                    default:
+                        break;
                 }
-                    break;
-                    
-                case AVERROR_EOF:
-                    printf("the decoder has been fully flushed,\
-                           and there will be no more output frames.\n");
-                    break;
-                    
-                case AVERROR(EAGAIN):
-                    printf("Resource temporarily unavailable\n");
-                    break;
-                    
-                case AVERROR(EINVAL):
-                    printf("Invalid argument\n");
-                    break;
-                default:
-                    break;
+                av_packet_unref(packet);
+                
             }
-            av_packet_unref(packet);
-            
         }
         {
             if (packet->stream_index == audioStreamID) {
-                printf("audio\n");
+//                printf("audio\n");
                 avcodec_send_packet(audioCodeContext, packet);
                 result = avcodec_receive_frame(audioCodeContext, audioFrame);
                 switch (result) {

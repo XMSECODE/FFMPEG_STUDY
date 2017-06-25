@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import <AVFoundation/AVFoundation.h>
 #import "avformat.h"
 #import "avcodec.h"
 #import "swscale.h"
@@ -25,6 +26,8 @@
 
 @property(nonatomic,weak)ECOpenGLView* openGLView;
 
+@property(nonatomic,assign)NSInteger i;
+
 @end
 
 @implementation ViewController
@@ -32,10 +35,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.i = 0;
     
     [self playWithImageView];
     
-    [self setupView];
+//    [self setupView];
+    
+    AudioQueueCreateTimeline(<#AudioQueueRef  _Nonnull inAQ#>, <#AudioQueueTimelineRef  _Nullable * _Nonnull outTimeline#>)
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -66,7 +72,13 @@
                 });
             }
         } audioSuccess:^(AVFrame *frame) {
-//            NSLog(@"===%p",frame);
+//            NSLog(@"%d",frame->format);
+            NSData *data = [NSData dataWithBytes:frame->data[0] length:frame->linesize[0]];
+            
+            AVAudioPlayer *newPlayer =[[AVAudioPlayer alloc] initWithData:data error: nil];
+            [newPlayer play];
+            
+            
         } failure:^(NSError *error) {
             NSLog(@"error == %@",error.localizedDescription);
         }];
