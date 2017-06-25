@@ -33,6 +33,8 @@
 		0495E8D41EFE497A00958C4F /* NSError+ECError.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8D31EFE497A00958C4F /* NSError+ECError.m */; };
 		0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */; };
 		0495E8DB1EFE5DE500958C4F /* UIView+XMSView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */; };
+		0495E8DE1EFF416700958C4F /* ECOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8DD1EFF416700958C4F /* ECOpenGLView.m */; };
+		0495E8E11EFF41D800958C4F /* FFmpegManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8E01EFF41D800958C4F /* FFmpegManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -178,6 +180,10 @@
 		0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPFPSStatus.m; sourceTree = "<group>"; };
 		0495E8D91EFE5DE500958C4F /* UIView+XMSView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+XMSView.h"; sourceTree = "<group>"; };
 		0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+XMSView.m"; sourceTree = "<group>"; };
+		0495E8DC1EFF416700958C4F /* ECOpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECOpenGLView.h; sourceTree = "<group>"; };
+		0495E8DD1EFF416700958C4F /* ECOpenGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECOpenGLView.m; sourceTree = "<group>"; };
+		0495E8DF1EFF41D800958C4F /* FFmpegManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegManager.h; sourceTree = "<group>"; };
+		0495E8E01EFF41D800958C4F /* FFmpegManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFmpegManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -487,8 +493,12 @@
 			isa = PBXGroup;
 			children = (
 				0495E8D01EFE48DF00958C4F /* category */,
+				0495E8DF1EFF41D800958C4F /* FFmpegManager.h */,
+				0495E8E01EFF41D800958C4F /* FFmpegManager.m */,
 				0495E8C71EFE483E00958C4F /* ECSwsscaleManager.h */,
 				0495E8C81EFE483E00958C4F /* ECSwsscaleManager.m */,
+				0495E8DC1EFF416700958C4F /* ECOpenGLView.h */,
+				0495E8DD1EFF416700958C4F /* ECOpenGLView.m */,
 			);
 			path = tool;
 			sourceTree = "<group>";
@@ -595,10 +605,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				0495E8D41EFE497A00958C4F /* NSError+ECError.m in Sources */,
+				0495E8DE1EFF416700958C4F /* ECOpenGLView.m in Sources */,
 				0495E8CF1EFE488500958C4F /* main.m in Sources */,
 				0495E8DB1EFE5DE500958C4F /* UIView+XMSView.m in Sources */,
 				0495E8C91EFE483E00958C4F /* ECSwsscaleManager.m in Sources */,
 				047B7B081EF2C47800E4F0F8 /* ViewController.m in Sources */,
+				0495E8E11EFF41D800958C4F /* FFmpegManager.m in Sources */,
 				0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */,
 				047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */,
 				0495E8CD1EFE485200958C4F /* OpenGLView20.m in Sources */,

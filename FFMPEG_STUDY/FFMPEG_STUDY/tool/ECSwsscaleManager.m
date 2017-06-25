@@ -14,6 +14,24 @@
 @implementation ECSwsscaleManager
 
 + (UIImage *)getImageFromAVFrame:(AVFrame *)frame {
+
+    AVFrame *RGBFrame = [self getRGBAVFrameFromOtherFormat:frame];
+    
+    NSString *headerString = [NSString stringWithFormat:@"P6\n%d %d\n255\n",frame->width,frame->height];
+    NSData *data = [headerString dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *bodyData = [NSData dataWithBytes:RGBFrame->data[0] length:frame->width * frame->height * 3];
+    NSMutableData *mData = [data mutableCopy];
+    [mData appendData:bodyData];
+    
+    UIImage *image = [UIImage imageWithData:mData];
+    
+    av_free(RGBFrame->data[0]);
+    av_frame_free(&RGBFrame);
+    
+    return image;
+}
+
++ (AVFrame *)getRGBAVFrameFromOtherFormat:(AVFrame *)frame {
     struct SwsContext *swsContext = sws_getContext(frame->width, frame->height, AV_PIX_FMT_YUV420P, frame->width, frame->height, AV_PIX_FMT_RGB24, SWS_BICUBIC, NULL, NULL, NULL);
     
     AVFrame *RGBFrame = av_frame_alloc();
@@ -34,20 +52,10 @@
         sws_freeContext(swsContext);
         return nil;
     }
-    
-    NSString *headerString = [NSString stringWithFormat:@"P6\n%d %d\n255\n",frame->width,frame->height];
-    NSData *data = [headerString dataUsingEncoding:NSUTF8StringEncoding];
-    NSData *bodyData = [NSData dataWithBytes:RGBFrame->data[0] length:frame->width * frame->height * 3];
-    NSMutableData *mData = [data mutableCopy];
-    [mData appendData:bodyData];
-    
-    UIImage *image = [UIImage imageWithData:mData];
-    
-    av_free(RGBFrame->data[0]);
-    av_frame_free(&RGBFrame);
+    RGBFrame->width = frame->width;
+    RGBFrame->height = frame->height;
     sws_freeContext(swsContext);
-    
-    return image;
+    return RGBFrame;
 }
 
 + (void)saveToPNGImageWithAVFrame:(AVFrame *)frame filePath:(NSString *)filePath success:(void(^)())success failure:(void(^)(NSError *error))failure {
