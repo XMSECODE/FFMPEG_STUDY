@@ -11,13 +11,7 @@
 #import "avformat.h"
 
 @interface ECSwsscaleManager : NSObject
-
-/**
- 从AVFrame转换得到UIImage
-
- @param frame 需要转换的AVFrame
- */
-+ (void)getImageFromAVFrame:(AVFrame *)frame success:(void(^)(UIImage *image))success failure:(void(^)(NSError *error))failure;
++ (UIImage *)getImageFromAVFrame:(AVFrame *)frame;
 
 /**
  保存AVFrame为PNG格式到本地，会转换为RGB24格式

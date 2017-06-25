@@ -118,17 +118,20 @@ const char *imagePath = "file:///Users/xiangmingsheng/Downloads/ss";
                 case 0://成功
                     printf("got a frame !\n");
                     if (i < FRAMECOUNT) {
-                        [ECSwsscaleManager getImageFromAVFrame:frame success:^(UIImage *image) {
-                            self.showImageView.image = image;
-                            static dispatch_once_t onceToken;
-                            dispatch_once(&onceToken, ^{
-                                int scale = [UIScreen mainScreen].scale;
-                                self.showImageView.W = image.size.width / scale;
-                                self.showImageView.H = image.size.height / scale;
+                        @autoreleasepool {
+                            UIImage *image = [ECSwsscaleManager getImageFromAVFrame:frame];
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                self.showImageView.image = image;
+                                static dispatch_once_t onceToken;
+                                dispatch_once(&onceToken, ^{
+                                    int scale = [UIScreen mainScreen].scale;
+                                    self.showImageView.W = image.size.width / scale;
+                                    self.showImageView.H = image.size.height / scale;
+                                });
                             });
-                        } failure:^(NSError *error) {
-                            NSLog(@"%@",error.localizedDescription);
-                        }];
+                        }
+                        
+//
                         i++;
                     }
                 
