@@ -13,6 +13,8 @@
 
 + (instancetype)sharedManager;
 
+- (void)getFirstVideoFrameWithURL:(NSString *)urlString success:(void(^)(AVFrame *firstFrame))success failure:(void(^)(NSError *error))failure;
+
 - (void)openURL:(NSString *)urlString videoSuccess:(void(^)(AVFrame *frame))videoSuccess audioSuccess:(void(^)(AVFrame *frame))audioSuccess failure:(void(^)(NSError *error))failure;
 
 @end

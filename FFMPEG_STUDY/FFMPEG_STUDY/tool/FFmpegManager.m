@@ -16,7 +16,6 @@
 
 @property(nonatomic,assign)BOOL ffmpegNetIsInit;
 
-
 @end
 
 static FFmpegManager *staticFFmpegManager;
@@ -40,7 +39,15 @@ static FFmpegManager *staticFFmpegManager;
     return self;
 }
 
+- (void)getFirstVideoFrameWithURL:(NSString *)urlString success:(void(^)(AVFrame *firstFrame))success failure:(void(^)(NSError *error))failure {
+    [self openURL:urlString videoSuccess:success audioSuccess:nil failure:failure isGetFirstVideoFrame:YES];
+}
+
 - (void)openURL:(NSString *)urlString videoSuccess:(void(^)(AVFrame *frame))videoSuccess audioSuccess:(void(^)(AVFrame *frame))audioSuccess failure:(void(^)(NSError *error))failure {
+    [self openURL:urlString videoSuccess:videoSuccess audioSuccess:audioSuccess failure:failure isGetFirstVideoFrame:NO];
+}
+
+- (void)openURL:(NSString *)urlString videoSuccess:(void(^)(AVFrame *frame))videoSuccess audioSuccess:(void(^)(AVFrame *frame))audioSuccess failure:(void(^)(NSError *error))failure isGetFirstVideoFrame:(BOOL)isGetFirstVideoFrame{
     
     AVFormatContext *formatContext = NULL;
     AVInputFormat *inputFormat = NULL;
@@ -135,6 +142,8 @@ static FFmpegManager *staticFFmpegManager;
     
     AVFrame *audioFrame = av_frame_alloc();
     
+    BOOL getFirstVideoFrame = NO;
+    
     while (av_read_frame(formatContext, packet) >= 0) {
         {
             if(packet->stream_index == videoStreamID) {
@@ -143,7 +152,10 @@ static FFmpegManager *staticFFmpegManager;
                 result = avcodec_receive_frame(videoCodecContext, videoFrame);
                 switch (result) {
                     case 0:{
-                        videoSuccess(videoFrame);
+                        if (videoSuccess) {
+                            videoSuccess(videoFrame);
+                        }
+                        getFirstVideoFrame = YES;
                     }
                         break;
                         
@@ -173,7 +185,9 @@ static FFmpegManager *staticFFmpegManager;
                 result = avcodec_receive_frame(audioCodeContext, audioFrame);
                 switch (result) {
                     case 0:{
-                        audioSuccess(audioFrame);
+                        if (audioSuccess) {
+                            audioSuccess(audioFrame);
+                        }
                     }
                         break;
                         
@@ -195,8 +209,13 @@ static FFmpegManager *staticFFmpegManager;
                 av_packet_unref(packet);
             }
         }
-        
+        if (isGetFirstVideoFrame) {
+            if (getFirstVideoFrame == YES) {
+                break;
+            }
+        }
     }
+    printf("decode end!");
     av_free(videoFrame);
     av_frame_free(&audioFrame);
     avcodec_close(videoCodecContext);
