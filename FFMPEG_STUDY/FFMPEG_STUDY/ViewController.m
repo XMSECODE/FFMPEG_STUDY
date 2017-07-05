@@ -42,6 +42,9 @@
     [self setupView];
     
     [self getFirstFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+    
+    [self getAudioFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+    
 }
 
 - (void)setupView {
@@ -50,6 +53,7 @@
     [self.view addSubview:openGLView];
 }
 
+#pragma mark - private
 - (void)playWithImageViewWithURLString:(NSString *)URLString {
     __weak __typeof(self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
@@ -84,6 +88,25 @@
             NSLog(@"error == %@",error.localizedDescription);
         }];
     });
+}
+
+- (void)playVideoWithImageViewWithURLString:(NSString *)URLString {
+    
+}
+
+- (void)getAudioFrameWithURLString:(NSString *)URLString {
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [[FFmpegManager sharedManager] openAudioURL:URLString audioSuccess:^(AVFrame *frame) {
+            
+        } failure:^(NSError *error) {
+            
+        }];
+    });
+    
+}
+
+- (void)playAudioWithURLString:(NSString *)URLString {
+    
 }
 
 @end
