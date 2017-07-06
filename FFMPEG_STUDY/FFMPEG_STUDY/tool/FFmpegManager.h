@@ -13,6 +13,15 @@
 
 + (instancetype)sharedManager;
 
+- (void)getFirstVideoFrameWithURL:(NSString *)urlString success:(void(^)(AVFrame *firstFrame))success failure:(void(^)(NSError *error))failure;
+
+- (void)openAudioURL:(NSString *)urlString audioSuccess:(void(^)(AVFrame *frame))audioSuccess failure:(void(^)(NSError *error))failure;
+
+- (void)getPCMDataAudioURL:(NSString *)urlString audioSuccess:(void(^)(NSData *PCMData))audioSuccess failure:(void(^)(NSError *error))failure;
+
+- (void)openVideoURL:(NSString *)urlString videoSuccess:(void(^)(AVFrame *frame))videoSuccess failure:(void(^)(NSError *error))failure;
+
 - (void)openURL:(NSString *)urlString videoSuccess:(void(^)(AVFrame *frame))videoSuccess audioSuccess:(void(^)(AVFrame *frame))audioSuccess failure:(void(^)(NSError *error))failure;
+
 
 @end

@@ -9,51 +9,28 @@
 #import "ECOpenGLView.h"
 #import "Header.h"
 #import <CoreGraphics/CoreGraphics.h>
+#import "ECSwsscaleManager.h"
+
+@interface ECOpenGLView ()
+
+@property(nonatomic,strong)UIImage* image;
+
+@end
 
 @implementation ECOpenGLView
 
 - (void)drawRect:(CGRect)rect {
-//    if (self.avFrame == nil) {
-//        return;
-//    }
-    
-//    NSInteger height = self.avFrame->height;
-//    NSInteger width = self.avFrame->width;
-    
-//    UIBezierPath *path = [UIBezierPath bezierPath];
-//    path.lineWidth = 1;
-//    for (int i = 0; i < height; i++) {
-//        for (int j = 0; j < width; j++) {
-//            int r = self.avFrame->data[0][i * width + width];
-//            int g = self.avFrame->data[0][i * width + width + 1];
-//            int b = self.avFrame->data[0][i * width + width + 2];
-//            UIColor*color = kRGBColor(r, g, b);
-//
-//            if (i == 0 && j == 0) {
-//                [path moveToPoint:CGPointMake(i, j)];
-//            }else {
-//                [path addLineToPoint:CGPointMake(i, j)];
-//            }
-//            if (i == height - 20 && j == width - 20) {
-//                
-//                self.backgroundColor = color;
-//            }
-//            [color setStroke];
-//        }
-//    }
-//    [path stroke];
-    
-    
-//    int r = self.avFrame->data[0][20 * width + width];
-//    int g = self.avFrame->data[0][20 * width + width + 1];
-//    int b = self.avFrame->data[0][20 * width + width + 2];
-//    UIColor*color = kRGBColor(r, g, b);
-//    self.backgroundColor = color;
+    [self.image drawInRect:rect];
 }
 
 - (void)setAvFrame:(AVFrame *)avFrame {
-//    _avFrame = avFrame;
-//    [self setNeedsDisplay];
+    UIImage *image = [ECSwsscaleManager getImageFromAVFrame:avFrame];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"image == %@",image);
+        NSLog(@"%@",[NSThread currentThread]);
+        self.image = image;
+        [self setNeedsDisplay];
+    });
 }
 
 

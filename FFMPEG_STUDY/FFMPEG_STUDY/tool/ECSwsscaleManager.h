@@ -12,8 +12,11 @@
 
 @interface ECSwsscaleManager : NSObject
 
-+ (UIImage *)getImageFromAVFrame:(AVFrame *)frame;
 
+/**
+ 下面两个方法会自动释放传入的frame
+ */
++ (UIImage *)getImageFromAVFrame:(AVFrame *)frame;
 + (AVFrame *)getRGBAVFrameFromOtherFormat:(AVFrame *)frame;
 
 
