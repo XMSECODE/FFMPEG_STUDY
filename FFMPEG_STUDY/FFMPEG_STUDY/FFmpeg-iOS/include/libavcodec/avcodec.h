@@ -4645,26 +4645,26 @@ int avcodec_parameters_to_context(AVCodecContext *codec,
  * @see avcodec_alloc_context3(), avcodec_find_decoder(), avcodec_find_encoder(),
  *      av_dict_set(), av_opt_find().
  
- 使用给定的AVCodec（AV编解码器）初始化一个AVCodecContext（AV编解码器上下文）。使用之前要使用avcodec_alloc_context3()这个函数来分配上下文。
- 这些avcodec_find_decoder_by_name(), avcodec_find_encoder_by_name(),avcodec_find_decoder() and avcodec_find_encoder()函数提供了一个简单的方法来检索一个编解码器。
- warning：这个方法不是线程安全的。
- note注意：在使用解码日程工作之前都需要调用这个方法（比如：avcodec_receive_frame()）
- 示例代码：
-  avcodec_register_all();
-  av_dict_set(&opts, "b", "2.5M", 0);
-  codec = avcodec_find_decoder(AV_CODEC_ID_H264);
-  if (!codec)
-      exit(1);
+ * 使用给定的AVCodec（AV编解码器）初始化一个AVCodecContext（AV编解码器上下文）。使用之前要使用avcodec_alloc_context3()这个函数来分配上下文。
+ * 这些avcodec_find_decoder_by_name(), avcodec_find_encoder_by_name(),avcodec_find_decoder() and avcodec_find_encoder()函数提供了一个简单的方法来检索一个编解码器。
+ * warning：这个方法不是线程安全的。
+ * note注意：在使用解码日程工作之前都需要调用这个方法（比如：avcodec_receive_frame()）
+ * 示例代码：
+ * avcodec_register_all();
+ * av_dict_set(&opts, "b", "2.5M", 0);
+ * codec = avcodec_find_decoder(AV_CODEC_ID_H264);
+ * if (!codec)
+ *     exit(1);
  
-  context = avcodec_alloc_context3(codec);
+ * context = avcodec_alloc_context3(codec);
  
-  if (avcodec_open2(context, codec, opts) < 0)
+ * if (avcodec_open2(context, codec, opts) < 0)
       exit(1);
- avctx参数：用来初始化的上下文
- codec参数：打开上下文的编解码器。假如codec是一个非NULL，并且先前传递给avcodec_alloc_context3()或者这个上下文，那么这个参数必须是NULL或者是等于以前通过的编码器。
- options参数：一个填满了AVCodecContext和codec-private选项的字典。在函数返回时，这个字典将会填满没有找到的值。
- return：返回0则代表成功，其他则代表失败
- 相关阅读：avcodec_alloc_context3(), avcodec_find_decoder(), avcodec_find_encoder(),av_dict_set(), av_opt_find()
+ * avctx参数：用来初始化的上下文
+ * codec参数：打开上下文的编解码器。假如codec是一个非NULL，并且先前传递给avcodec_alloc_context3()或者这个上下文，那么这个参数必须是NULL或者是等于以前通过的编码器。
+ * options参数：一个填满了AVCodecContext和codec-private选项的字典。在函数返回时，这个字典将会填满没有找到的值。
+ * return：返回0则代表成功，其他则代表失败
+ * 相关阅读：avcodec_alloc_context3(), avcodec_find_decoder(), avcodec_find_encoder(),av_dict_set(), av_opt_find()
  */
 int avcodec_open2(AVCodecContext *avctx, const AVCodec *codec, AVDictionary **options);
 

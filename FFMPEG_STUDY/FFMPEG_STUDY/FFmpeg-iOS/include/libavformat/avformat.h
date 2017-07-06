@@ -2226,11 +2226,12 @@ const AVClass *avformat_get_class(void);
  * defaults to be set, so codec should be provided if it is known.
  *
  * @return newly created stream or NULL on error.
- 添加一个新的stream到一个media文件。
- 当demuxing时，在使用之前应该调用avformat_write_header()。用户需要调用avcodec_close()和avformat_free_context()来清理通过avformat_new_stream()分配的AVStream。
- s：media文件句柄
- c：假如不为NULL，AVCodecContext对于的新的stream将会被这个codec初始化。这是必要的，例如指定的codec默认被设置，假如是知道的就应该提供codec。
- return:成功则返回创建的stream，失败则返回NULL
+ * 添加一个新的stream到一个media文件。
+ *
+ * 当muxing时，在使用avformat_write_header()之前应该调用。用户需要调用avcodec_close()和avformat_free_context()来清理通过avformat_new_stream()分配的AVStream。
+ * s：media文件句柄
+ * c：假如不为NULL，AVCodecContext对于的新的stream将会被这个codec初始化。这是必要的，例如指定的codec默认被设置，假如是知道的就应该提供codec。
+ * return:成功则返回创建的stream，失败则返回NULL
  */
 AVStream *avformat_new_stream(AVFormatContext *s, const AVCodec *c);
 

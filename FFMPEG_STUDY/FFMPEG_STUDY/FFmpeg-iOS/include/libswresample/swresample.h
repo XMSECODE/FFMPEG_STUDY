@@ -555,6 +555,17 @@ const char *swresample_license(void);
  * @param input           input AVFrame
  * @return                0 on success, AVERROR on failure or nonmatching
  *                        configuration.
+ * 转换输入的AVFrame样本，然后写到输出的AVFrame。
+ *
+ * 输入和输出的AVFrames必须有设置channel_layout，sampl_rate和format。
+ *
+ * 假如输出的AVFrame没有指向分配的nb_samples字段数据的指针则将会使用av_frame_get_buffer来分配这个frame。
+ *
+ *输出的AVFrame可以为NULL，或者有较少的需要分配的样本。在这种情况下，任何剩下样本不会写到output加入到内部的FIFO缓存，在下一刻调用这个函数。
+ *
+ *
+ *
+ *
  */
 int swr_convert_frame(SwrContext *swr,
                       AVFrame *output, const AVFrame *input);
