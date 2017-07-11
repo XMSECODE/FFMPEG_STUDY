@@ -37,13 +37,19 @@
     
     self.i = 0;
     
-    [self playWithImageViewWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+//    [self playWithImageViewWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+    [self playWithImageViewWithURLString:@"/Users/xiangmingsheng/Music/网易云音乐/Bridge - 雾都历.mp3"];
     
     [self setupView];
     
-    [self getFirstFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+//    [self getFirstFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
     
-    [self getAudioFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+//    [self getFirstFrameWithURLString:@"/Users/xiangmingsheng/Music/网易云音乐/Bridge - 雾都历.mp3"];
+    
+//    [self getAudioFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+    
+//    [self playAudioWithURLString:@"/Users/xiangmingsheng/Music/网易云音乐/Bridge - 雾都历.mp3"];
+    
     
 }
 
@@ -90,8 +96,12 @@
     });
 }
 
-- (void)playVideoWithImageViewWithURLString:(NSString *)URLString {
-    
+- (void)playAudioWithImageViewWithURLString:(NSString *)URLString {
+    [[FFmpegManager sharedManager] getPCMDataAudioURL:URLString audioSuccess:^(NSData *PCMData) {
+        
+    } failure:^(NSError *error) {
+        NSLog(@"error == %@",error.localizedDescription);
+    }];
 }
 
 - (void)getAudioFrameWithURLString:(NSString *)URLString {
@@ -99,14 +109,25 @@
         [[FFmpegManager sharedManager] openAudioURL:URLString audioSuccess:^(AVFrame *frame) {
             
         } failure:^(NSError *error) {
-            
+            NSLog(@"error == %@",error.localizedDescription);
         }];
     });
     
 }
 
 - (void)playAudioWithURLString:(NSString *)URLString {
-    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [[FFmpegManager sharedManager] getPCMDataAudioURL:URLString audioSuccess:^(NSData *PCMData) {
+            NSError *error;
+//            int ii = [PCMData writeToFile:@"/Users/xiangmingsheng/Music/网易云音乐/Bs.mp3" atomically:YES];
+            AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithData:PCMData error:&error];
+            if (error == nil) {
+                [player prepareToPlay];
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+    });
 }
 
 @end

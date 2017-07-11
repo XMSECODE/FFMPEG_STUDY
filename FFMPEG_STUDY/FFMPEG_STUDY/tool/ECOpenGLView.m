@@ -27,7 +27,6 @@
     UIImage *image = [ECSwsscaleManager getImageFromAVFrame:avFrame];
     dispatch_async(dispatch_get_main_queue(), ^{
         NSLog(@"image == %@",image);
-        NSLog(@"%@",[NSThread currentThread]);
         self.image = image;
         [self setNeedsDisplay];
     });

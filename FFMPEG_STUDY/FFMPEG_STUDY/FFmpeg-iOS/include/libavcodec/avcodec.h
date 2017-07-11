@@ -1850,12 +1850,14 @@ typedef struct AVPacket {
      * decompression, unless one wants to view hex dumps. Some formats misuse
      * the terms dts and pts/cts to mean something different. Such timestamps
      * must be converted to true pts/dts before they are stored in AVPacket.
+     * 显示时间戳
      */
     int64_t pts;
     /**
      * Decompression timestamp in AVStream->time_base units; the time at which
      * the packet is decompressed.
      * Can be AV_NOPTS_VALUE if it is not stored in the file.
+     * 解码时间戳
      */
     int64_t dts;
     uint8_t *data;
