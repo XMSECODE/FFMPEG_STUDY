@@ -9,10 +9,15 @@
 #import "FFmpegManager.h"
 #import "avcodec.h"
 #import "Header.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface FFmpegManager ()
 
 @property(nonatomic,copy)NSString* URLString;
+
+@property(nonatomic,strong)AVAudioPlayer* play1;
+
+@property(nonatomic,strong)NSMutableArray* play2array;
 
 
 @end
@@ -55,105 +60,6 @@ static FFmpegManager *staticFFmpegManager;
 }
 
 - (void)getPCMDataAudioURL:(NSString *)urlString audioSuccess:(void(^)(NSData *PCMData))audioSuccess failure:(void(^)(NSError *error))failure {
-    
-    self.URLString = urlString;
-    
-    AVFormatContext *formatContext = NULL;
-    AVInputFormat *inputFormat = NULL;
-    AVDictionary *avDictionary = NULL;
-    const char *url = [urlString cStringUsingEncoding:NSUTF8StringEncoding];
-    int result = avformat_open_input(&formatContext, url, inputFormat, &avDictionary);
-    if (result != 0) {
-        NSError *error = [NSError EC_errorWithLocalizedDescription:@"open url failure,please check url is available"];
-        failure(error);
-        return;
-    }
-    
-    result = avformat_find_stream_info(formatContext, NULL);
-    if (result < 0) {
-        NSError *error = [NSError EC_errorWithLocalizedDescription:@"find stream info failure"];
-        failure(error);
-        return;
-    }
-    
-    //打印信息
-    av_dump_format(formatContext, 0, url, 0);
-
-    //查找音频流
-    int audioStreamID = -1;
-    for (int i = 0; i < formatContext->nb_streams; i++) {
-        if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
-            audioStreamID = i;
-            break;
-        }
-    }
-    
-    printf("==================\n");
-    printf("the first audio stream index is : %d\n", audioStreamID);
-    
-    printf("==================\n");
-    
-    AVCodecParameters *audioCodecParameters = formatContext->streams[audioStreamID]->codecpar;
-    AVStream *audioStream = formatContext->streams[audioStreamID];
-    printf("codec Par :%d,format %d\n",audioCodecParameters->frame_size,audioCodecParameters->format);
-    
-    AVCodec *audioCodec = avcodec_find_decoder(audioStream->codecpar->codec_id);
-    AVCodecContext *audioCodeContext = avcodec_alloc_context3(audioCodec);
-    
-    if ((result = avcodec_parameters_to_context(audioCodeContext, audioStream->codecpar)) < 0) {
-        printf("copy the codec parameters to context fail, err code : %d\n", result);
-        NSError *error = [NSError EC_errorWithLocalizedDescription:[NSString stringWithFormat:@"copy the codec parameters to context fail, err code : %d\n",result]];
-        failure(error);
-        return;
-    }
-    
-    if ((result = avcodec_open2(audioCodeContext, audioCodec, NULL)) < 0) {
-        printf("open codec fail , err code : %d", result);
-        NSError *error = [NSError EC_errorWithLocalizedDescription:[NSString stringWithFormat:@"open codec fail , err code : %d", result]];
-        failure(error);
-        return;
-    }
-    
-    AVPacket *packet = av_packet_alloc();
-    
-    AVFrame *audioFrame = av_frame_alloc();
-    
-    while (av_read_frame(formatContext, packet) >= 0) {
-        
-        {
-            if (packet->stream_index == audioStreamID && audioSuccess) {
-                //                printf("audio\n");
-                avcodec_send_packet(audioCodeContext, packet);
-                result = avcodec_receive_frame(audioCodeContext, audioFrame);
-                switch (result) {
-                    case 0:{
-                        audioSuccess(nil);
-                    }
-                        break;
-                        
-                    case AVERROR_EOF:
-                        printf("the decoder has been fully flushed,\
-                               and there will be no more output frames.\n");
-                        break;
-                        
-                    case AVERROR(EAGAIN):
-                        printf("audio Resource temporarily unavailable\n");
-                        break;
-                        
-                    case AVERROR(EINVAL):
-                        printf("Invalid argument\n");
-                        break;
-                    default:
-                        break;
-                }
-                av_packet_unref(packet);
-            }
-        }
-    }
-    printf("decode end!");
-    av_frame_free(&audioFrame);
-    avcodec_close(audioCodeContext);
-    avformat_close_input(&formatContext);
 }
 
 - (void)openVideoURL:(NSString *)urlString videoSuccess:(void(^)(AVFrame *frame))videoSuccess failure:(void(^)(NSError *error))failure {
@@ -279,8 +185,7 @@ static FFmpegManager *staticFFmpegManager;
                         break;
                         
                     case AVERROR_EOF:
-                        printf("the decoder has been fully flushed,\
-                               and there will be no more output frames.\n");
+                        printf("video the decoder has been fully flushed, and there will be no more output frames.\n");
                         break;
                         
                     case AVERROR(EAGAIN):
@@ -304,13 +209,13 @@ static FFmpegManager *staticFFmpegManager;
                 result = avcodec_receive_frame(audioCodeContext, audioFrame);
                 switch (result) {
                     case 0:{
+                     
                         audioSuccess(audioFrame);
                     }
                         break;
                         
                     case AVERROR_EOF:
-                        printf("the decoder has been fully flushed,\
-                               and there will be no more output frames.\n");
+                        printf("audio the decoder has been fully flushed, and there will be no more output frames.\n");
                         break;
                         
                     case AVERROR(EAGAIN):
