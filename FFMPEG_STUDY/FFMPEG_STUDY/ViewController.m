@@ -50,6 +50,8 @@ typedef struct AQPlayerState {
 @property (nonatomic, strong) NSOperationQueue *streamQueue;
 @property (nonatomic, assign) AudioFileStreamID streamID;
 
+@property (nonatomic, assign) BOOL isFailure;
+
 @property (nonatomic, assign) AudioStreamBasicDescription* streamDescription;
 
 @end
@@ -103,7 +105,7 @@ void func2_AudioFileStream_PacketsProc(void *							inClientData,
 
 - (void)initAudioStreamQueue {
     AudioFileStreamID streamID = NULL;
-    int code = AudioFileStreamOpen(NULL, func1_AudioFileStream_PropertyListenerProc, func2_AudioFileStream_PacketsProc, 0, &streamID);
+    int code = AudioFileStreamOpen(NULL, func1_AudioFileStream_PropertyListenerProc, func2_AudioFileStream_PacketsProc,kAudioFileMP2Type, &streamID);
     if (code == 0) {
         self.streamID = streamID;
         printf("init Audio Stream Queue success\n");
@@ -166,19 +168,16 @@ void func2_AudioFileStream_PacketsProc(void *							inClientData,
                 });
             }
         } audioSuccess:^(AVFrame *frame) {
-            NSBlockOperation *block = [NSBlockOperation blockOperationWithBlock:^{
+            if (self.isFailure == NO) {
                 int code = AudioFileStreamParseBytes(self.streamID, frame->linesize[0], frame->data[0], 0);
                 if (code == noErr) {
                     printf("parseBytes success\n");
                 }else {
-                    printf("parseBytes failure\n");
+                    printf("parseBytes failure = %d\n",code);
+                    self.isFailure = YES;
                     return ;
                 }
-//                NSLog(@"%@",[NSThread currentThread]);
-
-            }];
-            [self.streamQueue addOperation:block];
-            
+            }
         } failure:^(NSError *error) {
             NSLog(@"error == %@",error.localizedDescription);
         }];
