@@ -49,7 +49,7 @@ typedef struct AQPlayerState {
 //audiostream
 @property (nonatomic, strong) NSOperationQueue *streamQueue;
 @property (nonatomic, assign) AudioFileStreamID streamID;
-
+@property (nonatomic, assign) AudioQueueRef *queue;
 @property (nonatomic, assign) BOOL isFailure;
 
 @property (nonatomic, assign) AudioStreamBasicDescription* streamDescription;
@@ -84,33 +84,33 @@ void func2_AudioFileStream_PacketsProc(void *							inClientData,
     
     [self setupView];
     
-//    [self getFirstFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+    //    [self getFirstFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
     
-//    [self getFirstFrameWithURLString:@"/Users/xiangmingsheng/Music/网易云音乐/Bridge - 雾都历.mp3"];
+    //    [self getFirstFrameWithURLString:@"/Users/xiangmingsheng/Music/网易云音乐/Bridge - 雾都历.mp3"];
     
-//    [self getAudioFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+    //    [self getAudioFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
     
-//    [self playAudioWithURLString:@"/Users/xiangmingsheng/Music/网易云音乐/Bridge - 雾都历.mp3"];
+    //    [self playAudioWithURLString:@"/Users/xiangmingsheng/Music/网易云音乐/Bridge - 雾都历.mp3"];
     
-//    [self getAudioFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+    //    [self getAudioFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
     
     
-//    self.playThread = [[NSThread alloc] initWithTarget:self selector:@selector(playMusic) object:nil];
-
+    //    self.playThread = [[NSThread alloc] initWithTarget:self selector:@selector(playMusic) object:nil];
     
-//    [self.playThread start];
+    
+    //    [self.playThread start];
     
     
 }
 
 - (void)initAudioStreamQueue {
     AudioFileStreamID streamID = NULL;
-    int code = AudioFileStreamOpen(NULL, func1_AudioFileStream_PropertyListenerProc, func2_AudioFileStream_PacketsProc,kAudioFileMP2Type, &streamID);
+    int code = AudioFileStreamOpen((__bridge void * _Nullable)(self), func1_AudioFileStream_PropertyListenerProc, func2_AudioFileStream_PacketsProc,kAudioFileMP2Type, &streamID);
     if (code == 0) {
         self.streamID = streamID;
-        printf("init Audio Stream Queue success\n");
+        printf("init Audio Stream success\n");
     }else {
-        printf("init Audio Stream Queue failure\n");
+        printf("init Audio Stream failure\n");
         return ;
     }
 }
@@ -125,29 +125,50 @@ void func2_AudioFileStream_PacketsProc(void *							inClientData,
     [self.view addSubview:openGLView];
 }
 
+void my_AudioQueueOutputCallback(void * __nullable       inUserData,
+                                 AudioQueueRef           inAQ,
+                                 AudioQueueBufferRef     inBuffer) {
+    printf("my_AudioQueueOutputCallback");
+};
+
 void  func1_AudioFileStream_PropertyListenerProc(void *							inClientData,
                                                  AudioFileStreamID				inAudioFileStream,
                                                  AudioFileStreamPropertyID		inPropertyID,
                                                  AudioFileStreamPropertyFlags *	ioFlags) {
     if (inPropertyID ==  kAudioFileStreamProperty_DataFormat) {
         UInt32 outDataSize = sizeof(AudioStreamBasicDescription);
-        AudioStreamBasicDescription audiostream;
-        int code = AudioFileStreamGetProperty(inAudioFileStream, inPropertyID,  &outDataSize, &audiostream);
+        AudioStreamBasicDescription *audiostream = NULL;
+        AudioStreamBasicDescription audios;
+        audiostream = &audios;
+        int code = AudioFileStreamGetProperty(inAudioFileStream, inPropertyID, &outDataSize, audiostream);
         if (code == noErr) {
             printf("read audio stream basic description success\n");
+            AudioQueueRef *queue = NULL;
+            code =  AudioQueueNewOutput(audiostream, my_AudioQueueOutputCallback, inClientData, NULL, NULL, 0, queue);
+            ViewController *view = (__bridge ViewController *)(inClientData);
+            view.queue = queue;
+            if (code == noErr) {
+                printf("queue success\n");
+            }else {
+                printf("queue failure == %d\n",code);
+            }
         }else {
-            printf("read audio stream basic description failuren\n");
+            printf("read audio stream basic description failuren == %d\n",code);
         }
+    }else if (inPropertyID == kAudioFileStreamProperty_ReadyToProducePackets) {
+        printf("kAudioFileStreamProperty_ReadyToProducePackets\n");
+    }else if (inPropertyID == kAudioFileStreamProperty_BitRate) {
+        printf("kAudioFileStreamProperty_BitRate\n");
     }
     printf("func1\n");
 }
 
 void func2_AudioFileStream_PacketsProc(void *							inClientData,
-                                    UInt32							inNumberBytes,
-                                    UInt32							inNumberPackets,
-                                    const void *					inInputData,
-                                        AudioStreamPacketDescription	*inPacketDescriptions) {
-    printf("func2");
+                                       UInt32							inNumberBytes,
+                                       UInt32							inNumberPackets,
+                                       const void *					inInputData,
+                                       AudioStreamPacketDescription	*inPacketDescriptions) {
+//    printf("func2\n");
 }
 
 #pragma mark - private
@@ -171,7 +192,7 @@ void func2_AudioFileStream_PacketsProc(void *							inClientData,
             if (self.isFailure == NO) {
                 int code = AudioFileStreamParseBytes(self.streamID, frame->linesize[0], frame->data[0], 0);
                 if (code == noErr) {
-                    printf("parseBytes success\n");
+//                    printf("parseBytes success\n");
                 }else {
                     printf("parseBytes failure = %d\n",code);
                     self.isFailure = YES;
@@ -219,7 +240,7 @@ void func2_AudioFileStream_PacketsProc(void *							inClientData,
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [[FFmpegManager sharedManager] getPCMDataAudioURL:URLString audioSuccess:^(NSData *PCMData) {
             NSError *error;
-//            int ii = [PCMData writeToFile:@"/Users/xiangmingsheng/Music/网易云音乐/Bs.mp3" atomically:YES];
+            //            int ii = [PCMData writeToFile:@"/Users/xiangmingsheng/Music/网易云音乐/Bs.mp3" atomically:YES];
             AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithData:PCMData error:&error];
             if (error == nil) {
                 [player prepareToPlay];
