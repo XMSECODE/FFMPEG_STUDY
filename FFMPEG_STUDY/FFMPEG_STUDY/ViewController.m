@@ -105,7 +105,7 @@ void func2_AudioFileStream_PacketsProc(void *							inClientData,
 
 - (void)initAudioStreamQueue {
     AudioFileStreamID streamID = NULL;
-    int code = AudioFileStreamOpen((__bridge void * _Nullable)(self), func1_AudioFileStream_PropertyListenerProc, func2_AudioFileStream_PacketsProc,kAudioFileMP2Type, &streamID);
+    int code = AudioFileStreamOpen((__bridge void * _Nullable)(self), func1_AudioFileStream_PropertyListenerProc, func2_AudioFileStream_PacketsProc,kAudioFileAAC_ADTSType, &streamID);
     if (code == 0) {
         self.streamID = streamID;
         printf("init Audio Stream success\n");
@@ -139,11 +139,28 @@ void  func1_AudioFileStream_PropertyListenerProc(void *							inClientData,
         UInt32 outDataSize = sizeof(AudioStreamBasicDescription);
         AudioStreamBasicDescription *audiostream = NULL;
         AudioStreamBasicDescription audios;
+        int s = kAudioFormatMPEG4AAC;
+        NSLog(@"%d",s);
         audiostream = &audios;
         int code = AudioFileStreamGetProperty(inAudioFileStream, inPropertyID, &outDataSize, audiostream);
+        NSLog(@"%f",audios.mSampleRate);
+        printf("mSampleRate = %f  mFormatID = %u  mFormatFlags = %d  mBytesPerPacket = %d mFramesPerPacket = %d  mBytesPerFrame = %d  mChannelsPerFrame = %d  mBitsPerChannel = %d  mReserved = %d\n",audiostream->mSampleRate,(unsigned int)audiostream->mFormatID,audiostream->mFormatFlags,audiostream->mBytesPerPacket,audiostream->mFramesPerPacket,audiostream->mBytesPerFrame,audiostream->mChannelsPerFrame,audiostream->mBitsPerChannel,audiostream->mReserved);
         if (code == noErr) {
+            AudioQueueRef queueRef;
+            AudioQueueRef *queue = &queueRef;
+            audiostream->mSampleRate = 48000;
+//            audiostream->mFormatID = kAudioFormatMPEG4AAC_LD;
+//            audiostream->mFormatFlags = 0;
+//            audiostream->mBytesPerPacket =
+            audiostream->mBitsPerChannel = 8;
+            audiostream->mChannelsPerFrame = 3;
+            audiostream->mBytesPerFrame      = audiostream->mBitsPerChannel * audiostream->mChannelsPerFrame/8;//每帧的bytes数
+            audiostream->mBytesPerPacket     = audiostream->mBytesPerFrame * audiostream->mFramesPerPacket;//每个数据包的bytes总数，每帧的bytes数＊每个数据包的帧数
+            
+            printf("mSampleRate = %f  mFormatID = %u  mFormatFlags = %d  mBytesPerPacket = %d mFramesPerPacket = %d  mBytesPerFrame = %d  mChannelsPerFrame = %d  mBitsPerChannel = %d  mReserved = %d\n",audiostream->mSampleRate,(unsigned int)audiostream->mFormatID,audiostream->mFormatFlags,audiostream->mBytesPerPacket,audiostream->mFramesPerPacket,audiostream->mBytesPerFrame,audiostream->mChannelsPerFrame,audiostream->mBitsPerChannel,audiostream->mReserved);
+
             printf("read audio stream basic description success\n");
-            AudioQueueRef *queue = NULL;
+
             code =  AudioQueueNewOutput(audiostream, my_AudioQueueOutputCallback, inClientData, NULL, NULL, 0, queue);
             ViewController *view = (__bridge ViewController *)(inClientData);
             view.queue = queue;
@@ -158,10 +175,48 @@ void  func1_AudioFileStream_PropertyListenerProc(void *							inClientData,
     }else if (inPropertyID == kAudioFileStreamProperty_ReadyToProducePackets) {
         printf("kAudioFileStreamProperty_ReadyToProducePackets\n");
     }else if (inPropertyID == kAudioFileStreamProperty_BitRate) {
+        uint32_t bitRate;
+        uint32_t bitRateSize = sizeof(bitRate);
+        int code = AudioFileStreamGetProperty(inAudioFileStream, inPropertyID, &bitRateSize, &bitRate);
+        if (code == noErr) {
+            printf("read audio bitRate success %d/n",bitRate);
+        }else {
+            printf("read audio bitRate failure = %d\n",code);
+        }
         printf("kAudioFileStreamProperty_BitRate\n");
+    }else if (inPropertyID == kAudioFileStreamProperty_DataOffset) {
+        printf("kAudioFileStreamProperty_DataOffset\n");
     }
-    printf("func1\n");
+       else if (inPropertyID == kAudioFileStreamProperty_FormatList) {
+        //获取数据大小
+        Boolean outWriteable;
+        UInt32 formatListSize;
+        OSStatus status = AudioFileStreamGetPropertyInfo(inAudioFileStream, kAudioFileStreamProperty_FormatList, &formatListSize, &outWriteable);
+        if (status != noErr)
+        {
+            //错误处理
+        }
+        
+        //获取formatlist
+        AudioFormatListItem *formatList = malloc(formatListSize);
+        status = AudioFileStreamGetProperty(inAudioFileStream, kAudioFileStreamProperty_FormatList, &formatListSize, formatList);
+        if (status != noErr)
+        {
+            //错误处理
+        }
+        
+        //选择需要的格式
+        for (int i = 0; i * sizeof(AudioFormatListItem) < formatListSize; i += sizeof(AudioFormatListItem))
+        { 
+            AudioStreamBasicDescription pasbd = formatList[i].mASBD; 
+            //选择需要的格式。。                              
+        } 
+        free(formatList);
+    }
+    printf("func1 %d\n",inPropertyID);
 }
+
+#define de .
 
 void func2_AudioFileStream_PacketsProc(void *							inClientData,
                                        UInt32							inNumberBytes,
@@ -194,6 +249,7 @@ void func2_AudioFileStream_PacketsProc(void *							inClientData,
                 if (code == noErr) {
 //                    printf("parseBytes success\n");
                 }else {
+                    NSLog(@"%d",frame->linesize[0]);
                     printf("parseBytes failure = %d\n",code);
                     self.isFailure = YES;
                     return ;
