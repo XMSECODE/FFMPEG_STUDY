@@ -214,9 +214,8 @@ void  func1_AudioFileStream_PropertyListenerProc(void *							inClientData,
         free(formatList);
     }
     printf("func1 %d\n",inPropertyID);
-}
 
-#define de .
+}
 
 void func2_AudioFileStream_PacketsProc(void *							inClientData,
                                        UInt32							inNumberBytes,
