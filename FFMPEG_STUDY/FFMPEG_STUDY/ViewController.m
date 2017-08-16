@@ -72,17 +72,17 @@ void func2_AudioFileStream_PacketsProc(void *							inClientData,
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.i = 0;
+//    self.i = 0;
     
-    self.streamQueue = [[NSOperationQueue alloc] init];
-    self.streamQueue.maxConcurrentOperationCount = 1;
+//    self.streamQueue = [[NSOperationQueue alloc] init];
+//    self.streamQueue.maxConcurrentOperationCount = 1;
     
     
-    [self initAudioStreamQueue];
+//    [self initAudioStreamQueue];
     
     [self playWithImageViewWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
     
-    [self setupView];
+//    [self setupView];
     
     //    [self getFirstFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
     

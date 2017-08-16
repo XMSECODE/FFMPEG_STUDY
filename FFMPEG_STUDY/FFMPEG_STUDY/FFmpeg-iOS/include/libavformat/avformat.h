@@ -2226,11 +2226,15 @@ const AVClass *avformat_get_class(void);
  * defaults to be set, so codec should be provided if it is known.
  *
  * @return newly created stream or NULL on error.
+ *
  * 添加一个新的stream到一个media文件。
  *
  * 当muxing时，在使用avformat_write_header()之前应该调用。用户需要调用avcodec_close()和avformat_free_context()来清理通过avformat_new_stream()分配的AVStream。
+ *
  * s：media文件句柄
+ *
  * c：假如不为NULL，AVCodecContext对于的新的stream将会被这个codec初始化。这是必要的，例如指定的codec默认被设置，假如是知道的就应该提供codec。
+ *
  * return:成功则返回创建的stream，失败则返回NULL
  */
 AVStream *avformat_new_stream(AVFormatContext *s, const AVCodec *c);
@@ -2294,7 +2298,7 @@ AVProgram *av_new_program(AVFormatContext *s, int id);
  * avformat_free_context() can be used to free the context and
  * everything allocated by the framework within it.
  *
- * @param *ctx is set to the created format context, or to NULL in
+ * @param ctx is set to the created format context, or to NULL in
  * case of failure
  * @param oformat format to use for allocating the context, if NULL
  * format_name and filename are used instead
@@ -2304,12 +2308,18 @@ AVProgram *av_new_program(AVFormatContext *s, int id);
  * context, may be NULL
  * @return >= 0 in case of success, a negative AVERROR code in case of
  * failure
- 从输出的format分配一个AVFormatContext。可以使用avformat_free_context()来释放这个context和这个库分配的相关的一切对象。
- *ctx参数：用来设置创建的format context，失败则为NULL。
- oformat参数：用来分配context的format，假如为NULL，format_name和filename可以替代。
- format_name参数：用来分配context的format名字，假如为NULL，filename可以替代。
- filename:用来分配context的文件名字，可以为NULL。
- return：成功则返回0，失败则返回一个负值。
+ *
+ * 从输出的format分配一个AVFormatContext。可以使用avformat_free_context()来释放这个context和这个库分配的相关的一切对象。
+ *
+ * ctx参数：用来设置创建的format context，失败则为NULL。
+ *
+ * oformat参数：用来分配context的format，假如为NULL，format_name和filename可以替代。
+ *
+ * format_name参数：用来分配context的format名字，假如为NULL，filename可以替代。
+ *
+ * filename:用来分配context的文件名字，可以为NULL。
+ * 
+ * return：成功则返回0，失败则返回一个负值。
  */
 int avformat_alloc_output_context2(AVFormatContext **ctx, AVOutputFormat *oformat,
                                    const char *format_name, const char *filename);
@@ -2420,15 +2430,23 @@ int av_probe_input_buffer(AVIOContext *pb, AVInputFormat **fmt,
  *
  * @return 0 on success, a negative AVERROR on failure.
  *
- * @note If you want to use custom IO, preallocate the format context and set its pb field.
- 打开一个输入的流，并读取头部。这个编解码器不会被打开。
- 这个流必须与avformat_close_input()一起关闭。
- ps参数：指针指向用户提供的AVFormatContext结构体（通过avformat_alloc_context分配的结构体）。可以指向NULL，在这种情况下，通过这个方法来分配一个AVFormatContext并写到ps中。注意：用户提供的AVFormatContext如果失败则会被释放。
- url参数：打开流文件的URL
- fmt参数：假如这个参数不是NULL，这个参数就会强制输入这个格式。否则就会自动检测。
- options参数：充满着AVFormatContext和demuxer-private选项的字典。当这个函数返回时，这个参数也会被释放，并且这个字典包含的选项也会消失。这个可以为NULL
- return值：0代表成功，其他的AVERROR则代表失败
- 注意：假如你想自定义IO，请预分配这个上下文并设置pd字段。
+ * @note If you want to use custom IO, preallocate the format context and set its pb field. 
+ *
+ * 打开一个输入的流，并读取头部。这个编解码器不会被打开。
+ *
+ * 这个流必须与avformat_close_input()一起关闭。
+ *
+ * ps参数：指针指向用户提供的AVFormatContext结构体（通过avformat_alloc_context分配的结构体）。可以指向NULL，在这种情况下，通过这个方法来分配一个AVFormatContext并写到ps中。注意：用户提供的AVFormatContext如果失败则会被释放。
+ *
+ * url参数：打开流文件的URL
+ *
+ * fmt参数：假如这个参数不是NULL，这个参数就会强制输入这个格式。否则就会自动检测。
+ *
+ * options参数：充满着AVFormatContext和demuxer-private选项的字典。当这个函数返回时，这个参数也会被释放，并且这个字典包含的选项也会消失。这个可以为NULL
+ *
+ * return值：0代表成功，其他的AVERROR则代表失败
+ *
+ * 注意：假如你想自定义IO，请预分配这个上下文并设置pd字段。
  */
 int avformat_open_input(AVFormatContext **ps, const char *url, AVInputFormat *fmt, AVDictionary **options);
 
@@ -2455,13 +2473,20 @@ int av_demuxer_open(AVFormatContext *ic);
  *
  * @todo Let the user decide somehow what information is needed so that
  *       we do not waste time getting stuff the user does not need.
- 读取一个媒体文件的packets来得到刘信息。这个对于没有headers的文件流来说是很有用的，比如MPEG。这个函数也会在MPEG-2重复帧的模式下计算真的帧速率。
- 这个逻辑文件位置不会因为这个方法而发生改变。检查的packets可能会被缓存，供以后使用。
- ic参数：media文件的句柄
- options参数：假如不为NULL，一个ic.nb_streams的指向字典的长数组，i-th成员包含着编解码器对应流的i-th选项。在函数返回时，每一个字典将会被填满没有被找到的选项。
- return值：大于等于0则代表成功，AVERROR_xxx则是失败
- 注意：这个函数不能担保打开所有的编解码器，所以options在函数返回时非空是正常的行为
- todo：让用户决定哪些消息是被需要的，所以我们不会浪费时间来得到用户不需要的东西。
+ *
+ * 读取一个媒体文件的packets来得到刘信息。这个对于没有headers的文件流来说是很有用的，比如MPEG。这个函数也会在MPEG-2重复帧的模式下计算真的帧速率。
+ *
+ * 这个逻辑文件位置不会因为这个方法而发生改变。检查的packets可能会被缓存，供以后使用。
+ *
+ * ic参数：media文件的句柄
+ *
+ * options参数：假如不为NULL，一个ic.nb_streams的指向字典的长数组，i-th成员包含着编解码器对应流的i-th选项。在函数返回时，每一个字典将会被填满没有被找到的选项。
+ *
+ * return值：大于等于0则代表成功，AVERROR_xxx则是失败
+ *
+ * 注意：这个函数不能担保打开所有的编解码器，所以options在函数返回时非空是正常的行为
+ *
+ * todo：让用户决定哪些消息是被需要的，所以我们不会浪费时间来得到用户不需要的东西。
  */
 int avformat_find_stream_info(AVFormatContext *ic, AVDictionary **options);
 
@@ -2664,7 +2689,8 @@ int av_read_pause(AVFormatContext *s);
 /**
  * Close an opened input AVFormatContext. Free it and all its contents
  * and set *s to NULL.
- 关闭一个打开的输入AVFormatContext。释放他并且他的所有内容和设置都置为NULL。
+ *
+ * 关闭一个打开的输入AVFormatContext。释放他并且他的所有内容和设置都置为NULL。
  */
 void avformat_close_input(AVFormatContext **s);
 /**

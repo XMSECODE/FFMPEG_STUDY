@@ -37,6 +37,7 @@
 		0495E8E11EFF41D800958C4F /* FFmpegManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8E01EFF41D800958C4F /* FFmpegManager.m */; };
 		F05971821F1C647F00A47C2D /* AVAudioPlayer+PCM.m in Sources */ = {isa = PBXBuildFile; fileRef = F059717F1F1C647F00A47C2D /* AVAudioPlayer+PCM.m */; };
 		F05971831F1C647F00A47C2D /* MCAudioInputQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = F05971811F1C647F00A47C2D /* MCAudioInputQueue.m */; };
+		F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = F0B883241F441B5F00042391 /* FFmpegRemuxer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -190,6 +191,8 @@
 		F059717F1F1C647F00A47C2D /* AVAudioPlayer+PCM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AVAudioPlayer+PCM.m"; sourceTree = "<group>"; };
 		F05971801F1C647F00A47C2D /* MCAudioInputQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MCAudioInputQueue.h; sourceTree = "<group>"; };
 		F05971811F1C647F00A47C2D /* MCAudioInputQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCAudioInputQueue.m; sourceTree = "<group>"; };
+		F0B883231F441B5F00042391 /* FFmpegRemuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegRemuxer.h; sourceTree = "<group>"; };
+		F0B883241F441B5F00042391 /* FFmpegRemuxer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFmpegRemuxer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -505,6 +508,8 @@
 				0495E8D01EFE48DF00958C4F /* category */,
 				0495E8DF1EFF41D800958C4F /* FFmpegManager.h */,
 				0495E8E01EFF41D800958C4F /* FFmpegManager.m */,
+				F0B883231F441B5F00042391 /* FFmpegRemuxer.h */,
+				F0B883241F441B5F00042391 /* FFmpegRemuxer.m */,
 				0495E8C71EFE483E00958C4F /* ECSwsscaleManager.h */,
 				0495E8C81EFE483E00958C4F /* ECSwsscaleManager.m */,
 				0495E8DC1EFF416700958C4F /* ECOpenGLView.h */,
@@ -573,7 +578,7 @@
 				TargetAttributes = {
 					047B7AFC1EF2C47800E4F0F8 = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = 4SF28MHQDQ;
+						DevelopmentTeam = 457L3UJ4DJ;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -625,6 +630,7 @@
 				0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */,
 				047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */,
 				F05971821F1C647F00A47C2D /* AVAudioPlayer+PCM.m in Sources */,
+				F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */,
 				0495E8CD1EFE485200958C4F /* OpenGLView20.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -749,7 +755,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 4SF28MHQDQ;
+				DEVELOPMENT_TEAM = 457L3UJ4DJ;
 				INFOPLIST_FILE = FFMPEG_STUDY/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -765,7 +771,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 4SF28MHQDQ;
+				DEVELOPMENT_TEAM = 457L3UJ4DJ;
 				INFOPLIST_FILE = FFMPEG_STUDY/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (

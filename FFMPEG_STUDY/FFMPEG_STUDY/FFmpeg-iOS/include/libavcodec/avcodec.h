@@ -4604,7 +4604,7 @@ int avcodec_parameters_from_context(AVCodecParameters *par,
  * Fields in codec that do not have a counterpart in par are not touched.
  *
  * @return >= 0 on success, a negative AVERROR code on failure.
- 基于codec parameters中的值来填满一个codec context。任何在codec中被分配的字段都有一个相应的在par在par被释放后被取而代之。在codec中的字段在pra中没有相应的字段。
+ * 基于codec parameters中的值来填满一个codec context。任何在codec中被分配的字段都有一个相应的在par在par被释放后被取而代之。在codec中的字段在pra中没有相应的字段。
  */
 int avcodec_parameters_to_context(AVCodecContext *codec,
                                   const AVCodecParameters *par);
@@ -5048,8 +5048,11 @@ void av_packet_rescale_ts(AVPacket *pkt, AVRational tb_src, AVRational tb_dst);
  *
  * @param id AVCodecID of the requested decoder
  * @return A decoder if one was found, NULL otherwise.
+ *
  * 查找一个已经在注册的匹配解码ID的解码器
+ *
  * id参数：请求解码器的AVCodecID
+ *
  * return：如果找到则返回一个解码器，否则返回NULL
  */
 AVCodec *avcodec_find_decoder(enum AVCodecID id);
