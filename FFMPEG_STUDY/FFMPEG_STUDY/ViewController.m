@@ -87,8 +87,8 @@ void func2_AudioFileStream_PacketsProc(void *							inClientData,
     
     [self playWithImageViewWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
     
-    self.remuxer = [[FFmpegRemuxer alloc] init];
-    [self.remuxer moToFlv:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+//    self.remuxer = [[FFmpegRemuxer alloc] init];
+//    [self.remuxer moToFlv:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
     
 //    [self setupView];
     
@@ -156,14 +156,26 @@ void  func1_AudioFileStream_PropertyListenerProc(void *							inClientData,
         if (code == noErr) {
             AudioQueueRef queueRef;
             AudioQueueRef *queue = &queueRef;
-            audiostream->mSampleRate = 48000;
-//            audiostream->mFormatID = kAudioFormatMPEG4AAC_LD;
-//            audiostream->mFormatFlags = 0;
-//            audiostream->mBytesPerPacket =
-            audiostream->mBitsPerChannel = 8;
-            audiostream->mChannelsPerFrame = 3;
-            audiostream->mBytesPerFrame      = audiostream->mBitsPerChannel * audiostream->mChannelsPerFrame/8;//每帧的bytes数
-            audiostream->mBytesPerPacket     = audiostream->mBytesPerFrame * audiostream->mFramesPerPacket;//每个数据包的bytes总数，每帧的bytes数＊每个数据包的帧数
+//            audiostream->mSampleRate = 48000;
+//            audiostream->mFormatID = kAudioFormatMPEG4AAC;
+//            audiostream->mFormatFlags = kAudioFormatFlagIsFloat;
+            
+//            ((mBitsPerSample / 8) * mChannelsPerFrame) == mBytesPerFrame;
+            /*
+             Float64             mSampleRate;
+             AudioFormatID       mFormatID;
+             AudioFormatFlags    mFormatFlags;
+             UInt32              mBytesPerPacket;
+             UInt32              mFramesPerPacket;
+             UInt32              mBytesPerFrame;
+             UInt32              mChannelsPerFrame;
+             UInt32              mBitsPerChannel;
+             UInt32              mReserved;
+             */
+//            audiostream->mBitsPerChannel = 8;
+//            audiostream->mChannelsPerFrame = 3;
+//            audiostream->mBytesPerFrame      = audiostream->mBitsPerChannel * audiostream->mChannelsPerFrame/8;//每帧的bytes数
+//            audiostream->mBytesPerPacket     = audiostream->mBytesPerFrame * audiostream->mFramesPerPacket;//每个数据包的bytes总数，每帧的bytes数＊每个数据包的帧数
             
             printf("mSampleRate = %f  mFormatID = %u  mFormatFlags = %d  mBytesPerPacket = %d mFramesPerPacket = %d  mBytesPerFrame = %d  mChannelsPerFrame = %d  mBitsPerChannel = %d  mReserved = %d\n",audiostream->mSampleRate,(unsigned int)audiostream->mFormatID,(unsigned int)audiostream->mFormatFlags,(unsigned int)audiostream->mBytesPerPacket,(unsigned int)audiostream->mFramesPerPacket,(unsigned int)audiostream->mBytesPerFrame,(unsigned int)audiostream->mChannelsPerFrame,(unsigned int)audiostream->mBitsPerChannel,(unsigned int)audiostream->mReserved);
 
@@ -251,8 +263,11 @@ void func2_AudioFileStream_PacketsProc(void *							inClientData,
                 });
             }
         } audioSuccess:^(AVFrame *frame) {
+//            printf("%d----%llu----%d---%d---%d    ",frame->sample_rate,frame->channel_layout,frame->nb_samples,frame->format,frame->nb_extended_buf);
             if (self.isFailure == NO) {
                 int code = AudioFileStreamParseBytes(self.streamID, frame->linesize[0], frame->data[0], 0);
+                AudioFileStreamParseBytes(self.streamID, frame->buf[0]->size, frame->buf[0]->data, 0);
+                AudioFileStreamParseBytes(self.streamID, frame->buf[1]->size, frame->buf[1]->data, 0);
                 if (code == noErr) {
 //                    printf("parseBytes success\n");
                 }else {

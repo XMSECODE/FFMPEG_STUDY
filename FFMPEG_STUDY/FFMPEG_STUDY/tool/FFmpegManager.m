@@ -141,12 +141,26 @@ static FFmpegManager *staticFFmpegManager;
         failure(error);
         return;
     }
+    {
+        if (audioStream->codecpar->format == AV_SAMPLE_FMT_FLTP) {
+            printf("para    ");
+        }
+        AVCodecParameters *para = audioStream->codecpar;
+        printf("%d---%d---%d---%zd---%d---%zd---%d\n",para->codec_type,para->codec_id,para->format,para->bit_rate,para->sample_rate,para->channel_layout,para->channels);
+
+    }
+    
     if ((result = avcodec_parameters_to_context(audioCodeContext, audioStream->codecpar)) < 0) {
         printf("copy the codec parameters to context fail, err code : %d\n", result);
         NSError *error = [NSError EC_errorWithLocalizedDescription:[NSString stringWithFormat:@"copy the codec parameters to context fail, err code : %d\n",result]];
         failure(error);
         return;
     }
+    
+//    printf("para    ");
+//    AVCodecParameters *para = audioStream->codecpar;
+//    printf("%d---%d---%d---%zd---%d---%zd---%d\n",para->codec_type,para->codec_id,para->format,para->bit_rate,para->sample_rate,para->channel_layout,para->channels);
+//    
     
     if((result = avcodec_open2(videoCodecContext, Videocodec, NULL)) < 0) {
         printf("open codec fail , err code : %d", result);

@@ -405,6 +405,10 @@ typedef struct AVFrame {
      * AV_NUM_DATA_POINTERS channels, there may be more buffers than can fit in
      * this array. Then the extra AVBufferRef pointers are stored in the
      * extended_buf array.
+     *
+     * 引用这个frame的backing数据。如果这个数据的所有元素为NULL，这个frame是没有引用的。这个数据必须被连续填充--如果buf[i]不是NULL，buf[j]必须也不是空，当j < i的时候。
+     * 这里最可能是每个plane占据一个AVBuffer，所以对于video来说这个数组总是包含所有的引用。对于planar的audio，将超过AV_NUM_DATA_POINTERS的频道，这里可能有更多的buffers可以填充这个array。对于额外的AVBufferRef指针存储在extended_buf数组。
+     *
      */
     AVBufferRef *buf[AV_NUM_DATA_POINTERS];
 
@@ -419,6 +423,9 @@ typedef struct AVFrame {
      *
      * This array is always allocated using av_malloc() by whoever constructs
      * the frame. It is freed in av_frame_unref().
+     * 对于planar格式的audio，需要比AV_NUM_DATA_POINTERS更多的AVBufferRef指针，这个数组会拥有不能填充到AVFrame的缓存里面的指针引用。
+     * Note：这个是不同于AVFrame.extended_data,那个是包含所有的指针。这个数据仅仅包含额外的指针，没有被填充的。
+     * 这个数组总是使用av_malloc()进行分配的，无论谁构造这个frame。他需要使用av_frame_unref()进行释放。
      */
     AVBufferRef **extended_buf;
     /**
