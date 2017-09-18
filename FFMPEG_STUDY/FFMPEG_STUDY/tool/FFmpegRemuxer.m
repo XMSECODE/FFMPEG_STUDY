@@ -25,44 +25,6 @@
 
 @implementation FFmpegRemuxer
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        if (![self setEncode]) {
-            return nil;
-        }
-    }
-    return self;
-}
-
-- (BOOL)setEncode {
-    avcodec_register_all();
-    AVCodec *H264Codec = avcodec_find_encoder(AV_CODEC_ID_H264);
-    if (H264Codec == nil) {
-        NSLog(@"编码器不支持");
-        return NO;
-    }
-    
-    AVCodecContext *codecContext = avcodec_alloc_context3(H264Codec);
-    if (codecContext == nil) {
-        NSLog(@"初始化编码环境失败");
-        return NO;
-    }
-    codecContext->width = 640;
-    codecContext->height = 480;
-    codecContext->pix_fmt = AV_PIX_FMT_YUV420P;
-    codecContext->time_base.den = 25;
-    codecContext->time_base.num = 1;
-    
-    int errorCode = avcodec_open2(codecContext, H264Codec, NULL);
-    if (errorCode != 0) {
-        NSLog(@"打开编码器失败");
-        return NO;
-    }
-    return YES;
-}
-
 - (void)initBasicInfo:(NSString *)filePath {
     in_filename = [filePath cStringUsingEncoding:NSUTF8StringEncoding];
     NSString *outFileNameString = [NSTemporaryDirectory() stringByAppendingPathComponent:@"mov2flv.flv"];

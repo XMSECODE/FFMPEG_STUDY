@@ -19,6 +19,7 @@
 #import "ECSwsscaleManager.h"
 #import "FFmpegManager.h"
 #import "ECOpenGLView.h"
+#import "FFmpegRemuxer.h"
 
 
 
@@ -54,6 +55,9 @@ typedef struct AQPlayerState {
 
 @property (nonatomic, assign) AudioStreamBasicDescription* streamDescription;
 
+
+@property (nonatomic, strong) FFmpegRemuxer *remuxer;
+
 @end
 
 @implementation ViewController
@@ -78,9 +82,13 @@ void func2_AudioFileStream_PacketsProc(void *							inClientData,
 //    self.streamQueue.maxConcurrentOperationCount = 1;
     
     
-//    [self initAudioStreamQueue];
+    
+    [self initAudioStreamQueue];
     
     [self playWithImageViewWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+    
+    self.remuxer = [[FFmpegRemuxer alloc] init];
+    [self.remuxer moToFlv:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
     
 //    [self setupView];
     
@@ -144,7 +152,7 @@ void  func1_AudioFileStream_PropertyListenerProc(void *							inClientData,
         audiostream = &audios;
         int code = AudioFileStreamGetProperty(inAudioFileStream, inPropertyID, &outDataSize, audiostream);
         NSLog(@"%f",audios.mSampleRate);
-        printf("mSampleRate = %f  mFormatID = %u  mFormatFlags = %d  mBytesPerPacket = %d mFramesPerPacket = %d  mBytesPerFrame = %d  mChannelsPerFrame = %d  mBitsPerChannel = %d  mReserved = %d\n",audiostream->mSampleRate,(unsigned int)audiostream->mFormatID,audiostream->mFormatFlags,audiostream->mBytesPerPacket,audiostream->mFramesPerPacket,audiostream->mBytesPerFrame,audiostream->mChannelsPerFrame,audiostream->mBitsPerChannel,audiostream->mReserved);
+        printf("mSampleRate = %f  mFormatID = %u  mFormatFlags = %d  mBytesPerPacket = %d mFramesPerPacket = %d  mBytesPerFrame = %d  mChannelsPerFrame = %d  mBitsPerChannel = %d  mReserved = %d\n",audiostream->mSampleRate,(unsigned int)audiostream->mFormatID,(unsigned int)audiostream->mFormatFlags,(unsigned int)audiostream->mBytesPerPacket,(unsigned int)audiostream->mFramesPerPacket,(unsigned int)audiostream->mBytesPerFrame,(unsigned int)audiostream->mChannelsPerFrame,(unsigned int)audiostream->mBitsPerChannel,(unsigned int)audiostream->mReserved);
         if (code == noErr) {
             AudioQueueRef queueRef;
             AudioQueueRef *queue = &queueRef;
@@ -157,7 +165,7 @@ void  func1_AudioFileStream_PropertyListenerProc(void *							inClientData,
             audiostream->mBytesPerFrame      = audiostream->mBitsPerChannel * audiostream->mChannelsPerFrame/8;//每帧的bytes数
             audiostream->mBytesPerPacket     = audiostream->mBytesPerFrame * audiostream->mFramesPerPacket;//每个数据包的bytes总数，每帧的bytes数＊每个数据包的帧数
             
-            printf("mSampleRate = %f  mFormatID = %u  mFormatFlags = %d  mBytesPerPacket = %d mFramesPerPacket = %d  mBytesPerFrame = %d  mChannelsPerFrame = %d  mBitsPerChannel = %d  mReserved = %d\n",audiostream->mSampleRate,(unsigned int)audiostream->mFormatID,audiostream->mFormatFlags,audiostream->mBytesPerPacket,audiostream->mFramesPerPacket,audiostream->mBytesPerFrame,audiostream->mChannelsPerFrame,audiostream->mBitsPerChannel,audiostream->mReserved);
+            printf("mSampleRate = %f  mFormatID = %u  mFormatFlags = %d  mBytesPerPacket = %d mFramesPerPacket = %d  mBytesPerFrame = %d  mChannelsPerFrame = %d  mBitsPerChannel = %d  mReserved = %d\n",audiostream->mSampleRate,(unsigned int)audiostream->mFormatID,(unsigned int)audiostream->mFormatFlags,(unsigned int)audiostream->mBytesPerPacket,(unsigned int)audiostream->mFramesPerPacket,(unsigned int)audiostream->mBytesPerFrame,(unsigned int)audiostream->mChannelsPerFrame,(unsigned int)audiostream->mBitsPerChannel,(unsigned int)audiostream->mReserved);
 
             printf("read audio stream basic description success\n");
 
@@ -213,7 +221,7 @@ void  func1_AudioFileStream_PropertyListenerProc(void *							inClientData,
         } 
         free(formatList);
     }
-    printf("func1 %d\n",inPropertyID);
+    printf("func1 %d\n",(unsigned int)inPropertyID);
 
 }
 
