@@ -19,9 +19,9 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
-    if (DEBUG) {
+#ifdef DEBUG
         [[JPFPSStatus sharedInstance] open];
-    }
+#endif
     
     return YES;
 }
