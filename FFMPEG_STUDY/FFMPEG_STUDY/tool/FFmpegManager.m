@@ -51,27 +51,37 @@ static FFmpegManager *staticFFmpegManager;
 }
 
 #pragma mark - Public
-- (void)getFirstVideoFrameWithURL:(NSString *)urlString success:(void(^)(AVFrame *firstFrame))success failure:(void(^)(NSError *error))failure {
-    [self openURL:urlString videoSuccess:success audioSuccess:nil failure:failure isGetFirstVideoFrame:YES];
+- (void)getFirstVideoFrameWithURL:(NSString *)urlString
+                          success:(void(^)(AVFrame *firstFrame))success
+                          failure:(void(^)(NSError *error))failure
+                        decodeEnd:(void(^)(void))decodeEnd {
+    [self openURL:urlString videoSuccess:success audioSuccess:nil failure:failure isGetFirstVideoFrame:YES decodeEnd:decodeEnd];
 }
 
-- (void)openAudioURL:(NSString *)urlString audioSuccess:(void(^)(AVFrame *frame))audioSuccess failure:(void(^)(NSError *error))failure {
-    [self openURL:urlString videoSuccess:nil audioSuccess:audioSuccess failure:failure isGetFirstVideoFrame:NO];
+- (void)openAudioURL:(NSString *)urlString
+        audioSuccess:(void(^)(AVFrame *frame))audioSuccess
+             failure:(void(^)(NSError *error))failure
+           decodeEnd:(void(^)(void))decodeEnd {
+    [self openURL:urlString videoSuccess:nil audioSuccess:audioSuccess failure:failure isGetFirstVideoFrame:NO decodeEnd:decodeEnd];
 }
 
-- (void)getPCMDataAudioURL:(NSString *)urlString audioSuccess:(void(^)(NSData *PCMData))audioSuccess failure:(void(^)(NSError *error))failure {
+- (void)openVideoURL:(NSString *)urlString
+        videoSuccess:(void(^)(AVFrame *frame))videoSuccess
+             failure:(void(^)(NSError *error))failure
+           decodeEnd:(void(^)(void))decodeEnd {
+    [self openURL:urlString videoSuccess:videoSuccess audioSuccess:nil failure:failure isGetFirstVideoFrame:NO decodeEnd:decodeEnd];
 }
 
-- (void)openVideoURL:(NSString *)urlString videoSuccess:(void(^)(AVFrame *frame))videoSuccess failure:(void(^)(NSError *error))failure {
-    [self openURL:urlString videoSuccess:videoSuccess audioSuccess:nil failure:failure isGetFirstVideoFrame:NO];
-}
-
-- (void)openURL:(NSString *)urlString videoSuccess:(void(^)(AVFrame *frame))videoSuccess audioSuccess:(void(^)(AVFrame *frame))audioSuccess failure:(void(^)(NSError *error))failure {
-    [self openURL:urlString videoSuccess:videoSuccess audioSuccess:audioSuccess failure:failure isGetFirstVideoFrame:NO];
+- (void)openURL:(NSString *)urlString
+   videoSuccess:(void(^)(AVFrame *frame))videoSuccess
+   audioSuccess:(void(^)(AVFrame *frame))audioSuccess
+        failure:(void(^)(NSError *error))failure
+      decodeEnd:(void(^)(void))decodeEnd {
+    [self openURL:urlString videoSuccess:videoSuccess audioSuccess:audioSuccess failure:failure isGetFirstVideoFrame:NO decodeEnd:decodeEnd];
 }
 
 #pragma mark - Private
-- (void)openURL:(NSString *)urlString videoSuccess:(void(^)(AVFrame *frame))videoSuccess audioSuccess:(void(^)(AVFrame *frame))audioSuccess failure:(void(^)(NSError *error))failure isGetFirstVideoFrame:(BOOL)isGetFirstVideoFrame{
+- (void)openURL:(NSString *)urlString videoSuccess:(void(^)(AVFrame *frame))videoSuccess audioSuccess:(void(^)(AVFrame *frame))audioSuccess failure:(void(^)(NSError *error))failure isGetFirstVideoFrame:(BOOL)isGetFirstVideoFrame decodeEnd:(void(^)(void))decodeEnd{
     
     self.URLString = urlString;
     
@@ -146,7 +156,15 @@ static FFmpegManager *staticFFmpegManager;
             printf("para    ");
         }
         AVCodecParameters *para = audioStream->codecpar;
-        printf("%d---%d---%d---%zd---%d---%zd---%d\n",para->codec_type,para->codec_id,para->format,para->bit_rate,para->sample_rate,para->channel_layout,para->channels);
+        printf("--codec_type--%d\n--codec_id--%d\n--format--%d\n--bit_rate--%lld\n--sample_rate--%d\n--channel_layout--%llu\n--channels--%d\n---frame_size-%d\n",
+               para->codec_type,
+               para->codec_id,
+               para->format,
+               para->bit_rate,
+               para->sample_rate,
+               para->channel_layout,
+               para->channels,
+               para->frame_size);
 
     }
     
@@ -252,6 +270,7 @@ static FFmpegManager *staticFFmpegManager;
         }
     }
     printf("decode end!");
+    decodeEnd();
     av_free(videoFrame);
     av_frame_free(&audioFrame);
     avcodec_close(videoCodecContext);
