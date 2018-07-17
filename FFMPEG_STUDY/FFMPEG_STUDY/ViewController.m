@@ -37,24 +37,15 @@
 
 @implementation ViewController
 
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    [self playWithImageViewWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+    NSString *mp4DemoPath = [[NSBundle mainBundle] pathForResource:@"demo.mp4" ofType:nil];
+    NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
     
-//    self.remuxer = [[FFmpegRemuxer alloc] init];
-//    [self.remuxer moToFlv:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
-    
-    
-    
-    //    [self getFirstFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
-    
-//        [self getFirstFrameWithURLString:@"/Users/xiangmingsheng/Music/网易云音乐/Bridge - 雾都历.mp3"];
-    
-    //    [self getAudioFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
-    
-    
-    //    [self getAudioFrameWithURLString:@"rtmp://live.hkstv.hk.lxdns.com/live/hks"];
+    [self playWithImageViewWithURLString:mp4DemoPath];
     
 }
 
@@ -76,20 +67,7 @@
                 });
             }
         } audioSuccess:^(AVFrame *frame) {
-//            printf("%d----%llu----%d---%d---%d    ",frame->sample_rate,frame->channel_layout,frame->nb_samples,frame->format,frame->nb_extended_buf);
-            if (self.isFailure == NO) {
-                int code = AudioFileStreamParseBytes(self.streamID, frame->linesize[0], frame->data[0], 0);
-                AudioFileStreamParseBytes(self.streamID, frame->buf[0]->size, frame->buf[0]->data, 0);
-                AudioFileStreamParseBytes(self.streamID, frame->buf[1]->size, frame->buf[1]->data, 0);
-                if (code == noErr) {
-//                    printf("parseBytes success\n");
-                }else {
-                    NSLog(@"%d",frame->linesize[0]);
-                    printf("parseBytes failure = %d\n",code);
-                    self.isFailure = YES;
-                    return ;
-                }
-            }
+
         } failure:^(NSError *error) {
             NSLog(@"error == %@",error.localizedDescription);
         }];
