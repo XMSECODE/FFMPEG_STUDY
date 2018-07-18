@@ -39,7 +39,7 @@ void *aac_decoder_create(int sample_rate, int channels, int bit_rate) {
     uint64_t out_channel_layout = channels < 2 ? AV_CH_LAYOUT_MONO:AV_CH_LAYOUT_STEREO;
     int out_nb_samples = 1024;
     enum AVSampleFormat out_sample_fmt = AV_SAMPLE_FMT_S16;
-//    pComponent->au_convert_ctx = swr_alloc();
+
     pComponent->au_convert_ctx = swr_alloc_set_opts(NULL, out_channel_layout, out_sample_fmt, sample_rate, out_channel_layout, AV_SAMPLE_FMT_FLTP, sample_rate, 0, NULL);
     
     int errorcode = swr_init(pComponent->au_convert_ctx);

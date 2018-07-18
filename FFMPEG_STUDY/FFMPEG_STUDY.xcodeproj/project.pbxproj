@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		040D9F7E20FF888D00EE76E6 /* ESCAudioStreamPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 040D9F7D20FF888C00EE76E6 /* ESCAudioStreamPlayer.m */; };
 		047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 047B7B041EF2C47800E4F0F8 /* AppDelegate.m */; };
 		047B7B081EF2C47800E4F0F8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 047B7B071EF2C47800E4F0F8 /* ViewController.m */; };
 		047B7B0B1EF2C47800E4F0F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 047B7B091EF2C47800E4F0F8 /* Main.storyboard */; };
@@ -40,6 +41,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		040D9F7C20FF888C00EE76E6 /* ESCAudioStreamPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCAudioStreamPlayer.h; sourceTree = "<group>"; };
+		040D9F7D20FF888C00EE76E6 /* ESCAudioStreamPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCAudioStreamPlayer.m; sourceTree = "<group>"; };
 		047B7AFD1EF2C47800E4F0F8 /* FFMPEG_STUDY.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FFMPEG_STUDY.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		047B7B031EF2C47800E4F0F8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		047B7B041EF2C47800E4F0F8 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -488,6 +491,8 @@
 		0495E8C61EFE482100958C4F /* tool */ = {
 			isa = PBXGroup;
 			children = (
+				040D9F7C20FF888C00EE76E6 /* ESCAudioStreamPlayer.h */,
+				040D9F7D20FF888C00EE76E6 /* ESCAudioStreamPlayer.m */,
 				0495E8D01EFE48DF00958C4F /* category */,
 				0495E8DF1EFF41D800958C4F /* FFmpegManager.h */,
 				0495E8E01EFF41D800958C4F /* FFmpegManager.m */,
@@ -620,6 +625,7 @@
 				047B7B081EF2C47800E4F0F8 /* ViewController.m in Sources */,
 				0495E8E11EFF41D800958C4F /* FFmpegManager.m in Sources */,
 				0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */,
+				040D9F7E20FF888D00EE76E6 /* ESCAudioStreamPlayer.m in Sources */,
 				047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */,
 				F079562520FF2FF700F3AF26 /* ESCAACToPCMDecoder.m in Sources */,
 				F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */,

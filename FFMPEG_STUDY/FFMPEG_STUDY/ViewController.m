@@ -16,6 +16,7 @@
 #import "opt.h"
 #import "Header.h"
 #import "ESCAACToPCMDecoder.h"
+#import "ESCAudioStreamPlayer.h"
 
 #import "ECSwsscaleManager.h"
 #import "FFmpegManager.h"
@@ -32,6 +33,8 @@
 
 @property(nonatomic,assign)NSInteger writeAudioDataFrameCount;
 
+@property(nonatomic,strong)ESCAudioStreamPlayer* audioPlayer;
+
 @end
 
 @implementation ViewController
@@ -44,7 +47,8 @@
     NSString *mp4DemoPath = [[NSBundle mainBundle] pathForResource:@"demo.mp4" ofType:nil];
     NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
     
-    pcode = aac_decoder_create(48000, 3, 0);
+//    pcode = aac_decoder_create(48000, 3, 0);
+    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger  channelsPerFrame:2 bitsPerChannel:16 framesPerPacket:1];
     
     [self setupAudioQueue];
     
@@ -97,9 +101,10 @@ void audioQueueOutputCallback(
 - (void)handleAudioFrame:(AVFrame *)audioFrame {
     NSData *audioData = [NSData dataWithBytes:audioFrame->data[0] length:audioFrame->linesize[0]];
 
-    char pcm[10240];
-    int lenth;
-    aac_decode_frame(pcode, audioData.bytes, audioData.length, pcm, &lenth,audioFrame);
+//    char pcm[10240];
+//    int lenth;
+    [self.audioPlayer play:audioData];
+//    aac_decode_frame(pcode, audioData.bytes, audioData.length, pcm, &lenth,audioFrame);
     
     
     
