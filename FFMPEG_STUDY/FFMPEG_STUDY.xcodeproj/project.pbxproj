@@ -34,6 +34,7 @@
 		0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */; };
 		0495E8DB1EFE5DE500958C4F /* UIView+XMSView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */; };
 		0495E8E11EFF41D800958C4F /* FFmpegManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8E01EFF41D800958C4F /* FFmpegManager.m */; };
+		F079562520FF2FF700F3AF26 /* ESCAACToPCMDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */; };
 		F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = F0B883241F441B5F00042391 /* FFmpegRemuxer.m */; };
 		F0F9344C20FD84F500E6A334 /* demo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F0F9344B20FD84F500E6A334 /* demo.mp4 */; };
 /* End PBXBuildFile section */
@@ -183,6 +184,8 @@
 		0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+XMSView.m"; sourceTree = "<group>"; };
 		0495E8DF1EFF41D800958C4F /* FFmpegManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegManager.h; sourceTree = "<group>"; };
 		0495E8E01EFF41D800958C4F /* FFmpegManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFmpegManager.m; sourceTree = "<group>"; };
+		F079562320FF2FF700F3AF26 /* ESCAACToPCMDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCAACToPCMDecoder.h; sourceTree = "<group>"; };
+		F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCAACToPCMDecoder.m; sourceTree = "<group>"; };
 		F0B883231F441B5F00042391 /* FFmpegRemuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegRemuxer.h; sourceTree = "<group>"; };
 		F0B883241F441B5F00042391 /* FFmpegRemuxer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFmpegRemuxer.m; sourceTree = "<group>"; };
 		F0F9344B20FD84F500E6A334 /* demo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = demo.mp4; sourceTree = "<group>"; };
@@ -492,6 +495,8 @@
 				F0B883241F441B5F00042391 /* FFmpegRemuxer.m */,
 				0495E8C71EFE483E00958C4F /* ECSwsscaleManager.h */,
 				0495E8C81EFE483E00958C4F /* ECSwsscaleManager.m */,
+				F079562320FF2FF700F3AF26 /* ESCAACToPCMDecoder.h */,
+				F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */,
 			);
 			path = tool;
 			sourceTree = "<group>";
@@ -566,7 +571,7 @@
 				TargetAttributes = {
 					047B7AFC1EF2C47800E4F0F8 = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = 4SF28MHQDQ;
+						DevelopmentTeam = NZ6KCMA9HH;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -616,6 +621,7 @@
 				0495E8E11EFF41D800958C4F /* FFmpegManager.m in Sources */,
 				0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */,
 				047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */,
+				F079562520FF2FF700F3AF26 /* ESCAACToPCMDecoder.m in Sources */,
 				F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */,
 				0495E8CD1EFE485200958C4F /* OpenGLView20.m in Sources */,
 			);
@@ -741,7 +747,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 4SF28MHQDQ;
+				DEVELOPMENT_TEAM = NZ6KCMA9HH;
 				INFOPLIST_FILE = FFMPEG_STUDY/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -758,7 +764,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 4SF28MHQDQ;
+				DEVELOPMENT_TEAM = NZ6KCMA9HH;
 				INFOPLIST_FILE = FFMPEG_STUDY/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

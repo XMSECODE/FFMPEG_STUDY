@@ -15,13 +15,16 @@
 #import "imgutils.h"
 #import "opt.h"
 #import "Header.h"
+#import "ESCAACToPCMDecoder.h"
 
 #import "ECSwsscaleManager.h"
 #import "FFmpegManager.h"
 #import "FFmpegRemuxer.h"
 
 
-@interface ViewController ()
+@interface ViewController () {
+    void *pcode;
+}
 
 @property (weak, nonatomic) IBOutlet UIImageView *showImageView;
 
@@ -41,43 +44,15 @@
     NSString *mp4DemoPath = [[NSBundle mainBundle] pathForResource:@"demo.mp4" ofType:nil];
     NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
     
+    pcode = aac_decoder_create(48000, 3, 0);
+    
     [self setupAudioQueue];
     
     [self playWithImageViewWithURLString:hongkongTVPath];
     
 }
 - (void)setupAudioQueue {
-    AudioStreamBasicDescription inFormat;
-    inFormat.mSampleRate = 48000;
-    inFormat.mFormatID = kAudioFormatMPEG4AAC;
-    inFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
-    
-    inFormat.mBitsPerChannel = 16;
-    inFormat.mChannelsPerFrame = 2;
-    inFormat.mFramesPerPacket = 1;
-    inFormat.mBytesPerFrame = inFormat.mBitsPerChannel * inFormat.mChannelsPerFrame / 8;    //4
-    inFormat.mBytesPerPacket = inFormat.mFramesPerPacket * inFormat.mBytesPerFrame;         //
-    inFormat.mReserved = 0;
-    
-    AudioStreamBasicDescription audioFormate;
-    audioFormate.mSampleRate = 48000;
-    audioFormate.mFormatID = kAudioFormatLinearPCM;
-    audioFormate.mFormatFlags        = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
-    audioFormate.mFramesPerPacket    = 1;//每个数据包多少帧
-    audioFormate.mChannelsPerFrame   = 2;//1单声道，2立体声
-    audioFormate.mBitsPerChannel     = 16;//语音每采样点占用位数
-    audioFormate.mBytesPerFrame      = audioFormate.mBitsPerChannel * audioFormate.mChannelsPerFrame/8;//每帧的bytes数
-    audioFormate.mBytesPerPacket     = audioFormate.mBytesPerFrame * audioFormate.mFramesPerPacket;//每个数据包的bytes总数，每帧的bytes数＊每个数据包的帧数
-    audioFormate.mReserved           = 0;
-    
-    AudioQueueRef audioQueueRef;
-    
-    
-    OSStatus status = AudioQueueNewOutput(&inFormat, audioQueueOutputCallback, (__bridge void * _Nullable)(self), NULL, NULL, 0, &audioQueueRef);
-    if (status != noErr) {
-        NSLog(@"create audio queue f%dle(int)d!%d",status);
-        return;
-    }
+
 }
 
 #pragma mark - private
@@ -122,7 +97,9 @@ void audioQueueOutputCallback(
 - (void)handleAudioFrame:(AVFrame *)audioFrame {
     NSData *audioData = [NSData dataWithBytes:audioFrame->data[0] length:audioFrame->linesize[0]];
 
-   
+    char pcm[10240];
+    int lenth;
+    aac_decode_frame(pcode, audioData.bytes, audioData.length, pcm, &lenth,audioFrame);
     
     
     
