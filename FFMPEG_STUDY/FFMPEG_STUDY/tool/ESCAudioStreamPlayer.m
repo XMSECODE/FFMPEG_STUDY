@@ -92,7 +92,7 @@ static void AudioPlayerAQInputCallback(void* inUserData,AudioQueueRef outQ, Audi
 //        layout.mChannelDescriptions[i].mChannelFlags = kAudioChannelFlags_AllOff;
 //    }
     
-    status = AudioQueueSetProperty(audioQueue, kAudioQueueProperty_ChannelLayout, &layout, sizeof(layout));
+//    status = AudioQueueSetProperty(audioQueue, kAudioQueueProperty_ChannelLayout, &layout, sizeof(layout));
     if (status != 0) {
         NSLog(@"set channelLayout failed!");
     }

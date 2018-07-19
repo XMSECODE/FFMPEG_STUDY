@@ -52,7 +52,7 @@
     NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
     
     //    pcode = aac_decoder_create(48000, 3, 0);
-    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsFloat  channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
+    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked  channelsPerFrame:1 bitsPerChannel:32 framesPerPacket:1];
     
     [self playWithImageViewWithURLString:hongkongTVPath];
 }
@@ -105,12 +105,17 @@ void audioQueueOutputCallback(
 }
 
 - (void)handleAudioFrame:(AVFrame *)audioFrame {
-    NSData *audioData = [NSData dataWithBytes:audioFrame->data[0] length:audioFrame->linesize[0]];
-
+    AVFrame *pcmFrame = [ESCAACToPCMDecoder getPCMAVFrameFromOtherFormat:audioFrame];
+    if (pcmFrame == NULL) {
+        NSLog(@"get pcm frame failed!");
+    }
+    NSData *audioData = [NSData dataWithBytes:pcmFrame->data[0] length:pcmFrame->linesize[0]];
+    
 //    char pcm[10240];
 //    int lenth;
     [self.audioPlayer play:audioData];
 //    aac_decode_frame(pcode, audioData.bytes, audioData.length, pcm, &lenth,audioFrame);
+    
     
     
     

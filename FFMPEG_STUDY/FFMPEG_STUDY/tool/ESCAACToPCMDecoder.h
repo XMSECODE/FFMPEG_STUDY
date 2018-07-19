@@ -17,4 +17,6 @@ void aac_decode_close(void *pParam);
 
 @interface ESCAACToPCMDecoder : NSObject
 
++ (AVFrame *)getPCMAVFrameFromOtherFormat:(AVFrame *)frame;
+
 @end
