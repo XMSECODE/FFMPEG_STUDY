@@ -79,6 +79,25 @@ static void AudioPlayerAQInputCallback(void* inUserData,AudioQueueRef outQ, Audi
         NSLog(@"start failed!==%d",(int)status);
         return;
     }
+    
+    AudioChannelLayout layout;
+    layout.mChannelLayoutTag = kAudioChannelLayoutTag_Stereo;
+    layout.mChannelBitmap =  kAudioChannelBit_Left | kAudioChannelBit_Right;
+    layout.mNumberChannelDescriptions = 0;
+    
+//    AudioChannelLabel labels[2] = {kAudioChannelLabel_Right, kAudioChannelLabel_Left};
+    
+//    for (UInt32 i = 0; i < layout.mNumberChannelDescriptions; i++) {
+//        layout.mChannelDescriptions[i].mChannelLabel = labels[i];
+//        layout.mChannelDescriptions[i].mChannelFlags = kAudioChannelFlags_AllOff;
+//    }
+    
+    status = AudioQueueSetProperty(audioQueue, kAudioQueueProperty_ChannelLayout, &layout, sizeof(layout));
+    if (status != 0) {
+        NSLog(@"set channelLayout failed!");
+    }
+//    AudioQueueSetParameter(audioQueue, AudioQueueParameterID inParamID, AudioQueueParameterValue inValue)
+    
     self.cachDataArray = [NSMutableArray array];
     //初始化音频缓冲区
     for (int i =0; i <QUEUE_BUFFER_SIZE; i++) {

@@ -44,19 +44,25 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    NSString *mp4DemoPath = [[NSBundle mainBundle] pathForResource:@"demo.mp4" ofType:nil];
+    
+    [self playHKTV];
+}
+
+- (void)playHKTV {
     NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
     
-//    pcode = aac_decoder_create(48000, 3, 0);
-    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger  channelsPerFrame:2 bitsPerChannel:16 framesPerPacket:1];
-    
-    [self setupAudioQueue];
+    //    pcode = aac_decoder_create(48000, 3, 0);
+    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsFloat  channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
     
     [self playWithImageViewWithURLString:hongkongTVPath];
-    
 }
-- (void)setupAudioQueue {
 
+- (void)playLocalVideoFile {
+    NSString *mp4DemoPath = [[NSBundle mainBundle] pathForResource:@"demo.mp4" ofType:nil];
+    
+    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:8000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsFloat  channelsPerFrame:1 bitsPerChannel:32 framesPerPacket:1];
+    
+    [self playWithImageViewWithURLString:mp4DemoPath];
 }
 
 #pragma mark - private
