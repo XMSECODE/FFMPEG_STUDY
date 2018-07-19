@@ -157,14 +157,14 @@ void aac_decode_close(void *pParam) {
 
 @implementation ESCAACToPCMDecoder
 + (AVFrame *)getPCMAVFrameFromOtherFormat:(AVFrame *)frame {
-    SwrContext *swrContext = swr_alloc_set_opts(NULL, 1, AV_SAMPLE_FMT_S32, 48000, frame->channel_layout, frame->format, frame->sample_rate, 0, 0);
+    SwrContext *swrContext = swr_alloc_set_opts(NULL, AV_CH_FRONT_CENTER, AV_SAMPLE_FMT_S32, 48000, frame->channel_layout, frame->format, frame->sample_rate, 0, 0);
     if (swrContext == NULL) {
         NSLog(@"create swrcontext failed!");
         return nil;
     }
     AVFrame *RGBFrame = av_frame_alloc();
     RGBFrame->sample_rate = 48000;
-    RGBFrame->channel_layout = 1;
+    RGBFrame->channel_layout = AV_CH_FRONT_CENTER;
     RGBFrame->format = AV_SAMPLE_FMT_S32;
     int result = swr_convert_frame(swrContext, RGBFrame, frame);
     if (result != 0) {

@@ -70,7 +70,7 @@
 static void AudioPlayerAQInputCallback(void* inUserData,AudioQueueRef outQ, AudioQueueBufferRef outQB) {
     ESCAudioStreamPlayer* player = (__bridge ESCAudioStreamPlayer*)inUserData;
     [player playerCallback:outQB];
-    NSLog(@"player callback");
+//    NSLog(@"player callback");
 }
 
 - (void)setupAudioQueue {
@@ -157,7 +157,7 @@ static void AudioPlayerAQInputCallback(void* inUserData,AudioQueueRef outQ, Audi
     NSData *firstData = self.cachDataArray.firstObject;
     [self.cachDataArray removeObjectAtIndex:0];
 
-    NSLog(@"last count packet %d",self.cachDataArray.count);
+//    NSLog(@"last count packet %d",self.cachDataArray.count);
 
     
     audioQueueBuffer->mAudioDataByteSize = firstData.length;
