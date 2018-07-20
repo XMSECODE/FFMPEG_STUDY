@@ -52,7 +52,7 @@
     NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
     
     //    pcode = aac_decoder_create(48000, 3, 0);
-    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked  channelsPerFrame:1 bitsPerChannel:32 framesPerPacket:1];
+    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:1 bitsPerChannel:32 framesPerPacket:1];
     
     [self playWithImageViewWithURLString:hongkongTVPath];
 }
