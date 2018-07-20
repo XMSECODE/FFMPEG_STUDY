@@ -576,7 +576,7 @@
 				TargetAttributes = {
 					047B7AFC1EF2C47800E4F0F8 = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = NZ6KCMA9HH;
+						DevelopmentTeam = 4SF28MHQDQ;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -753,7 +753,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = NZ6KCMA9HH;
+				DEVELOPMENT_TEAM = 4SF28MHQDQ;
 				INFOPLIST_FILE = FFMPEG_STUDY/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -770,7 +770,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = NZ6KCMA9HH;
+				DEVELOPMENT_TEAM = 4SF28MHQDQ;
 				INFOPLIST_FILE = FFMPEG_STUDY/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

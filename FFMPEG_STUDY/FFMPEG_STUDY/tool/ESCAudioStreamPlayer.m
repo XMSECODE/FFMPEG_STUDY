@@ -85,14 +85,14 @@ static void AudioPlayerAQInputCallback(void* inUserData,AudioQueueRef outQ, Audi
     layout.mChannelBitmap =  kAudioChannelBit_Left | kAudioChannelBit_Right;
     layout.mNumberChannelDescriptions = 0;
     
-//    AudioChannelLabel labels[2] = {kAudioChannelLabel_Right, kAudioChannelLabel_Left};
+    AudioChannelLabel labels[2] = {kAudioChannelLabel_Right, kAudioChannelLabel_Left};
     
-//    for (UInt32 i = 0; i < layout.mNumberChannelDescriptions; i++) {
-//        layout.mChannelDescriptions[i].mChannelLabel = labels[i];
-//        layout.mChannelDescriptions[i].mChannelFlags = kAudioChannelFlags_AllOff;
-//    }
+    for (UInt32 i = 0; i < layout.mNumberChannelDescriptions; i++) {
+        layout.mChannelDescriptions[i].mChannelLabel = labels[i];
+        layout.mChannelDescriptions[i].mChannelFlags = kAudioChannelFlags_AllOff;
+    }
     
-//    status = AudioQueueSetProperty(audioQueue, kAudioQueueProperty_ChannelLayout, &layout, sizeof(layout));
+    status = AudioQueueSetProperty(audioQueue, kAudioQueueProperty_ChannelLayout, &layout, sizeof(layout));
     if (status != 0) {
         NSLog(@"set channelLayout failed!");
     }

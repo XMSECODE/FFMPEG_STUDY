@@ -25,13 +25,16 @@
                                 <rect key="frame" x="0.0" y="124" width="284" height="254"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MyE-gG-Tuo">
-                                <rect key="frame" x="313" y="310" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MyE-gG-Tuo">
+                                <rect key="frame" x="164.5" y="617" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="MyE-gG-Tuo" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="HkP-ff-MsP"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="MyE-gG-Tuo" secondAttribute="bottom" constant="20" id="mmZ-CI-Ges"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="showImageView" destination="ugN-ig-dgJ" id="V72-i2-Eci"/>
