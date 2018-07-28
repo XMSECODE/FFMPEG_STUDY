@@ -210,6 +210,11 @@
     _s_texture_y = glGetUniformLocation(programHandle, "s_texture_y");
     _s_texture_u = glGetUniformLocation(programHandle, "s_texture_u");
     _s_texture_v = glGetUniformLocation(programHandle, "s_texture_v");
+    
+    glUniform1i(_s_texture_y, 0);
+    glUniform1i(_s_texture_u, 1);
+    glUniform1i(_s_texture_v, 2);
+
 }
 
 - (GLuint)compileShader:(NSString *)shaderName withType:(GLenum)shaderType {
@@ -248,6 +253,7 @@
     return shaderHandle;
 }
 
+#pragma mark - 创建纹理
 - (void)createTexWithRGBAData:(void *)RGBAData width:(int)width height:(int)height {
     //创建纹理
     glGenTextures(1, &_texture);
@@ -288,34 +294,30 @@
     
     void *ydata = (void *)[YData bytes];
     
-    glActiveTexture(GL_TEXTURE0);
     //传递纹理对象
     //创建纹理
+    glActiveTexture(GL_TEXTURE0);
     glGenTextures(1, &_ytexture);
     //绑定纹理
     glBindTexture(GL_TEXTURE_2D, _ytexture);
     [self createYUVTextureWithData:ydata width:width height:height texture:&_ytexture];
-    glUniform1i(_s_texture_y, 0);
     
     void *udata = (void *)[uData bytes];
-    
-    glActiveTexture(GL_TEXTURE1);
     //创建纹理
+    glActiveTexture(GL_TEXTURE1);
     glGenTextures(1, &_utexture);
     //绑定纹理
     glBindTexture(GL_TEXTURE_2D, _utexture);
     [self createYUVTextureWithData:udata width:width / 2 height:height / 2 texture:&_utexture];
-    glUniform1i(_s_texture_u, 1);
     
     void *vdata = (void *)[vData bytes];
     
-    glActiveTexture(GL_TEXTURE2);
     //创建纹理
+    glActiveTexture(GL_TEXTURE2);
     glGenTextures(1, &_vtexture);
     //绑定纹理
     glBindTexture(GL_TEXTURE_2D, _vtexture);
     [self createYUVTextureWithData:vdata width:width / 2 height:height / 2 texture:&_vtexture];
-    glUniform1i(_s_texture_v, 2);
     
 }
 
