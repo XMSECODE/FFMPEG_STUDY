@@ -35,6 +35,9 @@
 		0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */; };
 		0495E8DB1EFE5DE500958C4F /* UIView+XMSView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */; };
 		0495E8E11EFF41D800958C4F /* FFmpegManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8E01EFF41D800958C4F /* FFmpegManager.m */; };
+		04DAEC4E2108B8650048ACA3 /* fragmentshader.fmsd in Resources */ = {isa = PBXBuildFile; fileRef = 04DAEC4B2108B8640048ACA3 /* fragmentshader.fmsd */; };
+		04DAEC4F2108B8650048ACA3 /* ESCOpenGLESView.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DAEC4C2108B8650048ACA3 /* ESCOpenGLESView.m */; };
+		04DAEC502108B8650048ACA3 /* vertexshader.vtsd in Resources */ = {isa = PBXBuildFile; fileRef = 04DAEC4D2108B8650048ACA3 /* vertexshader.vtsd */; };
 		F079562520FF2FF700F3AF26 /* ESCAACToPCMDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */; };
 		F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = F0B883241F441B5F00042391 /* FFmpegRemuxer.m */; };
 		F0F9344C20FD84F500E6A334 /* demo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F0F9344B20FD84F500E6A334 /* demo.mp4 */; };
@@ -187,6 +190,10 @@
 		0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+XMSView.m"; sourceTree = "<group>"; };
 		0495E8DF1EFF41D800958C4F /* FFmpegManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegManager.h; sourceTree = "<group>"; };
 		0495E8E01EFF41D800958C4F /* FFmpegManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFmpegManager.m; sourceTree = "<group>"; };
+		04DAEC4A2108B8640048ACA3 /* ESCOpenGLESView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCOpenGLESView.h; sourceTree = "<group>"; };
+		04DAEC4B2108B8640048ACA3 /* fragmentshader.fmsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragmentshader.fmsd; sourceTree = "<group>"; };
+		04DAEC4C2108B8650048ACA3 /* ESCOpenGLESView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCOpenGLESView.m; sourceTree = "<group>"; };
+		04DAEC4D2108B8650048ACA3 /* vertexshader.vtsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vertexshader.vtsd; sourceTree = "<group>"; };
 		F079562320FF2FF700F3AF26 /* ESCAACToPCMDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCAACToPCMDecoder.h; sourceTree = "<group>"; };
 		F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCAACToPCMDecoder.m; sourceTree = "<group>"; };
 		F0B883231F441B5F00042391 /* FFmpegRemuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegRemuxer.h; sourceTree = "<group>"; };
@@ -511,6 +518,10 @@
 			children = (
 				0495E8CB1EFE485200958C4F /* OpenGLView20.h */,
 				0495E8CC1EFE485200958C4F /* OpenGLView20.m */,
+				04DAEC4A2108B8640048ACA3 /* ESCOpenGLESView.h */,
+				04DAEC4C2108B8650048ACA3 /* ESCOpenGLESView.m */,
+				04DAEC4B2108B8640048ACA3 /* fragmentshader.fmsd */,
+				04DAEC4D2108B8650048ACA3 /* vertexshader.vtsd */,
 			);
 			path = OpenGLView;
 			sourceTree = "<group>";
@@ -605,7 +616,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F0F9344C20FD84F500E6A334 /* demo.mp4 in Resources */,
+				04DAEC4E2108B8650048ACA3 /* fragmentshader.fmsd in Resources */,
 				047B7B101EF2C47900E4F0F8 /* LaunchScreen.storyboard in Resources */,
+				04DAEC502108B8650048ACA3 /* vertexshader.vtsd in Resources */,
 				047B7B0D1EF2C47800E4F0F8 /* Assets.xcassets in Resources */,
 				047B7B0B1EF2C47800E4F0F8 /* Main.storyboard in Resources */,
 			);
@@ -628,6 +641,7 @@
 				040D9F7E20FF888D00EE76E6 /* ESCAudioStreamPlayer.m in Sources */,
 				047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */,
 				F079562520FF2FF700F3AF26 /* ESCAACToPCMDecoder.m in Sources */,
+				04DAEC4F2108B8650048ACA3 /* ESCOpenGLESView.m in Sources */,
 				F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */,
 				0495E8CD1EFE485200958C4F /* OpenGLView20.m in Sources */,
 			);

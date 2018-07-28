@@ -21,7 +21,7 @@
 #import "ECSwsscaleManager.h"
 #import "FFmpegManager.h"
 #import "FFmpegRemuxer.h"
-
+#import "ESCOpenGLESView.h"
 
 @interface ViewController () {
     void *pcode;
@@ -35,6 +35,8 @@
 
 @property(nonatomic,strong)ESCAudioStreamPlayer* audioPlayer;
 
+@property(nonatomic,weak)ESCOpenGLESView* openGLESView;
+
 @end
 
 @implementation ViewController
@@ -44,6 +46,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+   
     
     [self playHKTV];
 }
@@ -52,7 +55,7 @@
     NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
     
     //    pcode = aac_decoder_create(48000, 3, 0);
-    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
+//    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
     
     [self playWithImageViewWithURLString:hongkongTVPath];
 }
@@ -85,13 +88,25 @@
     __weak __typeof(self)weakSelf = self;
     @autoreleasepool {
         UIImage *image = [ECSwsscaleManager getImageFromAVFrame:videoFrame];
+//        if (self.openGLESView) {
+//            AVFrame *rgbFrame = [ECSwsscaleManager getRGBAVFrameFromOtherFormat:videoFrame];
+//            [self.openGLESView loadRGBData:rgbFrame->data[0] lenth:rgbFrame->linesize[0] width:rgbFrame->width height:rgbFrame->height];
+//            av_free(rgbFrame->data[0]);
+//            av_frame_free(&rgbFrame);
+//        }
+
         dispatch_async(dispatch_get_main_queue(), ^{
             weakSelf.showImageView.image = image;
             static dispatch_once_t onceToken;
             dispatch_once(&onceToken, ^{
                 int scale = [UIScreen mainScreen].scale;
-                weakSelf.showImageView.W = image.size.width / scale;
-                weakSelf.showImageView.H = image.size.height / scale;
+                weakSelf.showImageView.W = image.size.width ;
+                weakSelf.showImageView.H = image.size.height ;
+                weakSelf.showImageView.Y = 40;
+                weakSelf.showImageView.X = 0;
+                ESCOpenGLESView *openglesView = [[ESCOpenGLESView alloc] initWithFrame:CGRectMake(0, 50 + image.size.height , image.size.width , image.size.height)];
+                [self.view addSubview:openglesView];
+                self.openGLESView = openglesView;
             });
         });
     }
@@ -105,15 +120,15 @@ void audioQueueOutputCallback(
 }
 
 - (void)handleAudioFrame:(AVFrame *)audioFrame {
-    AVFrame *pcmFrame = [ESCAACToPCMDecoder getPCMAVFrameFromOtherFormat:audioFrame];
-    if (pcmFrame == NULL) {
-        NSLog(@"get pcm frame failed!");
-    }
-    NSData *audioData = [NSData dataWithBytes:pcmFrame->data[0] length:pcmFrame->linesize[0]];
+//    AVFrame *pcmFrame = [ESCAACToPCMDecoder getPCMAVFrameFromOtherFormat:audioFrame];
+//    if (pcmFrame == NULL) {
+//        NSLog(@"get pcm frame failed!");
+//    }
+//    NSData *audioData = [NSData dataWithBytes:pcmFrame->data[0] length:pcmFrame->linesize[0]];
     
 //    char pcm[10240];
 //    int lenth;
-    [self.audioPlayer play:audioData];
+//    [self.audioPlayer play:audioData];
 //    aac_decode_frame(pcode, audioData.bytes, audioData.length, pcm, &lenth,audioFrame);
     
     
@@ -170,7 +185,7 @@ void audioQueueOutputCallback(
         
         self.writeAudioDataFrameCount++;
         NSLog(@"self.writeAudioDataFrameCount == %d",self.writeAudioDataFrameCount);
-        [self.audioFileHandle writeData:audioData];
+//        [self.audioFileHandle writeData:audioData];
     }
 }
 
