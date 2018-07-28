@@ -238,28 +238,36 @@ static FFmpegManager *staticFFmpegManager;
             if (packet->stream_index == audioStreamID && audioSuccess) {
 //                printf("audio\n");
                 avcodec_send_packet(audioCodeContext, packet);
-                result = avcodec_receive_frame(audioCodeContext, audioFrame);
-                switch (result) {
-                    case 0:{
-                     
-                        audioSuccess(audioFrame);
+                int i = 0;
+                while (1) {
+                    result = avcodec_receive_frame(audioCodeContext, audioFrame);
+                    switch (result) {
+                        case 0:{
+                            i++;
+//                            printf("%d==%d\n",i,audioCodeContext->frame_number);
+                            audioSuccess(audioFrame);
+                        }
+                            break;
+                            
+                        case AVERROR_EOF:
+                            printf("audio the decoder has been fully flushed, and there will be no more output frames.\n");
+                            break;
+                            
+                        case AVERROR(EAGAIN):
+                            printf("audio Resource temporarily unavailable\n");
+                            break;
+                            
+                        case AVERROR(EINVAL):
+                            printf("Invalid argument\n");
+                            break;
+                        default:
+                            break;
                     }
+                    if (result != 0) {
                         break;
-                        
-                    case AVERROR_EOF:
-                        printf("audio the decoder has been fully flushed, and there will be no more output frames.\n");
-                        break;
-                        
-                    case AVERROR(EAGAIN):
-                        printf("audio Resource temporarily unavailable\n");
-                        break;
-                        
-                    case AVERROR(EINVAL):
-                        printf("Invalid argument\n");
-                        break;
-                    default:
-                        break;
+                    }
                 }
+                
                 av_packet_unref(packet);
             }
         }
