@@ -23,6 +23,9 @@
 
 @property(nonatomic,assign)GLint backingHeight;
 
+
+
+//================================================================rgb
 @property(nonatomic,assign)GLuint texture;
 
 @property(nonatomic,assign)GLuint mGLProgId;
@@ -33,7 +36,33 @@
 
 @property(nonatomic,assign)GLuint mGLUniformTexture;
 
+//================================================================
+
 @property(nonatomic,strong)dispatch_queue_t openglesQueue;
+
+//================================================================yuv
+
+@property(nonatomic,assign)GLuint ytexture;
+
+@property(nonatomic,assign)GLuint utexture;
+
+@property(nonatomic,assign)GLuint vtexture;
+
+
+@property(nonatomic,assign)GLuint mYUVGLProgId;
+
+@property(nonatomic,assign)GLuint mYUVGLTextureCoords;
+
+@property(nonatomic,assign)GLuint mYUVGLPosition;
+
+@property(nonatomic,assign)GLuint s_texture_y;
+
+@property(nonatomic,assign)GLuint s_texture_u;
+
+@property(nonatomic,assign)GLuint s_texture_v;
+
+//================================================================
+
 
 @end
 
@@ -70,8 +99,6 @@
     //创建缓冲区buffer
     [self setupBuffers];
     
-    //设置GPU程序
-    [self setupGPUProgram];
 }
 
 - (void)setupContext {
@@ -119,10 +146,10 @@
     }
 }
 
-#pragma mark - 编译GPU程序
-- (void)setupGPUProgram {
-    GLuint vertexShader = [self compileShader:@"vertexshader.vtsd" withType:GL_VERTEX_SHADER];
-    GLuint fragmentShader = [self compileShader:@"fragmentshader.fmsd" withType:GL_FRAGMENT_SHADER];
+#pragma mark - 编译RGB_GPU程序
+- (void)setupRGBGPUProgram {
+    GLuint vertexShader = [self compileShader:@"vertexshader_RGB.vtsd" withType:GL_VERTEX_SHADER];
+    GLuint fragmentShader = [self compileShader:@"fragmentshader_RGB.fmsd" withType:GL_FRAGMENT_SHADER];
     
     GLuint programHandle = glCreateProgram();
     glAttachShader(programHandle, vertexShader);
@@ -131,8 +158,7 @@
     
     GLint linkSuccess;
     glGetProgramiv(programHandle, GL_LINK_STATUS, &linkSuccess);
-    if (linkSuccess == GL_FALSE)
-    {
+    if (linkSuccess == GL_FALSE) {
         GLchar message[256];
         glGetProgramInfoLog(programHandle, sizeof(message), 0, &message[0]);
         NSString *messageStr = [NSString stringWithUTF8String:message];
@@ -150,6 +176,40 @@
     
     _mGLUniformTexture = glGetUniformLocation(programHandle, "texSampler");
     
+}
+
+#pragma mark - 编译YUV_GPU程序
+- (void)setupYUVGPUProgram {
+    GLuint vertexShader = [self compileShader:@"vertexshader_YUV.vtsd" withType:GL_VERTEX_SHADER];
+    GLuint fragmentShader = [self compileShader:@"fragmentshader_YUV.fmsd" withType:GL_FRAGMENT_SHADER];
+    
+    GLuint programHandle = glCreateProgram();
+    glAttachShader(programHandle, vertexShader);
+    glAttachShader(programHandle, fragmentShader);
+    glLinkProgram(programHandle);
+    
+    GLint linkSuccess;
+    glGetProgramiv(programHandle, GL_LINK_STATUS, &linkSuccess);
+    if (linkSuccess == GL_FALSE) {
+        GLchar message[256];
+        glGetProgramInfoLog(programHandle, sizeof(message), 0, &message[0]);
+        NSString *messageStr = [NSString stringWithUTF8String:message];
+        NSLog(@"%@", messageStr);
+        return;
+    }
+    
+    glUseProgram(programHandle);
+    self.mYUVGLProgId = programHandle;
+    _mYUVGLPosition = glGetAttribLocation(programHandle, "position");
+    glEnableVertexAttribArray(_mYUVGLPosition);
+    
+    _mYUVGLTextureCoords = glGetAttribLocation(programHandle, "vTexCords");
+    glEnableVertexAttribArray(_mYUVGLTextureCoords);
+    
+    
+    _s_texture_y = glGetUniformLocation(programHandle, "s_texture_y");
+    _s_texture_u = glGetUniformLocation(programHandle, "s_texture_u");
+    _s_texture_v = glGetUniformLocation(programHandle, "s_texture_v");
 }
 
 - (GLuint)compileShader:(NSString *)shaderName withType:(GLenum)shaderType {
@@ -222,6 +282,57 @@
     
     
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, RGBData);
+}
+
+- (void)createTexWithYUVDataWithYData:(NSData *)YData uData:(NSData *)uData vData:(NSData *)vData width:(int)width height:(int)height {
+    
+    void *ydata = (void *)[YData bytes];
+    
+    glActiveTexture(GL_TEXTURE0);
+    //传递纹理对象
+    //创建纹理
+    glGenTextures(1, &_ytexture);
+    //绑定纹理
+    glBindTexture(GL_TEXTURE_2D, _ytexture);
+    [self createYUVTextureWithData:ydata width:width height:height texture:&_ytexture];
+    glUniform1i(_s_texture_y, 0);
+    
+    void *udata = (void *)[uData bytes];
+    
+    glActiveTexture(GL_TEXTURE1);
+    //创建纹理
+    glGenTextures(1, &_utexture);
+    //绑定纹理
+    glBindTexture(GL_TEXTURE_2D, _utexture);
+    [self createYUVTextureWithData:udata width:width / 2 height:height / 2 texture:&_utexture];
+    glUniform1i(_s_texture_u, 1);
+    
+    void *vdata = (void *)[vData bytes];
+    
+    glActiveTexture(GL_TEXTURE2);
+    //创建纹理
+    glGenTextures(1, &_vtexture);
+    //绑定纹理
+    glBindTexture(GL_TEXTURE_2D, _vtexture);
+    [self createYUVTextureWithData:vdata width:width / 2 height:height / 2 texture:&_vtexture];
+    glUniform1i(_s_texture_v, 2);
+    
+}
+
+- (void)createYUVTextureWithData:(void *)data  width:(int)width height:(int)height  texture:(GLuint *)texture {
+    
+    
+    //设置过滤参数
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    
+    //设置映射规则
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
+    
 }
 
 #pragma mark - 通过opengles加载image
@@ -338,8 +449,57 @@
             //解绑纹理
             glBindTexture(GL_TEXTURE_2D, 0);
         
+    });
+}
+
+- (void)loadYUV420PDataWithYData:(NSData *)yData uData:(NSData *)uData vData:(NSData *)vData width:(NSInteger)width height:(NSInteger)height {
+    dispatch_sync(self.openglesQueue, ^{
         
+        BOOL result = [EAGLContext setCurrentContext:self.context];
+        if (result == NO) {
+            NSLog(@"set context failed!");
+        }
+        if (self.texture) {
+            glDeleteTextures(1, &_texture);
+        }
         
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        //创建纹理
+        [self createTexWithYUVDataWithYData:yData uData:uData vData:vData width:width height:height];
+        
+        glViewport(0, 0, self.frame.size.width, self.frame.size.height);
+        
+        //设置物体坐标
+        GLfloat vertices[] = {
+            -1.0,-1.0,
+            1.0,-1.0,
+            -1.0,1.0,
+            1.0,1.0
+        };
+        glVertexAttribPointer(_mYUVGLPosition, 2, GL_FLOAT, 0, 0, vertices);
+        
+        //设置纹理坐标
+        GLfloat texCoords2[] = {
+            0,1,
+            1,1,
+            0,0,
+            1,0
+        };
+        glVertexAttribPointer(_mYUVGLTextureCoords, 2, GL_FLOAT, 0, 0, texCoords2);
+        
+        //执行绘制操作
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        
+        [self.context presentRenderbuffer:GL_RENDERBUFFER];
+        
+        //删除不使用纹理
+        glDeleteTextures(1, &_ytexture);
+        glDeleteTextures(1, &_utexture);
+        glDeleteTextures(1, &_vtexture);
+        //解绑纹理
+        glBindTexture(GL_TEXTURE_2D, 0);
         
     });
 }
@@ -364,6 +524,18 @@
     CGContextRelease(imageContext);
     CGColorSpaceRelease(colorRef);
     *data = imageData;
+}
+
+- (void)setType:(ESCVideoDataType)type {
+    if (type == ESCVideoDataTypeRGBA) {
+        
+    }else if (type == ESCVideoDataTypeRGB) {
+        //设置GPU程序
+        //RGB
+        [self setupRGBGPUProgram];
+    }else if (type == ESCVideoDataTypeYUV420) {
+        [self setupYUVGPUProgram];
+    }
 }
 
 @end

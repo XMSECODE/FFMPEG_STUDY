@@ -11,7 +11,6 @@
 #import "avformat.h"
 #import "avcodec.h"
 #import "swscale.h"
-#import "OpenGLView20.h"
 #import "imgutils.h"
 #import "opt.h"
 #import "Header.h"
@@ -22,10 +21,9 @@
 #import "FFmpegManager.h"
 #import "FFmpegRemuxer.h"
 #import "ESCOpenGLESView.h"
+#import "YUVView.h"
 
-@interface ViewController () {
-    void *pcode;
-}
+@interface ViewController ()
 
 @property (weak, nonatomic) IBOutlet UIImageView *showImageView;
 
@@ -36,6 +34,8 @@
 @property(nonatomic,strong)ESCAudioStreamPlayer* audioPlayer;
 
 @property(nonatomic,weak)ESCOpenGLESView* openGLESView;
+
+@property(nonatomic,weak)YUVView* testView;
 
 @end
 
@@ -54,8 +54,7 @@
 - (void)playHKTV {
     NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
     
-    //    pcode = aac_decoder_create(48000, 3, 0);
-//    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
+    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
     
     [self playWithImageViewWithURLString:hongkongTVPath];
 }
@@ -88,25 +87,48 @@
     __weak __typeof(self)weakSelf = self;
     @autoreleasepool {
         UIImage *image = [ECSwsscaleManager getImageFromAVFrame:videoFrame];
-//        if (self.openGLESView) {
+        if (self.openGLESView) {
 //            AVFrame *rgbFrame = [ECSwsscaleManager getRGBAVFrameFromOtherFormat:videoFrame];
 //            [self.openGLESView loadRGBData:rgbFrame->data[0] lenth:rgbFrame->linesize[0] width:rgbFrame->width height:rgbFrame->height];
 //            av_free(rgbFrame->data[0]);
 //            av_frame_free(&rgbFrame);
-//        }
+            
+            NSData *ydata = [NSData dataWithBytes:videoFrame->data[0] length:videoFrame->width * videoFrame->height];
+            NSData *udata = [NSData dataWithBytes:videoFrame->data[1] length:videoFrame->width * videoFrame->height / 4];
+            NSData *vdata = [NSData dataWithBytes:videoFrame->data[2] length:videoFrame->width * videoFrame->height / 4];
+            //            NSLog(@"%d==%d==%d",ydata.length,udata.length,vdata.length);
+            [self.openGLESView loadYUV420PDataWithYData:ydata uData:udata vData:vdata width:videoFrame->width height:videoFrame->height];
+
+
+//            NSMutableData *data = [ydata mutableCopy];
+//            [data appendData:udata];
+//            [data appendData:vdata];
+//            void* vodata = [data bytes];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [self.testView displayYUVI420Data:vodata width:480 height:288];
+//        });
+        
+        }
 
         dispatch_async(dispatch_get_main_queue(), ^{
             weakSelf.showImageView.image = image;
             static dispatch_once_t onceToken;
             dispatch_once(&onceToken, ^{
                 int scale = [UIScreen mainScreen].scale;
-                weakSelf.showImageView.W = image.size.width ;
-                weakSelf.showImageView.H = image.size.height ;
+                weakSelf.showImageView.W = image.size.width / scale;
+                weakSelf.showImageView.H = image.size.height / scale ;
                 weakSelf.showImageView.Y = 40;
                 weakSelf.showImageView.X = 0;
-                ESCOpenGLESView *openglesView = [[ESCOpenGLESView alloc] initWithFrame:CGRectMake(0, 50 + image.size.height , image.size.width , image.size.height)];
-                [self.view addSubview:openglesView];
+                
+                ESCOpenGLESView *openglesView = [[ESCOpenGLESView alloc] initWithFrame:CGRectMake(0, 50 + image.size.height , image.size.width / scale , image.size.height / scale)];
                 self.openGLESView = openglesView;
+                self.openGLESView.type = ESCVideoDataTypeYUV420;
+                [self.view addSubview:openglesView];
+//                    YUVView *testview = [[YUVView alloc] initWithFrame:CGRectMake(0, 50 + image.size.height , image.size.width , image.size.height)];
+//                    [testview setUp];
+//                    [self.view addSubview:testview];
+//                    self.testView = testview;
+                
             });
         });
     }
@@ -129,64 +151,7 @@ void audioQueueOutputCallback(
 //    char pcm[10240];
 //    int lenth;
 //    [self.audioPlayer play:audioData];
-//    aac_decode_frame(pcode, audioData.bytes, audioData.length, pcm, &lenth,audioFrame);
     
-    
-    
-    
-    
-    return;
-    
-//    NSLog(@"%d",audioFrame->linesize[0]);
-//    //先加7位头
-//    //aac header 8192
-//    unsigned char adtsHeader[7] = {0};
-//    adtsHeader[0] = 0xFF;
-//    adtsHeader[1] = 0xF1; //有的网站给的是F8，这里需要甄别
-//    int profile = 2;
-//    int freqIdx = 11;///8000   44100对应的值是4
-//    int chanCfg = 1; //mono channel
-//    int packetLen = audioData.length + 7 ;//inPacket为rtp的payload数据
-//    adtsHeader[2] = ((profile -1 )<<6) + (freqIdx << 2) + (chanCfg >> 2);
-//    adtsHeader[3] = ((chanCfg & 3) << 6) + (packetLen >> 11);
-//    adtsHeader[4] = (packetLen & 0x7ff) >> 3;//(packetLen >> 3) & 0xff;
-//    adtsHeader[5] = ((packetLen & 0x7) << 5)|0x1f;
-//    adtsHeader[6] = 0xFC;
-//
-//    char chBuf[25600]={0};
-//    memcpy(chBuf, adtsHeader, 7);
-//    memcpy(chBuf+7, audioData.bytes, audioData.length);
-//    audioData = [NSData dataWithBytes:chBuf length:7 + audioData.length];
-    
-    
-    
-   
-    
-    
-    
-    
-    if (self.audioFileHandle == nil) {
-        NSString *audioFilePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
-        audioFilePath = [NSString stringWithFormat:@"%@/demo.pcm",audioFilePath];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:audioFilePath] == NO) {
-            [[NSFileManager defaultManager] createFileAtPath:audioFilePath contents:nil attributes:nil];
-        }
-        self.audioFileHandle = [NSFileHandle fileHandleForWritingAtPath:audioFilePath];
-    }
-    if (self.writeAudioDataFrameCount >= 30) {
-        [self.audioFileHandle closeFile];
-    }else {
-        
-        
-        
-        
-        //                err = AudioFileStreamParseBytes(myData->audioFileStream, (UInt32)tData.length+7, chBuf, 0);
-        
-        
-        self.writeAudioDataFrameCount++;
-        NSLog(@"self.writeAudioDataFrameCount == %d",self.writeAudioDataFrameCount);
-//        [self.audioFileHandle writeData:audioData];
-    }
 }
 
 @end

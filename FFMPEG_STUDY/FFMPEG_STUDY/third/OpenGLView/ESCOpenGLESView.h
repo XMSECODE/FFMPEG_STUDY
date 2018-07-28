@@ -8,10 +8,20 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSUInteger, ESCVideoDataType) {
+    ESCVideoDataTypeRGBA,
+    ESCVideoDataTypeRGB,
+    ESCVideoDataTypeYUV420,
+};
+
 @interface ESCOpenGLESView : UIView
+
+@property(nonatomic,assign)ESCVideoDataType type;
 
 - (void)loadImage:(UIImage *)image;
 
 - (void)loadRGBData:(void *)data lenth:(NSInteger)lenth width:(NSInteger)width height:(NSInteger)height;
+
+- (void)loadYUV420PDataWithYData:(NSData *)yData uData:(NSData *)uData vData:(NSData *)vData width:(NSInteger)width height:(NSInteger)height;
 
 @end
