@@ -10,9 +10,6 @@
 		040D9F7E20FF888D00EE76E6 /* ESCAudioStreamPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 040D9F7D20FF888C00EE76E6 /* ESCAudioStreamPlayer.m */; };
 		04178399210C6CD5004A2841 /* fragmentshader_YUV.fmsd in Resources */ = {isa = PBXBuildFile; fileRef = 04178397210C6CD4004A2841 /* fragmentshader_YUV.fmsd */; };
 		0417839A210C6CD5004A2841 /* vertexshader_YUV.vtsd in Resources */ = {isa = PBXBuildFile; fileRef = 04178398210C6CD4004A2841 /* vertexshader_YUV.vtsd */; };
-		0417839F210CCAA1004A2841 /* file.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 0417839B210CCAA0004A2841 /* file.vsh */; };
-		041783A0210CCAA1004A2841 /* file.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 0417839C210CCAA0004A2841 /* file.fsh */; };
-		041783A1210CCAA1004A2841 /* YUVView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0417839D210CCAA0004A2841 /* YUVView.m */; };
 		047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 047B7B041EF2C47800E4F0F8 /* AppDelegate.m */; };
 		047B7B081EF2C47800E4F0F8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 047B7B071EF2C47800E4F0F8 /* ViewController.m */; };
 		047B7B0B1EF2C47800E4F0F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 047B7B091EF2C47800E4F0F8 /* Main.storyboard */; };
@@ -52,10 +49,6 @@
 		040D9F7D20FF888C00EE76E6 /* ESCAudioStreamPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCAudioStreamPlayer.m; sourceTree = "<group>"; };
 		04178397210C6CD4004A2841 /* fragmentshader_YUV.fmsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragmentshader_YUV.fmsd; sourceTree = "<group>"; };
 		04178398210C6CD4004A2841 /* vertexshader_YUV.vtsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vertexshader_YUV.vtsd; sourceTree = "<group>"; };
-		0417839B210CCAA0004A2841 /* file.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = file.vsh; sourceTree = "<group>"; };
-		0417839C210CCAA0004A2841 /* file.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = file.fsh; sourceTree = "<group>"; };
-		0417839D210CCAA0004A2841 /* YUVView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YUVView.m; sourceTree = "<group>"; };
-		0417839E210CCAA1004A2841 /* YUVView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YUVView.h; sourceTree = "<group>"; };
 		047B7AFD1EF2C47800E4F0F8 /* FFMPEG_STUDY.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FFMPEG_STUDY.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		047B7B031EF2C47800E4F0F8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		047B7B041EF2C47800E4F0F8 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -530,10 +523,6 @@
 				04DAEC4D2108B8650048ACA3 /* vertexshader_RGB.vtsd */,
 				04178397210C6CD4004A2841 /* fragmentshader_YUV.fmsd */,
 				04178398210C6CD4004A2841 /* vertexshader_YUV.vtsd */,
-				0417839C210CCAA0004A2841 /* file.fsh */,
-				0417839B210CCAA0004A2841 /* file.vsh */,
-				0417839E210CCAA1004A2841 /* YUVView.h */,
-				0417839D210CCAA0004A2841 /* YUVView.m */,
 			);
 			path = OpenGLView;
 			sourceTree = "<group>";
@@ -627,10 +616,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0417839F210CCAA1004A2841 /* file.vsh in Resources */,
 				F0F9344C20FD84F500E6A334 /* demo.mp4 in Resources */,
 				04DAEC4E2108B8650048ACA3 /* fragmentshader_RGB.fmsd in Resources */,
-				041783A0210CCAA1004A2841 /* file.fsh in Resources */,
 				047B7B101EF2C47900E4F0F8 /* LaunchScreen.storyboard in Resources */,
 				04DAEC502108B8650048ACA3 /* vertexshader_RGB.vtsd in Resources */,
 				047B7B0D1EF2C47800E4F0F8 /* Assets.xcassets in Resources */,
@@ -658,7 +645,6 @@
 				047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */,
 				F079562520FF2FF700F3AF26 /* ESCAACToPCMDecoder.m in Sources */,
 				04DAEC4F2108B8650048ACA3 /* ESCOpenGLESView.m in Sources */,
-				041783A1210CCAA1004A2841 /* YUVView.m in Sources */,
 				F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

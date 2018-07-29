@@ -318,7 +318,11 @@
     //绑定纹理
     glBindTexture(GL_TEXTURE_2D, _vtexture);
     [self createYUVTextureWithData:vdata width:width / 2 height:height / 2 texture:&_vtexture];
-    
+    if (!_ytexture || !_ytexture || !_vtexture)
+    {
+        NSLog(@"glGenTextures faild.");
+        return;
+    }
 }
 
 - (void)createYUVTextureWithData:(void *)data  width:(int)width height:(int)height  texture:(GLuint *)texture {
@@ -461,8 +465,14 @@
         if (result == NO) {
             NSLog(@"set context failed!");
         }
-        if (self.texture) {
-            glDeleteTextures(1, &_texture);
+        if (self.ytexture) {
+            glDeleteTextures(1, &_ytexture);
+        }
+        if (self.utexture) {
+            glDeleteTextures(1, &_utexture);
+        }
+        if (self.vtexture) {
+            glDeleteTextures(1, &_vtexture);
         }
         
         glClearColor(0, 0, 0, 1);
@@ -480,8 +490,8 @@
             -1.0,1.0,
             1.0,1.0
         };
+//        glEnableVertexAttribArray(_mYUVGLPosition);
         glVertexAttribPointer(_mYUVGLPosition, 2, GL_FLOAT, 0, 0, vertices);
-        
         //设置纹理坐标
         GLfloat texCoords2[] = {
             0,1,
@@ -489,8 +499,8 @@
             0,0,
             1,0
         };
+//        glEnableVertexAttribArray(_mYUVGLTextureCoords);
         glVertexAttribPointer(_mYUVGLTextureCoords, 2, GL_FLOAT, 0, 0, texCoords2);
-        
         //执行绘制操作
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         
