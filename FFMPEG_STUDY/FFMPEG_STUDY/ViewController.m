@@ -136,10 +136,10 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
     @autoreleasepool {
         UIImage *image = [ECSwsscaleManager getImageFromAVFrame:videoFrame];
         if (self.openGLESView) {
-//            AVFrame *rgbFrame = [ECSwsscaleManager getRGBAVFrameFromOtherFormat:videoFrame];
-//            [self.openGLESView loadRGBData:rgbFrame->data[0] lenth:rgbFrame->linesize[0] width:rgbFrame->width height:rgbFrame->height];
-//            av_free(rgbFrame->data[0]);
-//            av_frame_free(&rgbFrame);
+            AVFrame *rgbFrame = [ECSwsscaleManager getRGBAVFrameFromOtherFormat:videoFrame];
+            [self.openGLESView loadRGBData:rgbFrame->data[0] lenth:rgbFrame->linesize[0] width:rgbFrame->width height:rgbFrame->height];
+            av_free(rgbFrame->data[0]);
+            av_frame_free(&rgbFrame);
             
             NSData *ydata = copyFrameData(videoFrame->data[0], videoFrame->linesize[0], videoFrame->width, videoFrame->height);
             NSData *udata = copyFrameData(videoFrame->data[1], videoFrame->linesize[1], videoFrame->width / 2, videoFrame->height / 2);
@@ -154,12 +154,12 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
             static dispatch_once_t onceToken;
             dispatch_once(&onceToken, ^{
                 int scale = [UIScreen mainScreen].scale;
-                weakSelf.showImageView.W = image.size.width / scale;
-                weakSelf.showImageView.H = image.size.height / scale ;
+                weakSelf.showImageView.W = videoFrame->width / scale;
+                weakSelf.showImageView.H = videoFrame->height / scale ;
                 weakSelf.showImageView.Y = 40;
                 weakSelf.showImageView.X = 0;
                 
-                ESCOpenGLESView *openglesView = [[ESCOpenGLESView alloc] initWithFrame:CGRectMake(0, 50 + image.size.height , image.size.width / scale , image.size.height / scale)];
+                ESCOpenGLESView *openglesView = [[ESCOpenGLESView alloc] initWithFrame:CGRectMake(0, 50 + videoFrame->height , videoFrame->width  , videoFrame->height )];
                 self.openGLESView = openglesView;
                 self.openGLESView.type = ESCVideoDataTypeYUV420;
                 [self.view addSubview:openglesView];
