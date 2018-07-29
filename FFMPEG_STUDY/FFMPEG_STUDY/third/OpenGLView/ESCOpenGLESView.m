@@ -19,11 +19,9 @@
 
 @property(nonatomic,assign)GLuint renderBuffer;
 
-@property(nonatomic,assign)GLint backingWidth;
+@property(nonatomic,assign)NSInteger viewWidth;
 
-@property(nonatomic,assign)GLint backingHeight;
-
-
+@property(nonatomic,assign)NSInteger viewHeight;
 
 //================================================================rgb
 @property(nonatomic,assign)GLuint texture;
@@ -80,6 +78,21 @@
     return self;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    NSInteger width = self.frame.size.width;
+    NSInteger height = self.frame.size.height;
+    dispatch_sync(self.openglesQueue, ^{
+        if (self.viewHeight != height || self.viewWidth != width) {
+            //创建缓冲区buffer
+            [self setupBuffers];
+            self.viewWidth = width;
+            self.viewHeight = height;
+        }
+    });
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     [self setupOPENGLES];
@@ -96,8 +109,7 @@
     [eaglLayer setDrawableProperties:dict];
     //创建上下文
     [self setupContext];
-    //创建缓冲区buffer
-    [self setupBuffers];
+    
     
 }
 
@@ -128,8 +140,8 @@
     [self.context renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
     
     //获取绘制缓冲区像素高度/宽度
-    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &_backingWidth);
-    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &_backingHeight);
+//    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &_backingWidth);
+//    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &_backingHeight);
     
     //将绘制缓冲区绑定到帧缓冲区
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _renderBuffer);
@@ -414,13 +426,13 @@
                 glDeleteTextures(1, &_texture);
             }
             
-            glClearColor(0, 0, 0, 1);
+            glClearColor(1, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT);
         
             //创建纹理
-            [self createTexWithRGBData:data width:width height:height];
+            [self createTexWithRGBData:data width:(int)width height:(int)height];
             
-            glViewport(0, 0, self.frame.size.width, self.frame.size.height);
+            glViewport(0, 0, (int)self.viewWidth, (int)self.viewHeight);
             
             //设置物体坐标
             GLfloat vertices[] = {
@@ -479,7 +491,7 @@
         glClear(GL_COLOR_BUFFER_BIT);
         
         //创建纹理
-        [self createTexWithYUVDataWithYData:yData uData:uData vData:vData width:width height:height];
+        [self createTexWithYUVDataWithYData:yData uData:uData vData:vData width:(int)width height:(int)height];
         
         glViewport(0, 0, self.frame.size.width, self.frame.size.height);
         

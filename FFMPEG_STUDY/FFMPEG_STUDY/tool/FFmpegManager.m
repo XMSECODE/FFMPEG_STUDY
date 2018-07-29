@@ -15,10 +15,6 @@
 
 @property(nonatomic,copy)NSString* URLString;
 
-@property(nonatomic,strong)AVAudioPlayer* play1;
-
-@property(nonatomic,strong)NSMutableArray* play2array;
-
 
 @end
 
@@ -78,6 +74,10 @@ static FFmpegManager *staticFFmpegManager;
         failure:(void(^)(NSError *error))failure
       decodeEnd:(void(^)(void))decodeEnd {
     [self openURL:urlString videoSuccess:videoSuccess audioSuccess:audioSuccess failure:failure isGetFirstVideoFrame:NO decodeEnd:decodeEnd];
+}
+
+- (void)stop {
+    
 }
 
 #pragma mark - Private

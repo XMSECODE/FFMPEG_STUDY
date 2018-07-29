@@ -34,5 +34,7 @@
         failure:(void(^)(NSError *error))failure
       decodeEnd:(void(^)(void))decodeEnd;
 
+- (void)stop;
+
 
 @end

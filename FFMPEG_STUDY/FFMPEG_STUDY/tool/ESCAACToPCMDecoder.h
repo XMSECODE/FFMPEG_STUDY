@@ -11,6 +11,10 @@
 
 @interface ESCAACToPCMDecoder : NSObject
 
-+ (AVFrame *)getPCMAVFrameFromOtherFormat:(AVFrame *)frame;
+- (void)initConvertWithFrame:(AVFrame *)frame;
+
+- (AVFrame *)getPCMAVFrameFromOtherFormat:(AVFrame *)frame;
+
+- (void)destroy;
 
 @end

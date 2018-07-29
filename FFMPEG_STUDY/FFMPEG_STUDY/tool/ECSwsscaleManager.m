@@ -1,4 +1,4 @@
-//
+
 //  ECSwsscaleManager.m
 //  FFMPEG_STUDY
 //
@@ -11,9 +11,15 @@
 #import "imgutils.h"
 #import "Header.h"
 
+@interface ECSwsscaleManager()
+
+@property(nonatomic,assign)struct SwsContext * swsContext;
+
+@end
+
 @implementation ECSwsscaleManager
 
-+ (UIImage *)getImageFromAVFrame:(AVFrame *)frame {
+- (UIImage *)getImageFromAVFrame:(AVFrame *)frame {
 
     AVFrame *RGBFrame = [self getRGBAVFrameFromOtherFormat:frame];
     
@@ -31,8 +37,14 @@
     return image;
 }
 
-+ (AVFrame *)getRGBAVFrameFromOtherFormat:(AVFrame *)frame {
+- (void)initWithAVFrame:(AVFrame *)frame {
     struct SwsContext *swsContext = sws_getContext(frame->width, frame->height, AV_PIX_FMT_YUV420P, frame->width, frame->height, AV_PIX_FMT_RGB24, SWS_BICUBIC, NULL, NULL, NULL);
+    if (swsContext) {
+        self.swsContext = swsContext;
+    }
+}
+
+- (AVFrame *)getRGBAVFrameFromOtherFormat:(AVFrame *)frame {
     
     AVFrame *RGBFrame = av_frame_alloc();
     
@@ -41,24 +53,21 @@
     if (result< 0) {
         printf( "Could not allocate destination image\n");
         av_frame_free(&RGBFrame);
-        sws_freeContext(swsContext);
         return nil;;
     }
-    int result_height = sws_scale(swsContext, (const uint8_t* const*)frame->data, frame->linesize, 0, frame->height, RGBFrame->data, RGBFrame->linesize);
+    int result_height = sws_scale(self.swsContext, (const uint8_t* const*)frame->data, frame->linesize, 0, frame->height, RGBFrame->data, RGBFrame->linesize);
     
     if (result_height == 0) {
         av_free(RGBFrame->data[0]);
         av_frame_free(&RGBFrame);
-        sws_freeContext(swsContext);
         return nil;
     }
     RGBFrame->width = frame->width;
     RGBFrame->height = frame->height;
-    sws_freeContext(swsContext);
     return RGBFrame;
 }
 
-+ (void)saveToPNGImageWithAVFrame:(AVFrame *)frame filePath:(NSString *)filePath success:(void(^)())success failure:(void(^)(NSError *error))failure {
+- (void)saveToPNGImageWithAVFrame:(AVFrame *)frame filePath:(NSString *)filePath success:(void(^)())success failure:(void(^)(NSError *error))failure {
     
     UIImage *image = [self getImageFromAVFrame:frame];
     NSData *imageData = UIImagePNGRepresentation(image);
@@ -69,6 +78,10 @@
         NSError *error = [NSError EC_errorWithLocalizedDescription:@"write to file failuer"];
         failure(error);
     }
+}
+
+- (void)destroy {
+    sws_freeContext(self.swsContext);
 }
 
 @end

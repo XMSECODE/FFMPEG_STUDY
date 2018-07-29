@@ -12,12 +12,14 @@
 
 @interface ECSwsscaleManager : NSObject
 
+- (void)initWithAVFrame:(AVFrame *)frame;
+
 
 /**
  下面两个方法会自动释放传入的frame
  */
-+ (UIImage *)getImageFromAVFrame:(AVFrame *)frame;
-+ (AVFrame *)getRGBAVFrameFromOtherFormat:(AVFrame *)frame;
+- (UIImage *)getImageFromAVFrame:(AVFrame *)frame;
+- (AVFrame *)getRGBAVFrameFromOtherFormat:(AVFrame *)frame;
 
 
 /**
@@ -26,7 +28,8 @@
  @param frame 需要保存的AVFrame
  @param filePath 文件路径
  */
-+ (void)saveToPNGImageWithAVFrame:(AVFrame *)frame filePath:(NSString *)filePath success:(void(^)())success failure:(void(^)(NSError *error))failure;
+- (void)saveToPNGImageWithAVFrame:(AVFrame *)frame filePath:(NSString *)filePath success:(void(^)())success failure:(void(^)(NSError *error))failure;
 
+- (void)destroy;
 
 @end

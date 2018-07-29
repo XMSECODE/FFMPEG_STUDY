@@ -11,6 +11,7 @@
 
 #import "NSError+ECError.h"
 #import "UIView+XMSView.h"
+#import "Masonry.h"
 
 //Screen
 #define ScreenBounds [UIScreen mainScreen].bounds
