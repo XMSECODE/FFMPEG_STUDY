@@ -24,6 +24,7 @@
 		04394851210D9AFA00C7BECA /* NSLayoutConstraint+MASDebugAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 04394843210D9AFA00C7BECA /* NSLayoutConstraint+MASDebugAdditions.m */; };
 		04394852210D9AFA00C7BECA /* View+MASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 04394845210D9AFA00C7BECA /* View+MASAdditions.m */; };
 		04394853210D9AFA00C7BECA /* ViewController+MASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 04394848210D9AFA00C7BECA /* ViewController+MASAdditions.m */; };
+		04394856210DAF9800C7BECA /* ESCAudioUnitStreamPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04394854210DAF9700C7BECA /* ESCAudioUnitStreamPlayer.m */; };
 		047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 047B7B041EF2C47800E4F0F8 /* AppDelegate.m */; };
 		047B7B081EF2C47800E4F0F8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 047B7B071EF2C47800E4F0F8 /* ViewController.m */; };
 		047B7B0B1EF2C47800E4F0F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 047B7B091EF2C47800E4F0F8 /* Main.storyboard */; };
@@ -95,6 +96,8 @@
 		04394846210D9AFA00C7BECA /* View+MASShorthandAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "View+MASShorthandAdditions.h"; sourceTree = "<group>"; };
 		04394847210D9AFA00C7BECA /* ViewController+MASAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ViewController+MASAdditions.h"; sourceTree = "<group>"; };
 		04394848210D9AFA00C7BECA /* ViewController+MASAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ViewController+MASAdditions.m"; sourceTree = "<group>"; };
+		04394854210DAF9700C7BECA /* ESCAudioUnitStreamPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCAudioUnitStreamPlayer.m; sourceTree = "<group>"; };
+		04394855210DAF9700C7BECA /* ESCAudioUnitStreamPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCAudioUnitStreamPlayer.h; sourceTree = "<group>"; };
 		047B7AFD1EF2C47800E4F0F8 /* FFMPEG_STUDY.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FFMPEG_STUDY.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		047B7B031EF2C47800E4F0F8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		047B7B041EF2C47800E4F0F8 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -587,6 +590,8 @@
 			children = (
 				040D9F7C20FF888C00EE76E6 /* ESCAudioStreamPlayer.h */,
 				040D9F7D20FF888C00EE76E6 /* ESCAudioStreamPlayer.m */,
+				04394855210DAF9700C7BECA /* ESCAudioUnitStreamPlayer.h */,
+				04394854210DAF9700C7BECA /* ESCAudioUnitStreamPlayer.m */,
 				0495E8D01EFE48DF00958C4F /* category */,
 				0495E8DF1EFF41D800958C4F /* FFmpegManager.h */,
 				0495E8E01EFF41D800958C4F /* FFmpegManager.m */,
@@ -724,6 +729,7 @@
 				0439482A210D97B400C7BECA /* ESCYUV420VideoPlayViewController.m in Sources */,
 				0495E8D41EFE497A00958C4F /* NSError+ECError.m in Sources */,
 				0495E8CF1EFE488500958C4F /* main.m in Sources */,
+				04394856210DAF9800C7BECA /* ESCAudioUnitStreamPlayer.m in Sources */,
 				0439482D210D97DD00C7BECA /* ESCImageVideoPlayViewController.m in Sources */,
 				0495E8DB1EFE5DE500958C4F /* UIView+XMSView.m in Sources */,
 				0439484E210D9AFA00C7BECA /* MASViewAttribute.m in Sources */,

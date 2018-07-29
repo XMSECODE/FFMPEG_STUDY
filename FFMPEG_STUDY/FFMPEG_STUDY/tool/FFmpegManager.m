@@ -250,15 +250,15 @@ static FFmpegManager *staticFFmpegManager;
                             break;
                             
                         case AVERROR_EOF:
-                            printf("audio the decoder has been fully flushed, and there will be no more output frames.\n");
+//                            printf("audio the decoder has been fully flushed, and there will be no more output frames.\n");
                             break;
                             
                         case AVERROR(EAGAIN):
-                            printf("audio Resource temporarily unavailable\n");
+//                            printf("audio Resource temporarily unavailable\n");
                             break;
                             
                         case AVERROR(EINVAL):
-                            printf("Invalid argument\n");
+//                            printf("Invalid argument\n");
                             break;
                         default:
                             break;

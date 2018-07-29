@@ -15,6 +15,8 @@
 
 @property(nonatomic,assign)SwrContext *swrContext;
 
+@property(nonatomic,assign)AVFrame* pcmFrame;
+
 @end
 
 @implementation ESCAACToPCMDecoder
@@ -26,25 +28,32 @@
     }else {
         self.swrContext = swrContext;
     }
-    
+    AVFrame *PCMFrame = av_frame_alloc();
+    PCMFrame->sample_rate = 48000;
+    PCMFrame->channel_layout = AV_CH_LAYOUT_STEREO;
+    PCMFrame->format = AV_SAMPLE_FMT_S32;
+    self.pcmFrame = PCMFrame;
 }
 
 - (void)destroy {
     swr_free(&_swrContext);
 }
 
-- (AVFrame *)getPCMAVFrameFromOtherFormat:(AVFrame *)frame; {
-    AVFrame *PCMFrame = av_frame_alloc();
-    PCMFrame->sample_rate = 48000;
-    PCMFrame->channel_layout = AV_CH_LAYOUT_STEREO;
-    PCMFrame->format = AV_SAMPLE_FMT_S32;
-    int result = swr_convert_frame(self.swrContext, PCMFrame, frame);
+- (void)freeAudioFrame:(AVFrame *)audioFrame {
+//    av_free(audioFrame->data[0]);
+    av_frame_free(&audioFrame);
+}
+
+- (AVFrame *)getPCMAVFrameFromOtherFormat:(AVFrame *)frame {
+    int result = swr_convert_frame(self.swrContext, _pcmFrame, frame);
     if (result != 0) {
         NSLog(@"convert frame failed!");
-        av_frame_free(&PCMFrame);
+        if (_pcmFrame != NULL) {        
+            av_frame_free(&_pcmFrame);
+        }
         return nil;
     }
-    return PCMFrame;
+    return _pcmFrame;
 }
 
 @end

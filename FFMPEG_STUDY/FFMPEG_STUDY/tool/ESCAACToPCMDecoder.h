@@ -15,6 +15,8 @@
 
 - (AVFrame *)getPCMAVFrameFromOtherFormat:(AVFrame *)frame;
 
+- (void)freeAudioFrame:(AVFrame *)audioFrame;
+
 - (void)destroy;
 
 @end

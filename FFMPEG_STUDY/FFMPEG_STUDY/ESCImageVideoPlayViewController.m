@@ -15,12 +15,15 @@
 #import "ECSwsscaleManager.h"
 #import "FFmpegManager.h"
 #import "ESCAACToPCMDecoder.h"
+#import "ESCAudioUnitStreamPlayer.h"
 
 @interface ESCImageVideoPlayViewController ()
 
 @property (weak, nonatomic)UIImageView *showImageView;
 
 @property(nonatomic,strong)ESCAudioStreamPlayer* audioPlayer;
+
+@property(nonatomic,strong)ESCAudioUnitStreamPlayer* unitAudioPlayer;
 
 @property(nonatomic,strong)ESCAACToPCMDecoder* aacToPCMDecoder;
 
@@ -59,7 +62,9 @@
 - (void)playHKTV {
     NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
     
-    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
+//    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
+    self.unitAudioPlayer = [[ESCAudioUnitStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
+
     
     [self playWithImageViewWithURLString:hongkongTVPath];
 }
@@ -99,14 +104,17 @@
         self.aacToPCMDecoder = [[ESCAACToPCMDecoder alloc] init];
         [self.aacToPCMDecoder initConvertWithFrame:audioFrame];
     }
-    if (self.aacToPCMDecoder) {
-        AVFrame *pcmFrame = [self.aacToPCMDecoder getPCMAVFrameFromOtherFormat:audioFrame];
-        if (pcmFrame == NULL) {
-            NSLog(@"get pcm frame failed!");
+    @autoreleasepool {
+        if (self.aacToPCMDecoder) {
+            AVFrame *pcmFrame = [self.aacToPCMDecoder getPCMAVFrameFromOtherFormat:audioFrame];
+            if (pcmFrame == NULL) {
+                NSLog(@"get pcm frame failed!");
+            }
+            NSData *audioData = [NSData dataWithBytes:pcmFrame->data[0] length:pcmFrame->nb_samples * 2 * 4];
+//            [self.audioPlayer play:audioData];
+            [self.unitAudioPlayer play:audioData];
         }
-        NSData *audioData = [NSData dataWithBytes:pcmFrame->data[0] length:pcmFrame->nb_samples * 2 * 4];
-        
-        [self.audioPlayer play:audioData];
     }
+    
 }
 @end
