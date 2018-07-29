@@ -136,10 +136,10 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
     @autoreleasepool {
         UIImage *image = [ECSwsscaleManager getImageFromAVFrame:videoFrame];
         if (self.openGLESView) {
-            AVFrame *rgbFrame = [ECSwsscaleManager getRGBAVFrameFromOtherFormat:videoFrame];
-            [self.openGLESView loadRGBData:rgbFrame->data[0] lenth:rgbFrame->linesize[0] width:rgbFrame->width height:rgbFrame->height];
-            av_free(rgbFrame->data[0]);
-            av_frame_free(&rgbFrame);
+//            AVFrame *rgbFrame = [ECSwsscaleManager getRGBAVFrameFromOtherFormat:videoFrame];
+//            [self.openGLESView loadRGBData:rgbFrame->data[0] lenth:rgbFrame->linesize[0] width:rgbFrame->width height:rgbFrame->height];
+//            av_free(rgbFrame->data[0]);
+//            av_frame_free(&rgbFrame);
             
             NSData *ydata = copyFrameData(videoFrame->data[0], videoFrame->linesize[0], videoFrame->width, videoFrame->height);
             NSData *udata = copyFrameData(videoFrame->data[1], videoFrame->linesize[1], videoFrame->width / 2, videoFrame->height / 2);
@@ -171,15 +171,13 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
 
 
 - (void)handleAudioFrame:(AVFrame *)audioFrame {
-//    AVFrame *pcmFrame = [ESCAACToPCMDecoder getPCMAVFrameFromOtherFormat:audioFrame];
-//    if (pcmFrame == NULL) {
-//        NSLog(@"get pcm frame failed!");
-//    }
-//    NSData *audioData = [NSData dataWithBytes:pcmFrame->data[0] length:pcmFrame->linesize[0]];
+    AVFrame *pcmFrame = [ESCAACToPCMDecoder getPCMAVFrameFromOtherFormat:audioFrame];
+    if (pcmFrame == NULL) {
+        NSLog(@"get pcm frame failed!");
+    }
+    NSData *audioData = [NSData dataWithBytes:pcmFrame->data[0] length:pcmFrame->nb_samples * 2 * 4];
     
-//    char pcm[10240];
-//    int lenth;
-//    [self.audioPlayer play:audioData];
+    [self.audioPlayer play:audioData];
     
 }
 
