@@ -87,8 +87,6 @@
         if (self.viewHeight != height || self.viewWidth != width) {
             //创建缓冲区buffer
             [self setupBuffers];
-            self.viewWidth = width;
-            self.viewHeight = height;
         }
     });
 }
@@ -109,7 +107,6 @@
     [eaglLayer setDrawableProperties:dict];
     //创建上下文
     [self setupContext];
-    
     
 }
 
@@ -140,9 +137,13 @@
     [self.context renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
     
     //获取绘制缓冲区像素高度/宽度
-//    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &_backingWidth);
-//    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &_backingHeight);
+    GLint width;
+    GLint height;
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width);
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &height);
     
+    self.viewWidth = width;
+    self.viewHeight = height;
     //将绘制缓冲区绑定到帧缓冲区
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _renderBuffer);
     
@@ -373,8 +374,8 @@
     [self createTexWithRGBAData:pixels width:image.size.width height:image.size.height];
     free(pixels);
 
-    glViewport(0, 0, self.frame.size.width, self.frame.size.height);
-    
+    glViewport(0, 0, (int)self.viewWidth, (int)self.viewHeight);
+
     //设置物体坐标
     GLfloat vertices[] = {
         -1.0,-1.0,
@@ -432,8 +433,24 @@
             //创建纹理
             [self createTexWithRGBData:data width:(int)width height:(int)height];
             
-            glViewport(0, 0, (int)self.viewWidth, (int)self.viewHeight);
-            
+        //调整画面宽度
+        CGFloat x = 0;
+        CGFloat y = 0;
+        CGFloat w = 0;
+        CGFloat h = 0;
+        
+        //获取控件宽高比，与视频宽高比
+        if (self.viewWidth / self.viewHeight * 1.0 > width / height) {
+            h = self.viewHeight;
+            w = width * h / height;
+            x = (self.viewWidth - w) / 2;
+            glViewport(x, y, w, h);
+        }else {
+            w = self.viewWidth;
+            h = height * w / width;
+            y = (self.viewHeight - h) / 2;
+            glViewport(x, y, w, h);
+        }
             //设置物体坐标
             GLfloat vertices[] = {
                 -1.0,-1.0,
@@ -493,8 +510,26 @@
         //创建纹理
         [self createTexWithYUVDataWithYData:yData uData:uData vData:vData width:(int)width height:(int)height];
         
-        glViewport(0, 0, self.frame.size.width, self.frame.size.height);
+        //调整画面宽度
+        CGFloat x = 0;
+        CGFloat y = 0;
+        CGFloat w = 0;
+        CGFloat h = 0;
         
+        //获取控件宽高比，与视频宽高比
+        if (self.viewWidth / self.viewHeight * 1.0 > width / height) {
+            h = self.viewHeight;
+            w = width * h / height;
+            x = (self.viewWidth - w) / 2;
+            glViewport(x, y, w, h);
+        }else {
+            w = self.viewWidth;
+            h = height * w / width;
+            y = (self.viewHeight - h) / 2;
+            glViewport(x, y, w, h);
+        }
+        
+
         //设置物体坐标
         GLfloat vertices[] = {
             -1.0,-1.0,

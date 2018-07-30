@@ -37,7 +37,8 @@
     [super viewDidLoad];
     
     self.title = @"UIImage Player";
-    
+    self.navigationController.navigationBar.barTintColor = [UIColor clearColor];
+
     self.view.backgroundColor = [UIColor whiteColor];
     
     UIImageView *imageView = [[UIImageView alloc] init];

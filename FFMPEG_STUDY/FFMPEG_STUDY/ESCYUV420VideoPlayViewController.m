@@ -50,9 +50,15 @@
     [self.view addSubview:openglesView];
     
     [self.openGLESView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.right.left.equalTo(self.view);
-        make.height.equalTo(self.view).multipliedBy(0.6);
+        make.top.equalTo(self.view);
+        make.left.equalTo(self.view);
+        make.width.equalTo(self.view).multipliedBy(2);
+        make.height.equalTo(self.view).multipliedBy(0.6 * 2);
     }];
+    self.openGLESView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
+    self.openGLESView.transform = CGAffineTransformTranslate(self.openGLESView.transform, - self.view.frame.size.width * 1, - self.view.frame.size.height  * 0.6);
+    
+    self.navigationController.navigationBar.barTintColor = [UIColor clearColor];
     
     [self playHKTV];
 }
