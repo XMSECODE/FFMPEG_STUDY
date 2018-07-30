@@ -153,27 +153,29 @@ static void AudioPlayerAQInputCallback(void* inUserData,AudioQueueRef outQ, Audi
     }else {
         
     }
-    
-    NSData *firstData = self.cachDataArray.firstObject;
-    [self.cachDataArray removeObjectAtIndex:0];
-
-//    NSLog(@"last count packet %d",self.cachDataArray.count);
-
-    
-    audioQueueBuffer->mAudioDataByteSize = firstData.length;
-    
-    Byte* audiodata = (Byte*)audioQueueBuffer->mAudioData;
-    
-    void *data = (void *)[firstData bytes];
-    
-    memcpy(audiodata, data, firstData.length);
-    
-    OSStatus status = AudioQueueEnqueueBuffer(audioQueue, audioQueueBuffer,0,NULL);
-    if (status != 0) {
-        NSLog(@"en queue buffer failed! == %d",(int)status);
-    }else {
-//        NSLog(@"DataPlayer play dataSize:%d", firstData.length);
+    @autoreleasepool {
+        NSData *firstData = self.cachDataArray.firstObject;
+        [self.cachDataArray removeObjectAtIndex:0];
+        
+        //    NSLog(@"last count packet %d",self.cachDataArray.count);
+        
+        
+        audioQueueBuffer->mAudioDataByteSize = firstData.length;
+        
+        Byte* audiodata = (Byte*)audioQueueBuffer->mAudioData;
+        
+        void *data = (void *)[firstData bytes];
+        
+        memcpy(audiodata, data, firstData.length);
+        
+        OSStatus status = AudioQueueEnqueueBuffer(audioQueue, audioQueueBuffer,0,NULL);
+        if (status != 0) {
+            NSLog(@"en queue buffer failed! == %d",(int)status);
+        }else {
+            //        NSLog(@"DataPlayer play dataSize:%d", firstData.length);
+        }
     }
+   
 }
 
 - (AudioQueueBufferRef)getNotUsedBuffer {

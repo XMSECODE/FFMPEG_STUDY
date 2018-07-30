@@ -62,8 +62,8 @@
 - (void)playHKTV {
     NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
     
-//    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
-    self.unitAudioPlayer = [[ESCAudioUnitStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
+    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
+//    self.unitAudioPlayer = [[ESCAudioUnitStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
 
     
     [self playWithImageViewWithURLString:hongkongTVPath];
@@ -111,8 +111,8 @@
                 NSLog(@"get pcm frame failed!");
             }
             NSData *audioData = [NSData dataWithBytes:pcmFrame->data[0] length:pcmFrame->nb_samples * 2 * 4];
-//            [self.audioPlayer play:audioData];
-            [self.unitAudioPlayer play:audioData];
+            [self.audioPlayer play:audioData];
+//            [self.unitAudioPlayer play:audioData];
         }
     }
     
