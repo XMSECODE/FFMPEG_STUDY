@@ -54,6 +54,7 @@
 		04DAEC4E2108B8650048ACA3 /* fragmentshader_RGB.fmsd in Resources */ = {isa = PBXBuildFile; fileRef = 04DAEC4B2108B8640048ACA3 /* fragmentshader_RGB.fmsd */; };
 		04DAEC4F2108B8650048ACA3 /* ESCOpenGLESView.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DAEC4C2108B8650048ACA3 /* ESCOpenGLESView.m */; };
 		04DAEC502108B8650048ACA3 /* vertexshader_RGB.vtsd in Resources */ = {isa = PBXBuildFile; fileRef = 04DAEC4D2108B8650048ACA3 /* vertexshader_RGB.vtsd */; };
+		04F596CA2110B8F7007063E8 /* ESCMediaDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 04F596C92110B8F7007063E8 /* ESCMediaDataModel.m */; };
 		F079562520FF2FF700F3AF26 /* ESCAACToPCMDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */; };
 		F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = F0B883241F441B5F00042391 /* FFmpegRemuxer.m */; };
 		F0F9344C20FD84F500E6A334 /* demo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F0F9344B20FD84F500E6A334 /* demo.mp4 */; };
@@ -244,6 +245,8 @@
 		04DAEC4B2108B8640048ACA3 /* fragmentshader_RGB.fmsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragmentshader_RGB.fmsd; sourceTree = "<group>"; };
 		04DAEC4C2108B8650048ACA3 /* ESCOpenGLESView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCOpenGLESView.m; sourceTree = "<group>"; };
 		04DAEC4D2108B8650048ACA3 /* vertexshader_RGB.vtsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vertexshader_RGB.vtsd; sourceTree = "<group>"; };
+		04F596C82110B8F7007063E8 /* ESCMediaDataModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCMediaDataModel.h; sourceTree = "<group>"; };
+		04F596C92110B8F7007063E8 /* ESCMediaDataModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCMediaDataModel.m; sourceTree = "<group>"; };
 		F079562320FF2FF700F3AF26 /* ESCAACToPCMDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCAACToPCMDecoder.h; sourceTree = "<group>"; };
 		F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCAACToPCMDecoder.m; sourceTree = "<group>"; };
 		F0B883231F441B5F00042391 /* FFmpegRemuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegRemuxer.h; sourceTree = "<group>"; };
@@ -342,6 +345,8 @@
 				04394826210D979B00C7BECA /* ESCRGBVideoPlayViewController.m */,
 				04394828210D97B400C7BECA /* ESCYUV420VideoPlayViewController.h */,
 				04394829210D97B400C7BECA /* ESCYUV420VideoPlayViewController.m */,
+				04F596C82110B8F7007063E8 /* ESCMediaDataModel.h */,
+				04F596C92110B8F7007063E8 /* ESCMediaDataModel.m */,
 				047B7B111EF2C47900E4F0F8 /* Info.plist */,
 				F0F9344D20FD84FB00E6A334 /* resource */,
 				0495E8C41EFE482100958C4F /* other */,
@@ -750,6 +755,7 @@
 				04DAEC4F2108B8650048ACA3 /* ESCOpenGLESView.m in Sources */,
 				04394852210D9AFA00C7BECA /* View+MASAdditions.m in Sources */,
 				0439484F210D9AFA00C7BECA /* MASViewConstraint.m in Sources */,
+				04F596CA2110B8F7007063E8 /* ESCMediaDataModel.m in Sources */,
 				0439484B210D9AFA00C7BECA /* MASConstraint.m in Sources */,
 				F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */,
 			);

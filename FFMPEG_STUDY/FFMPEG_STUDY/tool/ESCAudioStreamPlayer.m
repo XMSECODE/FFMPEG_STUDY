@@ -136,7 +136,7 @@ static void AudioPlayerAQInputCallback(void* inUserData,AudioQueueRef outQ, Audi
 - (void)enqueueBuffers {
     
     if (self.cachDataArray.count == 0 || self.cachDataArray == nil) {
-        NSLog(@"data array is nil %d",self.enqueueDataCount);
+//        NSLog(@"data array is nil %d",self.enqueueDataCount);
         if (self.callBackHaveNoDo == YES) {
             self.enqueueDataCount--;
             self.callBackHaveNoDo = NO;

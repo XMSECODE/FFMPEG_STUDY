@@ -22,6 +22,7 @@
 #import "FFmpegRemuxer.h"
 #import "ESCOpenGLESView.h"
 #import "ESCAACToPCMDecoder.h"
+#import "ESCMediaDataModel.h"
 
 @interface ESCYUV420VideoPlayViewController ()
 
@@ -33,13 +34,30 @@
 
 @property(nonatomic,strong)ECSwsscaleManager* swsscaleManager;
 
+@property(nonatomic,strong)NSMutableArray <ESCMediaDataModel *>* videoFrameArray;
+
+@property(nonatomic,strong)NSMutableArray<ESCMediaDataModel*>* audioFrameArray;
+
+@property(nonatomic,assign)NSInteger width;
+
+@property(nonatomic,assign)NSInteger height;
+
+@property(nonatomic,strong)NSTimer* timer;
+
+@property(nonatomic,strong)dispatch_queue_t queue;
+
+@property(nonatomic,assign)NSInteger currentTime;
+
 @end
 
 @implementation ESCYUV420VideoPlayViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.videoFrameArray = [NSMutableArray array];
+    self.audioFrameArray = [NSMutableArray array];
     
+    self.queue = dispatch_queue_create("ff", DISPATCH_QUEUE_SERIAL);
     self.title = @"YUV420 Player";
     
     self.view.backgroundColor = [UIColor whiteColor];
@@ -77,12 +95,44 @@
         [[FFmpegManager sharedManager] openURL:URLString videoSuccess:^(AVFrame *frame) {
             [weakSelf handleVideoFrame:frame];
         } audioSuccess:^(AVFrame *frame) {
+            if (self.timer == nil && self.audioFrameArray.count > 100) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(play) userInfo:nil repeats:YES];
+                    NSLog(@"timer");
+                });
+                
+            }
             [weakSelf handleAudioFrame:frame];
         } failure:^(NSError *error) {
             NSLog(@"error == %@",error.localizedDescription);
         } decodeEnd:^{
             
         }];
+    });
+}
+
+- (void)play {
+    dispatch_async(self.queue, ^{
+        self.currentTime+=20;
+        if (self.videoFrameArray.count > 0) {
+            ESCMediaDataModel *videoModel = [self.videoFrameArray firstObject];
+            NSInteger videopts = videoModel.pts;
+
+            if (videopts - self.currentTime <= 50) {
+                [self.videoFrameArray removeObject:videoModel];
+                [self.openGLESView loadYUV420PDataWithYData:videoModel.yData uData:videoModel.uData vData:videoModel.vData width:self.width height:self.height];
+            }
+            
+            ESCMediaDataModel *audioModel = [self.audioFrameArray firstObject];
+            if (audioModel) {
+//                printf("audio data==%d==%d==%d\n",self.audioFrameArray.count,videopts,audioModel.pts);
+                if (audioModel.pts - self.currentTime < 100) {
+                    [self.audioFrameArray removeObject:audioModel];
+                    [self.audioPlayer play:audioModel.audioData];
+                }
+            }
+        }
+
     });
 }
 
@@ -105,11 +155,26 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
             self.swsscaleManager = [[ECSwsscaleManager alloc] init];
             [self.swsscaleManager initWithAVFrame:videoFrame];
         }
+        NSInteger pts = videoFrame->pts;
+
         if (self.openGLESView) {
             NSData *ydata = copyFrameData(videoFrame->data[0], videoFrame->linesize[0], videoFrame->width, videoFrame->height);
             NSData *udata = copyFrameData(videoFrame->data[1], videoFrame->linesize[1], videoFrame->width / 2, videoFrame->height / 2);
             NSData *vdata = copyFrameData(videoFrame->data[2], videoFrame->linesize[2], videoFrame->width / 2, videoFrame->height / 2);
-            [weakSelf.openGLESView loadYUV420PDataWithYData:ydata uData:udata vData:vdata width:videoFrame->width height:videoFrame->height];
+            if (self.width == 0 || self.height == 0) {
+                self.width = videoFrame->width;
+                self.height = videoFrame->height;
+            }
+            dispatch_async(self.queue, ^{
+                ESCMediaDataModel *model = [[ESCMediaDataModel alloc] init];
+                model.type = 0;
+                model.yData = ydata;
+                model.uData =udata;
+                model.vData = vdata;
+
+                model.pts = pts;
+                [self.videoFrameArray addObject:model];
+            });
             
         }
     }
@@ -121,13 +186,20 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
         [self.aacToPCMDecoder initConvertWithFrame:audioFrame];
     }
     if (self.aacToPCMDecoder) {
+        NSInteger pts = audioFrame->pts;
         AVFrame *pcmFrame = [self.aacToPCMDecoder getPCMAVFrameFromOtherFormat:audioFrame];
         if (pcmFrame == NULL) {
             NSLog(@"get pcm frame failed!");
         }
-        NSData *audioData = [NSData dataWithBytes:pcmFrame->data[0] length:pcmFrame->nb_samples * 2 * 4];
         
-        [self.audioPlayer play:audioData];
+        NSData *audioData = [NSData dataWithBytes:pcmFrame->data[0] length:pcmFrame->nb_samples * 2 * 4];
+        dispatch_async(self.queue, ^{
+            ESCMediaDataModel *model = [[ESCMediaDataModel alloc] init];
+            model.type = 1;
+            model.audioData = audioData;
+            model.pts = pts;
+            [self.audioFrameArray addObject:model];
+        });
     }
 }
 
