@@ -46,7 +46,9 @@
 
 @property(nonatomic,strong)dispatch_queue_t queue;
 
-@property(nonatomic,assign)NSInteger currentTime;
+@property(nonatomic,assign)double startTime;
+
+@property(nonatomic,assign)double currentTime;
 
 @end
 
@@ -71,10 +73,10 @@
         make.top.equalTo(self.view);
         make.left.equalTo(self.view);
         make.width.equalTo(self.view).multipliedBy(2);
-        make.height.equalTo(self.view).multipliedBy(0.6 * 2);
+        make.height.equalTo(self.view).multipliedBy(2);
     }];
     self.openGLESView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
-    self.openGLESView.transform = CGAffineTransformTranslate(self.openGLESView.transform, - self.view.frame.size.width * 1, - self.view.frame.size.height  * 0.6);
+    self.openGLESView.transform = CGAffineTransformTranslate(self.openGLESView.transform, - self.view.frame.size.width * 1, - self.view.frame.size.height);
     
     self.navigationController.navigationBar.barTintColor = [UIColor clearColor];
     
@@ -113,7 +115,11 @@
 
 - (void)play {
     dispatch_async(self.queue, ^{
-        self.currentTime+=20;
+        if (self.startTime == 0) {
+            self.startTime = CACurrentMediaTime();
+        }
+        self.currentTime = (CACurrentMediaTime() - self.startTime) * 1000;
+
         if (self.videoFrameArray.count > 0) {
             ESCMediaDataModel *videoModel = [self.videoFrameArray firstObject];
             NSInteger videopts = videoModel.pts;
