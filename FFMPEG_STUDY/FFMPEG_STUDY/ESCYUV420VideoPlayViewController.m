@@ -23,6 +23,9 @@
 #import "ESCOpenGLESView.h"
 #import "ESCAACToPCMDecoder.h"
 #import "ESCMediaDataModel.h"
+#import "x264.h"
+#import "ESCYUVToH264Encoder.h"
+#import "ESCH264FileToMp4FileTool.h"
 
 @interface ESCYUV420VideoPlayViewController ()
 
@@ -50,12 +53,40 @@
 
 @property(nonatomic,assign)double currentTime;
 
+@property(nonatomic,strong)NSFileHandle* temhandle;
+
+@property(nonatomic,strong)ESCYUVToH264Encoder* encoder;
+
 @end
 
 @implementation ESCYUV420VideoPlayViewController
 
+
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    NSString *saveH264Path = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
+    NSString *mp4Path = [NSString stringWithFormat:@"%@/tem.mp4",saveH264Path];
+    saveH264Path = [NSString stringWithFormat:@"%@/tem.h264",saveH264Path];
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:saveH264Path]) {
+        [[NSFileManager defaultManager] removeItemAtPath:saveH264Path error:nil];
+    }
+    
+    NSString *yuvFilePath = [[NSBundle mainBundle] pathForResource:@"tem1280_720.yuv" ofType:nil];
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    double startTime = CFAbsoluteTimeGetCurrent();
+    [ESCYUVToH264Encoder yuvToH264EncoderWithVideoWidth:1280 height:720 yuvFilePath:yuvFilePath h264FilePath:saveH264Path frameRate:25];
+    [ESCH264FileToMp4FileTool ESCH264FileToMp4FileToolWithh264FilePath:saveH264Path mp4FilePath:mp4Path videoWidth:1280 videoHeight:720 frameRate:25];
+    double endTime = CFAbsoluteTimeGetCurrent();
+    double time = endTime - startTime;
+    NSLog(@"time===========%f",time);
+    
+    });
+
     self.videoFrameArray = [NSMutableArray array];
     self.audioFrameArray = [NSMutableArray array];
     
@@ -79,6 +110,8 @@
     self.openGLESView.transform = CGAffineTransformTranslate(self.openGLESView.transform, - self.view.frame.size.width * 1, - self.view.frame.size.height);
     
     self.navigationController.navigationBar.barTintColor = [UIColor clearColor];
+    
+
     
     [self playHKTV];
 }

@@ -55,6 +55,10 @@
 		04DAEC4F2108B8650048ACA3 /* ESCOpenGLESView.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DAEC4C2108B8650048ACA3 /* ESCOpenGLESView.m */; };
 		04DAEC502108B8650048ACA3 /* vertexshader_RGB.vtsd in Resources */ = {isa = PBXBuildFile; fileRef = 04DAEC4D2108B8650048ACA3 /* vertexshader_RGB.vtsd */; };
 		04F596CA2110B8F7007063E8 /* ESCMediaDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 04F596C92110B8F7007063E8 /* ESCMediaDataModel.m */; };
+		F00D9DD621154BD600EDE1A1 /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F00D9DD521154BD600EDE1A1 /* libx264.a */; };
+		F00D9DDE2115789F00EDE1A1 /* ESCH264FileToMp4FileTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F00D9DDB2115789F00EDE1A1 /* ESCH264FileToMp4FileTool.m */; };
+		F00D9DDF2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F00D9DDD2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m */; };
+		F023F5212112A93100335B8A /* ESCYUVToH264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F023F5202112A93100335B8A /* ESCYUVToH264Encoder.m */; };
 		F079562520FF2FF700F3AF26 /* ESCAACToPCMDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */; };
 		F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = F0B883241F441B5F00042391 /* FFmpegRemuxer.m */; };
 		F0F9344C20FD84F500E6A334 /* demo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F0F9344B20FD84F500E6A334 /* demo.mp4 */; };
@@ -247,6 +251,15 @@
 		04DAEC4D2108B8650048ACA3 /* vertexshader_RGB.vtsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vertexshader_RGB.vtsd; sourceTree = "<group>"; };
 		04F596C82110B8F7007063E8 /* ESCMediaDataModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCMediaDataModel.h; sourceTree = "<group>"; };
 		04F596C92110B8F7007063E8 /* ESCMediaDataModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCMediaDataModel.m; sourceTree = "<group>"; };
+		F00D9DD221154BD600EDE1A1 /* x264.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x264.h; sourceTree = "<group>"; };
+		F00D9DD321154BD600EDE1A1 /* x264_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x264_config.h; sourceTree = "<group>"; };
+		F00D9DD521154BD600EDE1A1 /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libx264.a; sourceTree = "<group>"; };
+		F00D9DDA2115789F00EDE1A1 /* ESCH264FileToMp4FileTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCH264FileToMp4FileTool.h; sourceTree = "<group>"; };
+		F00D9DDB2115789F00EDE1A1 /* ESCH264FileToMp4FileTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCH264FileToMp4FileTool.m; sourceTree = "<group>"; };
+		F00D9DDC2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCH264StreamToMp4FileTool.h; sourceTree = "<group>"; };
+		F00D9DDD2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCH264StreamToMp4FileTool.m; sourceTree = "<group>"; };
+		F023F51F2112A93100335B8A /* ESCYUVToH264Encoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCYUVToH264Encoder.h; sourceTree = "<group>"; };
+		F023F5202112A93100335B8A /* ESCYUVToH264Encoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCYUVToH264Encoder.m; sourceTree = "<group>"; };
 		F079562320FF2FF700F3AF26 /* ESCAACToPCMDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCAACToPCMDecoder.h; sourceTree = "<group>"; };
 		F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCAACToPCMDecoder.m; sourceTree = "<group>"; };
 		F0B883231F441B5F00042391 /* FFmpegRemuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegRemuxer.h; sourceTree = "<group>"; };
@@ -262,6 +275,7 @@
 				047B7BA91EF2C85500E4F0F8 /* AudioToolbox.framework in Frameworks */,
 				047B7BA71EF2C84900E4F0F8 /* CoreGraphics.framework in Frameworks */,
 				047B7BA51EF2C83E00E4F0F8 /* CoreMedia.framework in Frameworks */,
+				F00D9DD621154BD600EDE1A1 /* libx264.a in Frameworks */,
 				047B7BA31EF2C83300E4F0F8 /* AVFoundation.framework in Frameworks */,
 				047B7BA11EF2C82300E4F0F8 /* VideoToolbox.framework in Frameworks */,
 				047B7B9F1EF2C7A300E4F0F8 /* libiconv.tbd in Frameworks */,
@@ -583,6 +597,8 @@
 		0495E8C51EFE482100958C4F /* third */ = {
 			isa = PBXGroup;
 			children = (
+				F00D9DD92115789F00EDE1A1 /* ESCH264ToMp4Tool */,
+				F00D9DD021154BD600EDE1A1 /* x264-iOS */,
 				0439482E210D9AFA00C7BECA /* Masonry */,
 				0495E8D51EFE5D3700958C4F /* JPFPSStatus */,
 				0495E8CA1EFE485200958C4F /* OpenGLView */,
@@ -606,6 +622,8 @@
 				0495E8C81EFE483E00958C4F /* ECSwsscaleManager.m */,
 				F079562320FF2FF700F3AF26 /* ESCAACToPCMDecoder.h */,
 				F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */,
+				F023F51F2112A93100335B8A /* ESCYUVToH264Encoder.h */,
+				F023F5202112A93100335B8A /* ESCYUVToH264Encoder.m */,
 			);
 			path = tool;
 			sourceTree = "<group>";
@@ -641,6 +659,43 @@
 				0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */,
 			);
 			path = JPFPSStatus;
+			sourceTree = "<group>";
+		};
+		F00D9DD021154BD600EDE1A1 /* x264-iOS */ = {
+			isa = PBXGroup;
+			children = (
+				F00D9DD121154BD600EDE1A1 /* include */,
+				F00D9DD421154BD600EDE1A1 /* lib */,
+			);
+			path = "x264-iOS";
+			sourceTree = "<group>";
+		};
+		F00D9DD121154BD600EDE1A1 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				F00D9DD221154BD600EDE1A1 /* x264.h */,
+				F00D9DD321154BD600EDE1A1 /* x264_config.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		F00D9DD421154BD600EDE1A1 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				F00D9DD521154BD600EDE1A1 /* libx264.a */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		F00D9DD92115789F00EDE1A1 /* ESCH264ToMp4Tool */ = {
+			isa = PBXGroup;
+			children = (
+				F00D9DDA2115789F00EDE1A1 /* ESCH264FileToMp4FileTool.h */,
+				F00D9DDB2115789F00EDE1A1 /* ESCH264FileToMp4FileTool.m */,
+				F00D9DDC2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.h */,
+				F00D9DDD2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m */,
+			);
+			path = ESCH264ToMp4Tool;
 			sourceTree = "<group>";
 		};
 		F0F9344D20FD84FB00E6A334 /* resource */ = {
@@ -684,7 +739,7 @@
 				TargetAttributes = {
 					047B7AFC1EF2C47800E4F0F8 = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = 4SF28MHQDQ;
+						DevelopmentTeam = NZ6KCMA9HH;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -741,6 +796,7 @@
 				0439484D210D9AFA00C7BECA /* MASLayoutConstraint.m in Sources */,
 				04394851210D9AFA00C7BECA /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,
 				0439484C210D9AFA00C7BECA /* MASConstraintMaker.m in Sources */,
+				F00D9DDE2115789F00EDE1A1 /* ESCH264FileToMp4FileTool.m in Sources */,
 				0495E8C91EFE483E00958C4F /* ECSwsscaleManager.m in Sources */,
 				047B7B081EF2C47800E4F0F8 /* ViewController.m in Sources */,
 				04394853210D9AFA00C7BECA /* ViewController+MASAdditions.m in Sources */,
@@ -752,7 +808,9 @@
 				0439484A210D9AFA00C7BECA /* MASCompositeConstraint.m in Sources */,
 				04394850210D9AFA00C7BECA /* NSArray+MASAdditions.m in Sources */,
 				F079562520FF2FF700F3AF26 /* ESCAACToPCMDecoder.m in Sources */,
+				F00D9DDF2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m in Sources */,
 				04DAEC4F2108B8650048ACA3 /* ESCOpenGLESView.m in Sources */,
+				F023F5212112A93100335B8A /* ESCYUVToH264Encoder.m in Sources */,
 				04394852210D9AFA00C7BECA /* View+MASAdditions.m in Sources */,
 				0439484F210D9AFA00C7BECA /* MASViewConstraint.m in Sources */,
 				04F596CA2110B8F7007063E8 /* ESCMediaDataModel.m in Sources */,
@@ -881,13 +939,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 4SF28MHQDQ;
+				DEVELOPMENT_TEAM = NZ6KCMA9HH;
 				INFOPLIST_FILE = FFMPEG_STUDY/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/FFMPEG_STUDY/FFmpeg-iOS/lib",
+					"$(PROJECT_DIR)/FFMPEG_STUDY/third/x264-iOS/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.XMSECODE.FFMPEG-STUDY";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -898,13 +957,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 4SF28MHQDQ;
+				DEVELOPMENT_TEAM = NZ6KCMA9HH;
 				INFOPLIST_FILE = FFMPEG_STUDY/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/FFMPEG_STUDY/FFmpeg-iOS/lib",
+					"$(PROJECT_DIR)/FFMPEG_STUDY/third/x264-iOS/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.XMSECODE.FFMPEG-STUDY";
 				PRODUCT_NAME = "$(TARGET_NAME)";
