@@ -53,9 +53,15 @@
 
 @property(nonatomic,assign)double currentTime;
 
-@property(nonatomic,strong)NSFileHandle* temhandle;
+@property(nonatomic,assign)NSInteger receiveVideoFrameCount;
 
 @property(nonatomic,strong)ESCYUVToH264Encoder* encoder;
+
+@property(nonatomic,copy)NSString* saveH264Path;
+
+@property(nonatomic,copy)NSString* saveMp4Path;
+
+@property(nonatomic,assign)BOOL isStartRecord;
 
 @end
 
@@ -67,25 +73,26 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    NSString *saveH264Path = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
-    NSString *mp4Path = [NSString stringWithFormat:@"%@/tem.mp4",saveH264Path];
-    saveH264Path = [NSString stringWithFormat:@"%@/tem.h264",saveH264Path];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:saveH264Path]) {
-        [[NSFileManager defaultManager] removeItemAtPath:saveH264Path error:nil];
-    }
-    
-    NSString *yuvFilePath = [[NSBundle mainBundle] pathForResource:@"tem1280_720.yuv" ofType:nil];
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-    double startTime = CFAbsoluteTimeGetCurrent();
-    [ESCYUVToH264Encoder yuvToH264EncoderWithVideoWidth:1280 height:720 yuvFilePath:yuvFilePath h264FilePath:saveH264Path frameRate:25];
-    [ESCH264FileToMp4FileTool ESCH264FileToMp4FileToolWithh264FilePath:saveH264Path mp4FilePath:mp4Path videoWidth:1280 videoHeight:720 frameRate:25];
-    double endTime = CFAbsoluteTimeGetCurrent();
-    double time = endTime - startTime;
-    NSLog(@"time===========%f",time);
-    
-    });
+//    NSString *saveH264Path = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
+//    NSString *mp4Path = [NSString stringWithFormat:@"%@/tem.mp4",saveH264Path];
+//    saveH264Path = [NSString stringWithFormat:@"%@/tem.h264",saveH264Path];
+//    
+//    if ([[NSFileManager defaultManager] fileExistsAtPath:saveH264Path]) {
+//        [[NSFileManager defaultManager] removeItemAtPath:saveH264Path error:nil];
+//    }
+//    
+//    NSString *yuvFilePath = [[NSBundle mainBundle] pathForResource:@"tem1280_720.yuv" ofType:nil];
+//    
+//    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+//    double startTime = CFAbsoluteTimeGetCurrent();
+//    [ESCYUVToH264Encoder yuvToH264EncoderWithVideoWidth:1280 height:720 yuvFilePath:yuvFilePath h264FilePath:saveH264Path frameRate:25];
+//    [ESCH264FileToMp4FileTool ESCH264FileToMp4FileToolWithh264FilePath:saveH264Path mp4FilePath:mp4Path videoWidth:1280 videoHeight:720 frameRate:25];
+//    double endTime = CFAbsoluteTimeGetCurrent();
+//    double time = endTime - startTime;
+//    NSLog(@"time===========%f",time);
+//    
+//    });
 
     self.videoFrameArray = [NSMutableArray array];
     self.audioFrameArray = [NSMutableArray array];
@@ -109,11 +116,49 @@
     self.openGLESView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
     self.openGLESView.transform = CGAffineTransformTranslate(self.openGLESView.transform, - self.view.frame.size.width * 1, - self.view.frame.size.height);
     
-    self.navigationController.navigationBar.barTintColor = [UIColor clearColor];
     
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"开始录制视频" style:UIBarButtonItemStyleDone target:self action:@selector(startRecorderVideo)];
 
     
     [self playHKTV];
+}
+
+- (void)startRecorderVideo {
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"停止录制视频" style:UIBarButtonItemStyleDone target:self action:@selector(stopRecorderVideo)];
+    dispatch_async(self.queue, ^{
+        if (self.encoder == nil) {
+            self.encoder = [[ESCYUVToH264Encoder alloc] init];
+            NSString *cachesPath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            dateFormatter.dateFormat = @"yyyy_MM_dd_HH_mm_ss";
+            NSString *datestring = [dateFormatter stringFromDate:[NSDate date]];
+            NSString *saveH264Path = [NSString stringWithFormat:@"%@/%@.h264",cachesPath,datestring];
+            NSString *mp4Path = [NSString stringWithFormat:@"%@/%@.mp4",cachesPath,datestring];
+            self.saveH264Path = saveH264Path;
+            self.saveMp4Path = mp4Path;
+            
+            [self.encoder setupVideoWidth:self.width height:self.height frameRate:25 h264FilePath:saveH264Path];
+            self.isStartRecord = YES;
+        }
+    });
+    
+}
+
+- (void)stopRecorderVideo {
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"开始录制视频" style:UIBarButtonItemStyleDone target:self action:@selector(startRecorderVideo)];
+    dispatch_async(self.queue, ^{
+        self.isStartRecord = NO;
+        
+        if(self.encoder){
+            [self.encoder endYUVDataStream];
+            self.encoder = nil;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    [ESCH264FileToMp4FileTool ESCH264FileToMp4FileToolWithh264FilePath:self.saveH264Path mp4FilePath:self.saveMp4Path videoWidth:self.width videoHeight:self.height frameRate:25];
+                });
+            });
+        }
+    });
 }
 
 - (void)playHKTV {
@@ -130,13 +175,6 @@
         [[FFmpegManager sharedManager] openURL:URLString videoSuccess:^(AVFrame *frame) {
             [weakSelf handleVideoFrame:frame];
         } audioSuccess:^(AVFrame *frame) {
-            if (self.timer == nil && self.audioFrameArray.count > 100) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(play) userInfo:nil repeats:YES];
-                    NSLog(@"timer");
-                });
-                
-            }
             [weakSelf handleAudioFrame:frame];
         } failure:^(NSError *error) {
             NSLog(@"error == %@",error.localizedDescription);
@@ -195,7 +233,7 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
             [self.swsscaleManager initWithAVFrame:videoFrame];
         }
         NSInteger pts = videoFrame->pts;
-
+        self.receiveVideoFrameCount++;
         if (self.openGLESView) {
             NSData *ydata = copyFrameData(videoFrame->data[0], videoFrame->linesize[0], videoFrame->width, videoFrame->height);
             NSData *udata = copyFrameData(videoFrame->data[1], videoFrame->linesize[1], videoFrame->width / 2, videoFrame->height / 2);
@@ -213,13 +251,29 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
 
                 model.pts = pts;
                 [self.videoFrameArray addObject:model];
+                
+                if (self.encoder && self.isStartRecord == YES) {
+                    NSMutableData *yuvData = [NSMutableData data];
+                    [yuvData appendData:ydata];
+                    [yuvData appendData:udata];
+                    [yuvData appendData:vdata];
+                    
+                    [self.encoder encoderYUVData:yuvData];
+                }
             });
-            
+           
+           
         }
     }
 }
 
 - (void)handleAudioFrame:(AVFrame *)audioFrame {
+    if (self.timer == nil && self.audioFrameArray.count > 100) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.timer = [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(play) userInfo:nil repeats:YES];
+            NSLog(@"timer");
+        });
+    }
     if (self.aacToPCMDecoder == nil) {
         self.aacToPCMDecoder = [[ESCAACToPCMDecoder alloc] init];
         [self.aacToPCMDecoder initConvertWithFrame:audioFrame];

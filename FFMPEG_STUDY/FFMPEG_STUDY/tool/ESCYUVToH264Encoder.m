@@ -46,6 +46,19 @@ typedef struct
 
 @interface ESCYUVToH264Encoder ()
 
+@property(nonatomic,assign)x264_t *x264Handle;
+
+@property(nonatomic,assign)x264_nal_t* pNals;
+
+@property(nonatomic,assign)x264_picture_t pic_out;
+
+@property(nonatomic,assign)x264_picture_t pic_in;
+
+@property(nonatomic,assign)FILE *fp_dst;
+
+@property(nonatomic,assign)NSInteger frameCount;
+
+@property(nonatomic,assign)int y_size;
 
 @end
 
@@ -177,6 +190,98 @@ typedef struct
     param.i_csp=X264_CSP_I420;
     x264_param_apply_profile(&param, x264_profile_names[6]);
     *pHandle = x264_encoder_open(&param);
+}
+
+- (void)setupVideoWidth:(NSInteger)width height:(NSInteger)height frameRate:(NSInteger)frameRate h264FilePath:(NSString *)h264FilePath {
+    
+    x264_t *x264Handle = NULL;
+    
+    [ESCYUVToH264Encoder x264_encode_init:&x264Handle width:width height:height frameRate:frameRate];
+    
+    int csp=X264_CSP_I420;
+    
+    
+    x264_picture_init(&_pic_out);
+    x264_picture_alloc(&_pic_out, csp, (int)width, (int)height);
+    
+    x264_picture_init(&_pic_in);
+    x264_picture_alloc(&_pic_in, csp, (int)width, (int)height);
+    
+    self.y_size = (int)width * (int)height;
+    
+    self.frameCount = 0;
+    
+    self.pNals = NULL;
+    
+    const char *outchar = [h264FilePath cStringUsingEncoding:NSUTF8StringEncoding];
+    
+    FILE* fp_dst = fopen(outchar, "a+");
+    
+    if (fp_dst == NULL) {
+        NSLog(@"打开目标文件失败");
+        return;
+    }
+    self.fp_dst = fp_dst;
+    
+    self.x264Handle = x264Handle;
+}
+
+- (void)encoderYUVData:(NSData *)yuvData {
+    
+    const unsigned char *yuv420data = [yuvData bytes];
+    
+    int iNal   = 0;
+    
+    memcpy(_pic_in.img.plane[0], yuv420data, self.y_size); //y
+    memcpy(_pic_in.img.plane[1], yuv420data  + self.y_size, self.y_size/4); //u
+    memcpy(_pic_in.img.plane[2], yuv420data  + self.y_size + self.y_size/4, self.y_size/4); //v
+    
+    _pic_out.i_pts = self.frameCount;
+    self.frameCount++;
+    int ret = x264_encoder_encode(self.x264Handle, &_pNals, &iNal, &_pic_in, &_pic_out);
+    
+    printf("Succeed encode frame: %5ld\n",(long)self.frameCount);
+    
+    if (ret <= 0){
+        return;
+    }
+    
+    if (iNal <= 0) {
+        return;
+    }
+    
+    for (int j = 0; j < iNal; ++j){
+        fwrite(_pNals[j].p_payload, _pNals[j].i_payload, 1, _fp_dst);
+        printf("====%d===%d\n",iNal,_pNals[j].i_payload);
+    }
+}
+
+-(void)endYUVDataStream {
+    while (1) {
+        int iNal   = 0;
+        _pic_out.i_pts = self.frameCount;
+        self.frameCount++;
+        
+        int ret = x264_encoder_encode(_x264Handle, &_pNals, &iNal, NULL, &_pic_out);
+        if (ret <= 0){
+            printf("Error.\n");
+            break;
+        }
+        
+        int j = 0;
+        
+        for ( j = 0; j < iNal; ++j){
+            fwrite(_pNals[j].p_payload, _pNals[j].i_payload, 1, _fp_dst);
+            printf("====%d===%d\n",iNal,_pNals[j].i_payload);
+        }
+    }
+    
+    fclose(_fp_dst);
+    
+    x264_picture_clean(&_pic_in);
+    
+    x264_encoder_close(_x264Handle);
+    
 }
 
 @end

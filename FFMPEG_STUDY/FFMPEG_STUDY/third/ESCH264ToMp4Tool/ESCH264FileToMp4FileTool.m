@@ -16,7 +16,9 @@
     NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingAtPath:h264FilePath];
     NSData *allData = [fileHandle readDataToEndOfFile];
     uint8_t *videoData = (uint8_t*)[allData bytes];
-    
+    if (allData.length <= 0) {
+        return;
+    }
     NaluUnit naluUnit;
     int cur_pos = 0;
     while([self ESCReadOneNaluFromAnnexBFormatH264WithNalu:&naluUnit buf:videoData buf_size:allData.length cur_pos:&cur_pos]) {
