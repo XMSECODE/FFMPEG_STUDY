@@ -226,6 +226,37 @@ typedef struct
     self.x264Handle = x264Handle;
 }
 
+- (void)setupVideoWidth:(NSInteger)width height:(NSInteger)height frameRate:(NSInteger)frameRate delegate:(id<ESCYUVToH264EncoderDelegate>)delegate {
+    
+    if (delegate) {
+        self.delegate = delegate;
+    }else {
+        return;
+    }
+    
+    x264_t *x264Handle = NULL;
+    
+    [ESCYUVToH264Encoder x264_encode_init:&x264Handle width:width height:height frameRate:frameRate];
+    
+    int csp=X264_CSP_I420;
+    
+    
+    x264_picture_init(&_pic_out);
+    x264_picture_alloc(&_pic_out, csp, (int)width, (int)height);
+    
+    x264_picture_init(&_pic_in);
+    x264_picture_alloc(&_pic_in, csp, (int)width, (int)height);
+    
+    self.y_size = (int)width * (int)height;
+    
+    self.frameCount = 0;
+    
+    self.pNals = NULL;
+    
+    self.x264Handle = x264Handle;
+    
+}
+
 - (void)encoderYUVData:(NSData *)yuvData {
     
     const unsigned char *yuv420data = [yuvData bytes];
@@ -250,10 +281,17 @@ typedef struct
         return;
     }
     
-    for (int j = 0; j < iNal; ++j){
-        fwrite(_pNals[j].p_payload, _pNals[j].i_payload, 1, _fp_dst);
-        printf("====%d===%d\n",iNal,_pNals[j].i_payload);
+    if (_fp_dst != NULL) {
+        for (int j = 0; j < iNal; ++j){
+            fwrite(_pNals[j].p_payload, _pNals[j].i_payload, 1, _fp_dst);
+        }
     }
+    if (self.delegate && [self.delegate respondsToSelector:@selector(encoder:h264Data:dataLenth:)]) {
+        for (int j = 0; j < iNal; ++j){
+            [self.delegate encoder:self h264Data:_pNals[j].p_payload dataLenth:_pNals[j].i_payload];
+        }
+    }
+    
 }
 
 -(void)endYUVDataStream {
@@ -267,16 +305,26 @@ typedef struct
             printf("Error.\n");
             break;
         }
-        
-        int j = 0;
-        
-        for ( j = 0; j < iNal; ++j){
-            fwrite(_pNals[j].p_payload, _pNals[j].i_payload, 1, _fp_dst);
-            printf("====%d===%d\n",iNal,_pNals[j].i_payload);
+                
+        if (_fp_dst != NULL) {
+            for (int j = 0; j < iNal; ++j){
+                fwrite(_pNals[j].p_payload, _pNals[j].i_payload, 1, _fp_dst);
+            }
+        }
+        if (self.delegate && [self.delegate respondsToSelector:@selector(encoder:h264Data:dataLenth:)]) {
+            for (int j = 0; j < iNal; ++j){
+                [self.delegate encoder:self h264Data:_pNals[j].p_payload dataLenth:_pNals[j].i_payload];
+            }
         }
     }
     
-    fclose(_fp_dst);
+    if (self.delegate && [self.delegate respondsToSelector:@selector(encoderEnd:)]) {
+        [self.delegate encoderEnd:self];
+    }
+    
+    if (_fp_dst != NULL) {
+        fclose(_fp_dst);
+    }
     
     x264_picture_clean(&_pic_in);
     
