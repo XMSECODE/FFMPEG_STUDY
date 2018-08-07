@@ -166,7 +166,8 @@ typedef struct
     x264_param_default(&param);
     param.i_width   = (int)width;
     param.i_height  = (int)height;
-//    param.i_fps_num = (int)frameRate;
+    param.i_fps_num = (int)frameRate;
+    param.i_bframe = 0;
 //    param.i_fps_num = (int)(frameRate * 1000 + 0.5);
 //    param.i_fps_den = 1000;
     /*
@@ -201,8 +202,8 @@ typedef struct
     int csp=X264_CSP_I420;
     
     
-    x264_picture_init(&_pic_out);
-    x264_picture_alloc(&_pic_out, csp, (int)width, (int)height);
+//    x264_picture_init(&_pic_out);
+//    x264_picture_alloc(&_pic_out, csp, (int)width, (int)height);
     
     x264_picture_init(&_pic_in);
     x264_picture_alloc(&_pic_in, csp, (int)width, (int)height);
@@ -267,7 +268,9 @@ typedef struct
     memcpy(_pic_in.img.plane[1], yuv420data  + self.y_size, self.y_size/4); //u
     memcpy(_pic_in.img.plane[2], yuv420data  + self.y_size + self.y_size/4, self.y_size/4); //v
     
-    _pic_out.i_pts = self.frameCount;
+    _pic_in.i_pts = self.frameCount;
+//    _pic_in.i_dts = self.frameCount;
+//    _pic_out.i_pts = self.frameCount;
     self.frameCount++;
     int ret = x264_encoder_encode(self.x264Handle, &_pNals, &iNal, &_pic_in, &_pic_out);
     
@@ -297,7 +300,7 @@ typedef struct
 -(void)endYUVDataStream {
     while (1) {
         int iNal   = 0;
-        _pic_out.i_pts = self.frameCount;
+//        _pic_out.i_pts = self.frameCount;
         self.frameCount++;
         
         int ret = x264_encoder_encode(_x264Handle, &_pNals, &iNal, NULL, &_pic_out);
