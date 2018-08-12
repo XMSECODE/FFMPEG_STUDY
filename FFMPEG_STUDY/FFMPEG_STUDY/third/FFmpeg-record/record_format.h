@@ -4,6 +4,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    
+#import "rjone.h"
 
 typedef struct _RECORD_FORAMT_STREAM_INFO_
 {	

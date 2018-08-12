@@ -10,6 +10,8 @@
 #import "avcodec.h"
 #import "Header.h"
 #import <AVFoundation/AVFoundation.h>
+#import "record_format.h"
+#import "rjone.h"
 
 @interface FFmpegManager ()
 
@@ -201,10 +203,20 @@ static FFmpegManager *staticFFmpegManager;
     AVFrame *audioFrame = av_frame_alloc();
     
     BOOL getFirstVideoFrame = NO;
+    RECORD_FORAMT_STREAM_INFO pVideoStream;
+    pVideoStream.codec_id = CODECID_V_H264;
+    pVideoStream.video_framerate = 25;
+    pVideoStream.video_width = codecParameters->width;
+    pVideoStream.video_height = codecParameters->height;
+//    Handle handle = RF_CreateRecordFile("ff.mp4", &pVideoStream, NULL);
+    
+    AVFormatContext *context;
+    avformat_alloc_output_context2(&context, NULL, NULL, "ff.mp4");
     
     while (av_read_frame(formatContext, packet) >= 0) {
         {
             if(packet->stream_index == videoStreamID && videoSuccess) {
+                
                 
 //                printf("video\n");
                 avcodec_send_packet(videoCodecContext, packet);
