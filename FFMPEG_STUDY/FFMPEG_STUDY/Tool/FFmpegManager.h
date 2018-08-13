@@ -19,18 +19,18 @@
                         decodeEnd:(void(^)(void))decodeEnd;
 
 - (void)openAudioURL:(NSString *)urlString
-        audioSuccess:(void(^)(AVFrame *frame))audioSuccess
+        audioSuccess:(void(^)(AVFrame *frame,AVPacket *packet))audioSuccess
              failure:(void(^)(NSError *error))failure
            decodeEnd:(void(^)(void))decodeEnd;
 
 - (void)openVideoURL:(NSString *)urlString
-        videoSuccess:(void(^)(AVFrame *frame))videoSuccess
+        videoSuccess:(void(^)(AVFrame *frame,AVPacket *packet))videoSuccess
              failure:(void(^)(NSError *error))failure
            decodeEnd:(void(^)(void))decodeEnd;
 
 - (void)openURL:(NSString *)urlString
-   videoSuccess:(void(^)(AVFrame *frame))videoSuccess
-   audioSuccess:(void(^)(AVFrame *frame))audioSuccess
+   videoSuccess:(void(^)(AVFrame *frame,AVPacket *packet))videoSuccess
+   audioSuccess:(void(^)(AVFrame *frame,AVPacket *packet))audioSuccess
         failure:(void(^)(NSError *error))failure
       decodeEnd:(void(^)(void))decodeEnd;
 

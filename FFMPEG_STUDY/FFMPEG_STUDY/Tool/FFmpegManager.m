@@ -53,26 +53,28 @@ static FFmpegManager *staticFFmpegManager;
                           success:(void(^)(AVFrame *firstFrame))success
                           failure:(void(^)(NSError *error))failure
                         decodeEnd:(void(^)(void))decodeEnd {
-    [self openURL:urlString videoSuccess:success audioSuccess:nil failure:failure isGetFirstVideoFrame:YES decodeEnd:decodeEnd];
+    [self openURL:urlString videoSuccess:^(AVFrame *frame, AVPacket *packet) {
+        success(frame);
+    } audioSuccess:nil failure:failure decodeEnd:decodeEnd];
 }
 
 - (void)openAudioURL:(NSString *)urlString
-        audioSuccess:(void(^)(AVFrame *frame))audioSuccess
+        audioSuccess:(void(^)(AVFrame *frame,AVPacket *packet))audioSuccess
              failure:(void(^)(NSError *error))failure
            decodeEnd:(void(^)(void))decodeEnd {
     [self openURL:urlString videoSuccess:nil audioSuccess:audioSuccess failure:failure isGetFirstVideoFrame:NO decodeEnd:decodeEnd];
 }
 
 - (void)openVideoURL:(NSString *)urlString
-        videoSuccess:(void(^)(AVFrame *frame))videoSuccess
+        videoSuccess:(void(^)(AVFrame *frame,AVPacket *packet))videoSuccess
              failure:(void(^)(NSError *error))failure
            decodeEnd:(void(^)(void))decodeEnd {
     [self openURL:urlString videoSuccess:videoSuccess audioSuccess:nil failure:failure isGetFirstVideoFrame:NO decodeEnd:decodeEnd];
 }
 
 - (void)openURL:(NSString *)urlString
-   videoSuccess:(void(^)(AVFrame *frame))videoSuccess
-   audioSuccess:(void(^)(AVFrame *frame))audioSuccess
+   videoSuccess:(void(^)(AVFrame *frame,AVPacket *packet))videoSuccess
+   audioSuccess:(void(^)(AVFrame *frame,AVPacket *packet))audioSuccess
         failure:(void(^)(NSError *error))failure
       decodeEnd:(void(^)(void))decodeEnd {
     [self openURL:urlString videoSuccess:videoSuccess audioSuccess:audioSuccess failure:failure isGetFirstVideoFrame:NO decodeEnd:decodeEnd];
@@ -83,7 +85,12 @@ static FFmpegManager *staticFFmpegManager;
 }
 
 #pragma mark - Private
-- (void)openURL:(NSString *)urlString videoSuccess:(void(^)(AVFrame *frame))videoSuccess audioSuccess:(void(^)(AVFrame *frame))audioSuccess failure:(void(^)(NSError *error))failure isGetFirstVideoFrame:(BOOL)isGetFirstVideoFrame decodeEnd:(void(^)(void))decodeEnd{
+- (void)openURL:(NSString *)urlString
+   videoSuccess:(void(^)(AVFrame *frame,AVPacket *packet))videoSuccess
+   audioSuccess:(void(^)(AVFrame *frame,AVPacket *packet))audioSuccess
+        failure:(void(^)(NSError *error))failure
+isGetFirstVideoFrame:(BOOL)isGetFirstVideoFrame
+      decodeEnd:(void(^)(void))decodeEnd{
     
     self.URLString = urlString;
     
@@ -203,18 +210,7 @@ static FFmpegManager *staticFFmpegManager;
     AVFrame *audioFrame = av_frame_alloc();
     
     BOOL getFirstVideoFrame = NO;
-    RECORD_FORAMT_STREAM_INFO pVideoStream;
-    pVideoStream.codec_id = CODECID_V_H264;
-    pVideoStream.video_framerate = 25;
-    pVideoStream.video_width = codecParameters->width;
-    pVideoStream.video_height = codecParameters->height;
-//    Handle handle = RF_CreateRecordFile("ff.mp4", &pVideoStream, NULL);
-    
-    AVFormatContext *context;
-    avformat_alloc_output_context2(&context, NULL, NULL, "ff.mp4");
-    if (context != NULL) {
-        NSLog(@"create context success !"); 
-    }
+
     while (av_read_frame(formatContext, packet) >= 0) {
         {
             if(packet->stream_index == videoStreamID && videoSuccess) {
@@ -225,7 +221,7 @@ static FFmpegManager *staticFFmpegManager;
                 result = avcodec_receive_frame(videoCodecContext, videoFrame);
                 switch (result) {
                     case 0:{
-                        videoSuccess(videoFrame);
+                        videoSuccess(videoFrame,packet);
                         getFirstVideoFrame = YES;
                     }
                         break;
@@ -259,7 +255,7 @@ static FFmpegManager *staticFFmpegManager;
                         case 0:{
                             i++;
 //                            printf("%d==%d\n",i,audioCodeContext->frame_number);
-                            audioSuccess(audioFrame);
+                            audioSuccess(audioFrame,packet);
                         }
                             break;
                             
