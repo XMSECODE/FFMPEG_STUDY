@@ -451,7 +451,7 @@ HANDLE RF_CreateRecordFile(char * pFileName,RECORD_FORAMT_STREAM_INFO * pVideoSt
 	if (!pFormat->o_fmt_ctx)
 	{
 		DPRINTK("Could not deduce output format from file extension\n");
-		goto err;
+        return NULL;
 	}
 
 	strcpy(pFormat->filename,pFileName);
@@ -575,10 +575,7 @@ HANDLE RF_CreateRecordFile(char * pFileName,RECORD_FORAMT_STREAM_INFO * pVideoSt
 				open_audio(AudioCodec,pFormat,NULL);
 			}
 				
-
-					
-		}	
-
+		}
 	}
 
 	av_dump_format(pFormat->o_fmt_ctx, 0, pFormat->filename, 1);
@@ -587,25 +584,6 @@ HANDLE RF_CreateRecordFile(char * pFileName,RECORD_FORAMT_STREAM_INFO * pVideoSt
 	
 	avformat_write_header(pFormat->o_fmt_ctx, NULL);
 	return pFormat;
-err:
-	if( pFormat )
-	{
-		if( pFormat->o_audio_stream )
-		{
-			avcodec_close(pFormat->o_audio_stream->codec); 			
-		}
-
-
-		if( pFormat->o_video_stream )
-		{
-			avcodec_close(pFormat->o_video_stream->codec); 			
-		}
-
-		avformat_free_context(pFormat->o_fmt_ctx);
-//        Debug_Free(pFormat);
-        free(pFormat);
-	}
-	return NULL;
 }
 
 

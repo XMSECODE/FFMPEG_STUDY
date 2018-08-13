@@ -27,6 +27,9 @@
 #import "ESCYUVToH264Encoder.h"
 #import "ESCH264FileToMp4FileTool.h"
 
+#import "record_format.h"
+#import "rjone.h"
+
 @interface ESCYUV420VideoPlayViewController ()
 
 @property(nonatomic,strong)ESCAudioStreamPlayer* audioPlayer;
@@ -62,6 +65,12 @@
 @property(nonatomic,copy)NSString* saveMp4Path;
 
 @property(nonatomic,assign)BOOL isStartRecord;
+
+@property(nonatomic,assign)HANDLE handle;
+
+@property(nonatomic,assign)NSInteger videoWidth;
+
+@property(nonatomic,assign)NSInteger videoHeight;
 
 @end
 
@@ -131,20 +140,31 @@
 - (void)startRecorderVideo {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"停止录制视频" style:UIBarButtonItemStyleDone target:self action:@selector(stopRecorderVideo)];
     dispatch_async(self.queue, ^{
-        if (self.encoder == nil) {
-            self.encoder = [[ESCYUVToH264Encoder alloc] init];
+//        if (self.encoder == nil) {
+//            self.encoder = [[ESCYUVToH264Encoder alloc] init];
             NSString *cachesPath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             dateFormatter.dateFormat = @"yyyy_MM_dd_HH_mm_ss";
             NSString *datestring = [dateFormatter stringFromDate:[NSDate date]];
             NSString *saveH264Path = [NSString stringWithFormat:@"%@/%@.h264",cachesPath,datestring];
             NSString *mp4Path = [NSString stringWithFormat:@"%@/%@.mp4",cachesPath,datestring];
-            self.saveH264Path = saveH264Path;
-            self.saveMp4Path = mp4Path;
-            
-            [self.encoder setupVideoWidth:self.width height:self.height frameRate:25 h264FilePath:saveH264Path];
-            self.isStartRecord = YES;
-        }
+//            self.saveH264Path = saveH264Path;
+//            self.saveMp4Path = mp4Path;
+//
+//            [self.encoder setupVideoWidth:self.width height:self.height frameRate:25 h264FilePath:saveH264Path];
+//            self.isStartRecord = YES;
+//        }
+        char *pFilePath = [mp4Path cStringUsingEncoding:NSUTF8StringEncoding];
+        
+        RECORD_FORAMT_STREAM_INFO video;
+        video.video_width = self.videoWidth;
+        video.video_height = self.videoHeight;
+        video.video_framerate = 25;
+        video.codec_id = AV_CODEC_ID_H264;
+        
+        HANDLE handle = RF_CreateRecordFile(pFilePath, &video, NULL);
+        self.handle = handle;
+        
     });
     
 }
@@ -155,13 +175,14 @@
         self.isStartRecord = NO;
         
         if(self.encoder){
-            [self.encoder endYUVDataStream];
-            self.encoder = nil;
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                    [ESCH264FileToMp4FileTool ESCH264FileToMp4FileToolWithh264FilePath:self.saveH264Path mp4FilePath:self.saveMp4Path videoWidth:self.width videoHeight:self.height frameRate:25];
-                });
-            });
+            RF_CloseRecordFile(self.handle);
+//            [self.encoder endYUVDataStream];
+//            self.encoder = nil;
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+//                    [ESCH264FileToMp4FileTool ESCH264FileToMp4FileToolWithh264FilePath:self.saveH264Path mp4FilePath:self.saveMp4Path videoWidth:self.width videoHeight:self.height frameRate:25];
+//                });
+//            });
         }
     });
 }
@@ -178,7 +199,7 @@
     __weak __typeof(self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [[FFmpegManager sharedManager] openURL:URLString videoSuccess:^(AVFrame *frame,AVPacket *packet) {
-            [weakSelf handleVideoFrame:frame];
+            [weakSelf handleVideoFrame:frame packet:packet];
         } audioSuccess:^(AVFrame *frame,AVPacket *packet) {
             [weakSelf handleAudioFrame:frame];
         } failure:^(NSError *error) {
@@ -230,13 +251,23 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
     return md;
 }
 
-- (void)handleVideoFrame:(AVFrame *)videoFrame {
+- (void)handleVideoFrame:(AVFrame *)videoFrame packet:(AVPacket *)packet {
+    if (self.videoWidth != videoFrame->width || self.videoHeight != videoFrame->height) {
+        self.videoHeight = videoFrame->height;
+        self.videoWidth = videoFrame->width;
+    }
     __weak __typeof(self)weakSelf = self;
     @autoreleasepool {
         if (self.swsscaleManager == nil) {
             self.swsscaleManager = [[ECSwsscaleManager alloc] init];
             [self.swsscaleManager initWithAVFrame:videoFrame];
         }
+        
+        if (self.encoder && self.isStartRecord == YES) {
+            
+            RF_WriteVideoFrame(self.handle, packet->buf, packet->size);
+        }
+        
         NSInteger pts = videoFrame->pts;
         self.receiveVideoFrameCount++;
         if (self.openGLESView) {
@@ -257,14 +288,14 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
                 model.pts = pts;
                 [self.videoFrameArray addObject:model];
                 
-                if (self.encoder && self.isStartRecord == YES) {
-                    NSMutableData *yuvData = [NSMutableData data];
-                    [yuvData appendData:ydata];
-                    [yuvData appendData:udata];
-                    [yuvData appendData:vdata];
-                    
-                    [self.encoder encoderYUVData:yuvData];
-                }
+//                if (self.encoder && self.isStartRecord == YES) {
+//                    NSMutableData *yuvData = [NSMutableData data];
+//                    [yuvData appendData:ydata];
+//                    [yuvData appendData:udata];
+//                    [yuvData appendData:vdata];
+//
+//                    [self.encoder encoderYUVData:yuvData];
+//                }
             });
            
            

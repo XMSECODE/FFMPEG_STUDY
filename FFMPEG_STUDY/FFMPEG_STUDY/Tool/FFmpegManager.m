@@ -126,6 +126,7 @@ static FFmpegManager *staticFFmpegManager;
             [self.playTime invalidate];
         }
         self.playState = FFPlayStateStop;
+        
         av_frame_free(&_videoFrame);
         av_frame_free(&_audioFrame);
         av_packet_free(&_packet);
