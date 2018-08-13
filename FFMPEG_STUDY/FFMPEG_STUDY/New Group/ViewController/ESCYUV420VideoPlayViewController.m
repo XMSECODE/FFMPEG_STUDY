@@ -123,6 +123,11 @@
     [self playHKTV];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [[FFmpegManager sharedManager] stop];
+}
+
 - (void)startRecorderVideo {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"停止录制视频" style:UIBarButtonItemStyleDone target:self action:@selector(stopRecorderVideo)];
     dispatch_async(self.queue, ^{
