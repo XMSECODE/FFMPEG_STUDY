@@ -212,7 +212,9 @@ static FFmpegManager *staticFFmpegManager;
     
     AVFormatContext *context;
     avformat_alloc_output_context2(&context, NULL, NULL, "ff.mp4");
-    
+    if (context != NULL) {
+        NSLog(@"create context success !"); 
+    }
     while (av_read_frame(formatContext, packet) >= 0) {
         {
             if(packet->stream_index == videoStreamID && videoSuccess) {
