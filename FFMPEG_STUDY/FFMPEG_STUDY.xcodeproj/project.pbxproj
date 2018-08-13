@@ -357,35 +357,14 @@
 		047B7AFF1EF2C47800E4F0F8 /* FFMPEG_STUDY */ = {
 			isa = PBXGroup;
 			children = (
-				047B7B171EF2C4CF00E4F0F8 /* FFmpeg-iOS */,
 				047B7B031EF2C47800E4F0F8 /* AppDelegate.h */,
 				047B7B041EF2C47800E4F0F8 /* AppDelegate.m */,
-				047B7B061EF2C47800E4F0F8 /* ViewController.h */,
-				047B7B071EF2C47800E4F0F8 /* ViewController.m */,
-				047B7B091EF2C47800E4F0F8 /* Main.storyboard */,
-				0439482B210D97DD00C7BECA /* ESCImageVideoPlayViewController.h */,
-				0439482C210D97DD00C7BECA /* ESCImageVideoPlayViewController.m */,
-				04394825210D979B00C7BECA /* ESCRGBVideoPlayViewController.h */,
-				04394826210D979B00C7BECA /* ESCRGBVideoPlayViewController.m */,
-				04394828210D97B400C7BECA /* ESCYUV420VideoPlayViewController.h */,
-				04394829210D97B400C7BECA /* ESCYUV420VideoPlayViewController.m */,
-				04F596C82110B8F7007063E8 /* ESCMediaDataModel.h */,
-				04F596C92110B8F7007063E8 /* ESCMediaDataModel.m */,
-				047B7B111EF2C47900E4F0F8 /* Info.plist */,
-				F0F9344D20FD84FB00E6A334 /* resource */,
-				0495E8C41EFE482100958C4F /* other */,
-				0495E8C51EFE482100958C4F /* third */,
-				0495E8C61EFE482100958C4F /* tool */,
-				047B7B001EF2C47800E4F0F8 /* Supporting Files */,
+				F07471A821212ECF00865F5D /* Class */,
+				0495E8C41EFE482100958C4F /* Other */,
+				0495E8C51EFE482100958C4F /* Vender */,
+				0495E8C61EFE482100958C4F /* Tool */,
 			);
 			path = FFMPEG_STUDY;
-			sourceTree = "<group>";
-		};
-		047B7B001EF2C47800E4F0F8 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		047B7B171EF2C4CF00E4F0F8 /* FFmpeg-iOS */ = {
@@ -595,36 +574,36 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		0495E8C41EFE482100958C4F /* other */ = {
+		0495E8C41EFE482100958C4F /* Other */ = {
 			isa = PBXGroup;
 			children = (
+				0495E8D01EFE48DF00958C4F /* category */,
+				F0F9344D20FD84FB00E6A334 /* resource */,
+				047B7B111EF2C47900E4F0F8 /* Info.plist */,
 				0495E8D11EFE495D00958C4F /* Header.h */,
 				0495E8CE1EFE488500958C4F /* main.m */,
 			);
-			path = other;
+			path = Other;
 			sourceTree = "<group>";
 		};
-		0495E8C51EFE482100958C4F /* third */ = {
+		0495E8C51EFE482100958C4F /* Vender */ = {
 			isa = PBXGroup;
 			children = (
-				04AF2FBB2120836A00C72746 /* FFmpeg-record */,
-				F00D9DD92115789F00EDE1A1 /* ESCH264ToMp4Tool */,
+				047B7B171EF2C4CF00E4F0F8 /* FFmpeg-iOS */,
 				F00D9DD021154BD600EDE1A1 /* x264-iOS */,
 				0439482E210D9AFA00C7BECA /* Masonry */,
 				0495E8D51EFE5D3700958C4F /* JPFPSStatus */,
-				0495E8CA1EFE485200958C4F /* OpenGLView */,
 			);
-			path = third;
+			path = Vender;
 			sourceTree = "<group>";
 		};
-		0495E8C61EFE482100958C4F /* tool */ = {
+		0495E8C61EFE482100958C4F /* Tool */ = {
 			isa = PBXGroup;
 			children = (
-				040D9F7C20FF888C00EE76E6 /* ESCAudioStreamPlayer.h */,
-				040D9F7D20FF888C00EE76E6 /* ESCAudioStreamPlayer.m */,
-				04394855210DAF9700C7BECA /* ESCAudioUnitStreamPlayer.h */,
-				04394854210DAF9700C7BECA /* ESCAudioUnitStreamPlayer.m */,
-				0495E8D01EFE48DF00958C4F /* category */,
+				F07471AA21212FBF00865F5D /* AudioTool */,
+				04AF2FBB2120836A00C72746 /* FFmpeg-record */,
+				F00D9DD92115789F00EDE1A1 /* ESCH264ToMp4Tool */,
+				0495E8CA1EFE485200958C4F /* OpenGLView */,
 				0495E8DF1EFF41D800958C4F /* FFmpegManager.h */,
 				0495E8E01EFF41D800958C4F /* FFmpegManager.m */,
 				F0B883231F441B5F00042391 /* FFmpegRemuxer.h */,
@@ -636,7 +615,7 @@
 				F023F51F2112A93100335B8A /* ESCYUVToH264Encoder.h */,
 				F023F5202112A93100335B8A /* ESCYUVToH264Encoder.m */,
 			);
-			path = tool;
+			path = Tool;
 			sourceTree = "<group>";
 		};
 		0495E8CA1EFE485200958C4F /* OpenGLView */ = {
@@ -722,6 +701,52 @@
 				F00D9DDD2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m */,
 			);
 			path = ESCH264ToMp4Tool;
+			sourceTree = "<group>";
+		};
+		F07471A821212ECF00865F5D /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				F0EDA0C821212DC0003E88E5 /* ViewController */,
+				F07471A921212F2100865F5D /* Model */,
+			);
+			name = Class;
+			path = "New Group";
+			sourceTree = "<group>";
+		};
+		F07471A921212F2100865F5D /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				04F596C82110B8F7007063E8 /* ESCMediaDataModel.h */,
+				04F596C92110B8F7007063E8 /* ESCMediaDataModel.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		F07471AA21212FBF00865F5D /* AudioTool */ = {
+			isa = PBXGroup;
+			children = (
+				040D9F7C20FF888C00EE76E6 /* ESCAudioStreamPlayer.h */,
+				040D9F7D20FF888C00EE76E6 /* ESCAudioStreamPlayer.m */,
+				04394855210DAF9700C7BECA /* ESCAudioUnitStreamPlayer.h */,
+				04394854210DAF9700C7BECA /* ESCAudioUnitStreamPlayer.m */,
+			);
+			path = AudioTool;
+			sourceTree = "<group>";
+		};
+		F0EDA0C821212DC0003E88E5 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				047B7B061EF2C47800E4F0F8 /* ViewController.h */,
+				047B7B071EF2C47800E4F0F8 /* ViewController.m */,
+				047B7B091EF2C47800E4F0F8 /* Main.storyboard */,
+				0439482B210D97DD00C7BECA /* ESCImageVideoPlayViewController.h */,
+				0439482C210D97DD00C7BECA /* ESCImageVideoPlayViewController.m */,
+				04394825210D979B00C7BECA /* ESCRGBVideoPlayViewController.h */,
+				04394826210D979B00C7BECA /* ESCRGBVideoPlayViewController.m */,
+				04394828210D97B400C7BECA /* ESCYUV420VideoPlayViewController.h */,
+				04394829210D97B400C7BECA /* ESCYUV420VideoPlayViewController.m */,
+			);
+			path = ViewController;
 			sourceTree = "<group>";
 		};
 		F0F9344D20FD84FB00E6A334 /* resource */ = {
@@ -968,13 +993,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = NZ6KCMA9HH;
-				INFOPLIST_FILE = FFMPEG_STUDY/Info.plist;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/FFMPEG_STUDY/Vender/FFmpeg-iOS/include";
+				INFOPLIST_FILE = "$(SRCROOT)/FFMPEG_STUDY/other/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/FFMPEG_STUDY/FFmpeg-iOS/lib",
-					"$(PROJECT_DIR)/FFMPEG_STUDY/third/x264-iOS/lib",
+					"$(PROJECT_DIR)/FFMPEG_STUDY/Vender/FFmpeg-iOS/lib",
+					"$(PROJECT_DIR)/FFMPEG_STUDY/Vender/x264-iOS/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.XMSECODE.FFMPEG-STUDY";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -986,13 +1012,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = NZ6KCMA9HH;
-				INFOPLIST_FILE = FFMPEG_STUDY/Info.plist;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/FFMPEG_STUDY/Vender/FFmpeg-iOS/include";
+				INFOPLIST_FILE = "$(SRCROOT)/FFMPEG_STUDY/other/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/FFMPEG_STUDY/FFmpeg-iOS/lib",
-					"$(PROJECT_DIR)/FFMPEG_STUDY/third/x264-iOS/lib",
+					"$(PROJECT_DIR)/FFMPEG_STUDY/Vender/FFmpeg-iOS/lib",
+					"$(PROJECT_DIR)/FFMPEG_STUDY/Vender/x264-iOS/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.XMSECODE.FFMPEG-STUDY";
 				PRODUCT_NAME = "$(TARGET_NAME)";

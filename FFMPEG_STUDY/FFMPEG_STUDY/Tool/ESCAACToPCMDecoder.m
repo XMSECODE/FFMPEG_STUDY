@@ -40,7 +40,6 @@
 }
 
 - (void)freeAudioFrame:(AVFrame *)audioFrame {
-//    av_free(audioFrame->data[0]);
     av_frame_free(&audioFrame);
 }
 
