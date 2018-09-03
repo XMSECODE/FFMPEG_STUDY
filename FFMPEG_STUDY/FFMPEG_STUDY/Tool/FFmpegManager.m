@@ -10,8 +10,6 @@
 #import "avcodec.h"
 #import "Header.h"
 #import <AVFoundation/AVFoundation.h>
-#import "record_format.h"
-#import "rjone.h"
 
 typedef NS_ENUM(NSUInteger, FFPlayState) {
     FFPlayStatePrepare,
@@ -283,7 +281,7 @@ isGetFirstVideoFrame:(BOOL)isGetFirstVideoFrame
 }
 
 - (void)readMediaDataInPlayQueue {
-    printf("prepare read data\n");
+//    printf("prepare read data\n");
     if (self.playOperationQueue && self.playOperationQueue.operationCount <= 2) {
         [self.playOperationQueue addOperationWithBlock:^{
             if (self.playState == FFPlayStatePlaying) {
@@ -297,7 +295,7 @@ isGetFirstVideoFrame:(BOOL)isGetFirstVideoFrame
 
 - (void)readMediaData {
     
-    printf("read data\n");
+//    printf("read data\n");
     BOOL getFirstVideoFrame = NO;
     
     
@@ -315,7 +313,7 @@ isGetFirstVideoFrame:(BOOL)isGetFirstVideoFrame
                     case 0:{
                         self.videoSuccess(_videoFrame,_packet);
                         getFirstVideoFrame = YES;
-                        printf("read video data success!\n");
+//                        printf("read video data success!\n");
                         return;
                     }
                         break;

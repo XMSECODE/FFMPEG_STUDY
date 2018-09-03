@@ -51,8 +51,6 @@
 		0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */; };
 		0495E8DB1EFE5DE500958C4F /* UIView+XMSView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */; };
 		0495E8E11EFF41D800958C4F /* FFmpegManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8E01EFF41D800958C4F /* FFmpegManager.m */; };
-		04AF2FB92120836700C72746 /* record_format.c in Sources */ = {isa = PBXBuildFile; fileRef = 04AF2FB22120836500C72746 /* record_format.c */; };
-		04AF2FBA2120836700C72746 /* app_debug.c in Sources */ = {isa = PBXBuildFile; fileRef = 04AF2FB42120836600C72746 /* app_debug.c */; };
 		04DAEC4E2108B8650048ACA3 /* fragmentshader_RGB.fmsd in Resources */ = {isa = PBXBuildFile; fileRef = 04DAEC4B2108B8640048ACA3 /* fragmentshader_RGB.fmsd */; };
 		04DAEC4F2108B8650048ACA3 /* ESCOpenGLESView.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DAEC4C2108B8650048ACA3 /* ESCOpenGLESView.m */; };
 		04DAEC502108B8650048ACA3 /* vertexshader_RGB.vtsd in Resources */ = {isa = PBXBuildFile; fileRef = 04DAEC4D2108B8650048ACA3 /* vertexshader_RGB.vtsd */; };
@@ -247,14 +245,6 @@
 		0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+XMSView.m"; sourceTree = "<group>"; };
 		0495E8DF1EFF41D800958C4F /* FFmpegManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegManager.h; sourceTree = "<group>"; };
 		0495E8E01EFF41D800958C4F /* FFmpegManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFmpegManager.m; sourceTree = "<group>"; };
-		04AF2FB12120836400C72746 /* rjone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rjone.h; sourceTree = "<group>"; };
-		04AF2FB22120836500C72746 /* record_format.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = record_format.c; sourceTree = "<group>"; };
-		04AF2FB32120836600C72746 /* rjone_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rjone_type.h; sourceTree = "<group>"; };
-		04AF2FB42120836600C72746 /* app_debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = app_debug.c; sourceTree = "<group>"; };
-		04AF2FB52120836600C72746 /* record_format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = record_format.h; sourceTree = "<group>"; };
-		04AF2FB62120836600C72746 /* rjone_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rjone_config.h; sourceTree = "<group>"; };
-		04AF2FB72120836700C72746 /* rjone_debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rjone_debug.h; sourceTree = "<group>"; };
-		04AF2FB82120836700C72746 /* app_debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = app_debug.h; sourceTree = "<group>"; };
 		04DAEC4A2108B8640048ACA3 /* ESCOpenGLESView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCOpenGLESView.h; sourceTree = "<group>"; };
 		04DAEC4B2108B8640048ACA3 /* fragmentshader_RGB.fmsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragmentshader_RGB.fmsd; sourceTree = "<group>"; };
 		04DAEC4C2108B8650048ACA3 /* ESCOpenGLESView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCOpenGLESView.m; sourceTree = "<group>"; };
@@ -601,7 +591,6 @@
 			isa = PBXGroup;
 			children = (
 				F07471AA21212FBF00865F5D /* AudioTool */,
-				04AF2FBB2120836A00C72746 /* FFmpeg-record */,
 				F00D9DD92115789F00EDE1A1 /* ESCH264ToMp4Tool */,
 				0495E8CA1EFE485200958C4F /* OpenGLView */,
 				0495E8DF1EFF41D800958C4F /* FFmpegManager.h */,
@@ -649,21 +638,6 @@
 				0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */,
 			);
 			path = JPFPSStatus;
-			sourceTree = "<group>";
-		};
-		04AF2FBB2120836A00C72746 /* FFmpeg-record */ = {
-			isa = PBXGroup;
-			children = (
-				04AF2FB42120836600C72746 /* app_debug.c */,
-				04AF2FB82120836700C72746 /* app_debug.h */,
-				04AF2FB22120836500C72746 /* record_format.c */,
-				04AF2FB52120836600C72746 /* record_format.h */,
-				04AF2FB62120836600C72746 /* rjone_config.h */,
-				04AF2FB72120836700C72746 /* rjone_debug.h */,
-				04AF2FB32120836600C72746 /* rjone_type.h */,
-				04AF2FB12120836400C72746 /* rjone.h */,
-			);
-			path = "FFmpeg-record";
 			sourceTree = "<group>";
 		};
 		F00D9DD021154BD600EDE1A1 /* x264-iOS */ = {
@@ -840,7 +814,6 @@
 				0439482A210D97B400C7BECA /* ESCYUV420VideoPlayViewController.m in Sources */,
 				0495E8D41EFE497A00958C4F /* NSError+ECError.m in Sources */,
 				0495E8CF1EFE488500958C4F /* main.m in Sources */,
-				04AF2FBA2120836700C72746 /* app_debug.c in Sources */,
 				04394856210DAF9800C7BECA /* ESCAudioUnitStreamPlayer.m in Sources */,
 				0439482D210D97DD00C7BECA /* ESCImageVideoPlayViewController.m in Sources */,
 				0495E8DB1EFE5DE500958C4F /* UIView+XMSView.m in Sources */,
@@ -865,7 +838,6 @@
 				F023F5212112A93100335B8A /* ESCYUVToH264Encoder.m in Sources */,
 				04394852210D9AFA00C7BECA /* View+MASAdditions.m in Sources */,
 				0439484F210D9AFA00C7BECA /* MASViewConstraint.m in Sources */,
-				04AF2FB92120836700C72746 /* record_format.c in Sources */,
 				04F596CA2110B8F7007063E8 /* ESCMediaDataModel.m in Sources */,
 				0439484B210D9AFA00C7BECA /* MASConstraint.m in Sources */,
 				F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */,
