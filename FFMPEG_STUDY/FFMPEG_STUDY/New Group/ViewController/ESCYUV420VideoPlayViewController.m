@@ -14,14 +14,14 @@
 #import "imgutils.h"
 #import "opt.h"
 #import "Header.h"
-#import "ESCAACToPCMDecoder.h"
+#import "ESCPCMRedecoder.h"
 #import "ESCAudioStreamPlayer.h"
 
 #import "ECSwsscaleManager.h"
 #import "FFmpegManager.h"
 #import "FFmpegRemuxer.h"
 #import "ESCOpenGLESView.h"
-#import "ESCAACToPCMDecoder.h"
+#import "ESCPCMRedecoder.h"
 #import "ESCMediaDataModel.h"
 #import "x264.h"
 #import "ESCYUVToH264Encoder.h"
@@ -35,7 +35,7 @@
 
 @property(nonatomic,weak)ESCOpenGLESView* openGLESView;
 
-@property(nonatomic,strong)ESCAACToPCMDecoder* aacToPCMDecoder;
+@property(nonatomic,strong)ESCPCMRedecoder* aacToPCMDecoder;
 
 @property(nonatomic,strong)ECSwsscaleManager* swsscaleManager;
 
@@ -304,7 +304,7 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
         });
     }
     if (self.aacToPCMDecoder == nil) {
-        self.aacToPCMDecoder = [[ESCAACToPCMDecoder alloc] init];
+        self.aacToPCMDecoder = [[ESCPCMRedecoder alloc] init];
         [self.aacToPCMDecoder initConvertWithFrame:audioFrame];
     }
     if (self.aacToPCMDecoder) {

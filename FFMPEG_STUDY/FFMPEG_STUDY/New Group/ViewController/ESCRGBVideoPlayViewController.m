@@ -15,14 +15,14 @@
 #import "imgutils.h"
 #import "opt.h"
 #import "Header.h"
-#import "ESCAACToPCMDecoder.h"
+#import "ESCPCMRedecoder.h"
 #import "ESCAudioStreamPlayer.h"
 
 #import "ECSwsscaleManager.h"
 #import "FFmpegManager.h"
 #import "FFmpegRemuxer.h"
 #import "ESCOpenGLESView.h"
-#import "ESCAACToPCMDecoder.h"
+#import "ESCPCMRedecoder.h"
 
 
 @interface ESCRGBVideoPlayViewController ()
@@ -31,7 +31,7 @@
 
 @property(nonatomic,weak)ESCOpenGLESView* openGLESView;
 
-@property(nonatomic,strong)ESCAACToPCMDecoder* aacToPCMDecoder;
+@property(nonatomic,strong)ESCPCMRedecoder* aacToPCMDecoder;
 
 @property(nonatomic,strong)ECSwsscaleManager* swsscaleManager;
 
@@ -102,7 +102,7 @@
 
 - (void)handleAudioFrame:(AVFrame *)audioFrame {
     if (self.aacToPCMDecoder == nil) {
-        self.aacToPCMDecoder = [[ESCAACToPCMDecoder alloc] init];
+        self.aacToPCMDecoder = [[ESCPCMRedecoder alloc] init];
         [self.aacToPCMDecoder initConvertWithFrame:audioFrame];
     }
     if (self.aacToPCMDecoder) {

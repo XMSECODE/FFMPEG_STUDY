@@ -60,7 +60,7 @@
 		F00D9DDF2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F00D9DDD2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m */; };
 		F023F5212112A93100335B8A /* ESCYUVToH264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F023F5202112A93100335B8A /* ESCYUVToH264Encoder.m */; };
 		F0740401213D264D00BA562A /* ESCffmpegRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = F0740400213D264D00BA562A /* ESCffmpegRecorder.m */; };
-		F079562520FF2FF700F3AF26 /* ESCAACToPCMDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */; };
+		F079562520FF2FF700F3AF26 /* ESCPCMRedecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F079562420FF2FF700F3AF26 /* ESCPCMRedecoder.m */; };
 		F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = F0B883241F441B5F00042391 /* FFmpegRemuxer.m */; };
 		F0F9344C20FD84F500E6A334 /* demo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F0F9344B20FD84F500E6A334 /* demo.mp4 */; };
 /* End PBXBuildFile section */
@@ -263,8 +263,8 @@
 		F023F5202112A93100335B8A /* ESCYUVToH264Encoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCYUVToH264Encoder.m; sourceTree = "<group>"; };
 		F07403FF213D264D00BA562A /* ESCffmpegRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCffmpegRecorder.h; sourceTree = "<group>"; };
 		F0740400213D264D00BA562A /* ESCffmpegRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCffmpegRecorder.m; sourceTree = "<group>"; };
-		F079562320FF2FF700F3AF26 /* ESCAACToPCMDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCAACToPCMDecoder.h; sourceTree = "<group>"; };
-		F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCAACToPCMDecoder.m; sourceTree = "<group>"; };
+		F079562320FF2FF700F3AF26 /* ESCPCMRedecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCPCMRedecoder.h; sourceTree = "<group>"; };
+		F079562420FF2FF700F3AF26 /* ESCPCMRedecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCPCMRedecoder.m; sourceTree = "<group>"; };
 		F0B883231F441B5F00042391 /* FFmpegRemuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegRemuxer.h; sourceTree = "<group>"; };
 		F0B883241F441B5F00042391 /* FFmpegRemuxer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFmpegRemuxer.m; sourceTree = "<group>"; };
 		F0F9344B20FD84F500E6A334 /* demo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = demo.mp4; sourceTree = "<group>"; };
@@ -603,8 +603,8 @@
 				F0B883241F441B5F00042391 /* FFmpegRemuxer.m */,
 				0495E8C71EFE483E00958C4F /* ECSwsscaleManager.h */,
 				0495E8C81EFE483E00958C4F /* ECSwsscaleManager.m */,
-				F079562320FF2FF700F3AF26 /* ESCAACToPCMDecoder.h */,
-				F079562420FF2FF700F3AF26 /* ESCAACToPCMDecoder.m */,
+				F079562320FF2FF700F3AF26 /* ESCPCMRedecoder.h */,
+				F079562420FF2FF700F3AF26 /* ESCPCMRedecoder.m */,
 				F023F51F2112A93100335B8A /* ESCYUVToH264Encoder.h */,
 				F023F5202112A93100335B8A /* ESCYUVToH264Encoder.m */,
 			);
@@ -845,7 +845,7 @@
 				047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */,
 				0439484A210D9AFA00C7BECA /* MASCompositeConstraint.m in Sources */,
 				04394850210D9AFA00C7BECA /* NSArray+MASAdditions.m in Sources */,
-				F079562520FF2FF700F3AF26 /* ESCAACToPCMDecoder.m in Sources */,
+				F079562520FF2FF700F3AF26 /* ESCPCMRedecoder.m in Sources */,
 				F00D9DDF2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m in Sources */,
 				04DAEC4F2108B8650048ACA3 /* ESCOpenGLESView.m in Sources */,
 				F0740401213D264D00BA562A /* ESCffmpegRecorder.m in Sources */,
