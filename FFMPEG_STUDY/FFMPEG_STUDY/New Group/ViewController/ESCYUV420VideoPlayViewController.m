@@ -27,6 +27,9 @@
 #import "ESCYUVToH264Encoder.h"
 #import "ESCH264FileToMp4FileTool.h"
 
+#import "record_format.h"
+#import "rjone.h"
+
 @interface ESCYUV420VideoPlayViewController () <ESCYUVToH264EncoderDelegate>
 
 @property(nonatomic,strong)ESCAudioStreamPlayer* audioPlayer;
@@ -68,6 +71,8 @@
 @property(nonatomic,assign)NSInteger videoWidth;
 
 @property(nonatomic,assign)NSInteger videoHeight;
+
+@property(nonatomic,assign)HANDLE handle;
 
 @end
 
@@ -129,9 +134,14 @@
     [self playHKTV];
 }
 
+- (void)dealloc {
+    NSLog(@"dealloc %@",self);
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     [[FFmpegManager sharedManager] stop];
+    [self.timer invalidate];
 }
 
 - (void)startRecorderVideo {
@@ -150,7 +160,16 @@
             self.isStartRecord = YES;
 //            [self.encoder setupVideoWidth:self.width height:self.height frameRate:25 h264FilePath:saveH264Path];
             [self.encoder setupVideoWidth:self.width height:self.height frameRate:25 delegate:self];
-            self.h264StreamToMp4FileTool = [[ESCH264StreamToMp4FileTool alloc] initWithVideoSize:CGSizeMake(self.width, self.height) filePath:self.saveMp4Path frameRate:25];
+//            self.h264StreamToMp4FileTool = [[ESCH264StreamToMp4FileTool alloc] initWithVideoSize:CGSizeMake(self.width, self.height) filePath:self.saveMp4Path frameRate:25];
+            char *pfile = [self.saveMp4Path cStringUsingEncoding:NSUTF8StringEncoding];
+            RECORD_FORAMT_STREAM_INFO info;
+            info.codec_id = CODECID_V_H264;
+            info.video_framerate = 25;
+            info.video_width = self.width;
+            info.video_height = self.height;
+ 
+            HANDLE handle = RF_CreateRecordFile(pfile, &info, NULL);
+            self.handle = handle;
         }
         
         
@@ -317,13 +336,18 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
 #pragma mark - ESCYUVToH264EncoderDelegate
 - (void)encoder:(ESCYUVToH264Encoder*)encoder h264Data:(void *)h264Data dataLenth:(NSInteger)lenth {
     NSData *data = [NSData dataWithBytes:h264Data length:lenth];
-    [self.h264StreamToMp4FileTool pushH264DataContentSpsAndPpsData:data];
+//    [self.h264StreamToMp4FileTool pushH264DataContentSpsAndPpsData:data];
+    if (self.handle) {
+        RF_WriteVideoFrame(self.handle, h264Data, lenth);
+    }
 }
 
 - (void)encoderEnd:(ESCYUVToH264Encoder *)encoder {
-    [self.h264StreamToMp4FileTool endWritingCompletionHandler:^{
-        
-    }];
+//    [self.h264StreamToMp4FileTool endWritingCompletionHandler:^{
+//
+//    }];
+    RF_CloseRecordFile(self.handle);
+    self.handle = nil;
 }
 
 @end

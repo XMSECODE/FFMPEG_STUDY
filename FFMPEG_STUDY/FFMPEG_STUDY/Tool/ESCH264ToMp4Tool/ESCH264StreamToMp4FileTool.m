@@ -219,6 +219,8 @@ const int32_t TIME_SCALE = 1000000000l;    // 1s = 1e10^9 ns
     if (_assetWriter.status == AVAssetWriterStatusUnknown) {
         NSLog(@"_assetWriter status not ready");
         return;
+    }else {
+        NSLog(@"_assetWriter status is ready");
     }
     NSData *h264Data = [NSData dataWithBytes:dataBuffer length:len];
     CMSampleBufferRef h264Sample = [self sampleBufferWithData:h264Data formatDescriptor:_videoFormat];
@@ -290,20 +292,25 @@ const int32_t TIME_SCALE = 1000000000l;    // 1s = 1e10^9 ns
     _frameIndex ++;
 
     // check error
+    CFRelease(blockBuffer);
     
     return sampleBuffer;
 }
 
 - (void) endWritingCompletionHandler:(void (^)(void))handler {
+    
      CMTime time = [self timeWithFrame:_frameIndex];
     [_videoWriteInput markAsFinished];
-    [_assetWriter endSessionAtSourceTime:time];
-    [_assetWriter finishWritingWithCompletionHandler:^{
-        NSLog(@"finishWriting");
-        if (handler) {
-            handler();
-        }
-    }];
+    if (_frameIndex != 0) {
+        [_assetWriter endSessionAtSourceTime:time];
+        [_assetWriter finishWritingWithCompletionHandler:^{
+            NSLog(@"finishWriting");
+            if (handler) {
+                handler();
+            }
+        }];
+    }
+    
 }
 
 
