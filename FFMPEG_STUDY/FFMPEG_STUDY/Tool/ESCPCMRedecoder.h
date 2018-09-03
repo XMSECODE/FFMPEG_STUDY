@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "avcodec.h"
 
-@interface ESCAACToPCMDecoder : NSObject
+@interface ESCPCMRedecoder : NSObject
 
 - (void)initConvertWithFrame:(AVFrame *)frame;
 

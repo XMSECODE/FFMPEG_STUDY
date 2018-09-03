@@ -6,12 +6,12 @@
 //  Copyright © 2018年 XMSECODE. All rights reserved.
 //
 
-#import "ESCAACToPCMDecoder.h"
+#import "ESCPCMRedecoder.h"
 #include "libavformat/avformat.h"
 #include "libswresample/swresample.h"
 #include "libavcodec/avcodec.h"
 
-@interface ESCAACToPCMDecoder()
+@interface ESCPCMRedecoder()
 
 @property(nonatomic,assign)SwrContext *swrContext;
 
@@ -19,7 +19,7 @@
 
 @end
 
-@implementation ESCAACToPCMDecoder
+@implementation ESCPCMRedecoder
 
 - (void)initConvertWithFrame:(AVFrame *)frame {
     SwrContext *swrContext = swr_alloc_set_opts(NULL, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 48000, frame->channel_layout, frame->format, frame->sample_rate, 0, 0);

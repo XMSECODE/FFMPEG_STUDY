@@ -9,12 +9,12 @@
 #import "ESCImageVideoPlayViewController.h"
 
 #import "Header.h"
-#import "ESCAACToPCMDecoder.h"
+#import "ESCPCMRedecoder.h"
 #import "ESCAudioStreamPlayer.h"
 
 #import "ECSwsscaleManager.h"
 #import "FFmpegManager.h"
-#import "ESCAACToPCMDecoder.h"
+#import "ESCPCMRedecoder.h"
 #import "ESCAudioUnitStreamPlayer.h"
 
 @interface ESCImageVideoPlayViewController ()
@@ -25,7 +25,7 @@
 
 @property(nonatomic,strong)ESCAudioUnitStreamPlayer* unitAudioPlayer;
 
-@property(nonatomic,strong)ESCAACToPCMDecoder* aacToPCMDecoder;
+@property(nonatomic,strong)ESCPCMRedecoder* aacToPCMDecoder;
 
 @property(nonatomic,strong)ECSwsscaleManager* swsscaleManager;
 
@@ -102,7 +102,7 @@
 
 - (void)handleAudioFrame:(AVFrame *)audioFrame {
     if (self.aacToPCMDecoder == nil) {
-        self.aacToPCMDecoder = [[ESCAACToPCMDecoder alloc] init];
+        self.aacToPCMDecoder = [[ESCPCMRedecoder alloc] init];
         [self.aacToPCMDecoder initConvertWithFrame:audioFrame];
     }
     @autoreleasepool {
