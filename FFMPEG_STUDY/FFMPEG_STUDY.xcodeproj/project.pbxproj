@@ -13,7 +13,6 @@
 		04394827210D979C00C7BECA /* ESCRGBVideoPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 04394826210D979B00C7BECA /* ESCRGBVideoPlayViewController.m */; };
 		0439482A210D97B400C7BECA /* ESCYUV420VideoPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 04394829210D97B400C7BECA /* ESCYUV420VideoPlayViewController.m */; };
 		0439482D210D97DD00C7BECA /* ESCImageVideoPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0439482C210D97DD00C7BECA /* ESCImageVideoPlayViewController.m */; };
-		04394849210D9AFA00C7BECA /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0439482F210D9AFA00C7BECA /* Info.plist */; };
 		0439484A210D9AFA00C7BECA /* MASCompositeConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 04394831210D9AFA00C7BECA /* MASCompositeConstraint.m */; };
 		0439484B210D9AFA00C7BECA /* MASConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 04394834210D9AFA00C7BECA /* MASConstraint.m */; };
 		0439484C210D9AFA00C7BECA /* MASConstraintMaker.m in Sources */ = {isa = PBXBuildFile; fileRef = 04394836210D9AFA00C7BECA /* MASConstraintMaker.m */; };
@@ -807,7 +806,6 @@
 			files = (
 				F0F9344C20FD84F500E6A334 /* demo.mp4 in Resources */,
 				04DAEC4E2108B8650048ACA3 /* fragmentshader_RGB.fmsd in Resources */,
-				04394849210D9AFA00C7BECA /* Info.plist in Resources */,
 				047B7B101EF2C47900E4F0F8 /* LaunchScreen.storyboard in Resources */,
 				04DAEC502108B8650048ACA3 /* vertexshader_RGB.vtsd in Resources */,
 				047B7B0D1EF2C47800E4F0F8 /* Assets.xcassets in Resources */,
