@@ -187,11 +187,12 @@
 }
 
 - (void)playHKTV {
-    NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
+    NSString *videoPath = [[NSBundle mainBundle] pathForResource:@"test.mp4" ofType:nil];
+//    NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
     
     self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
     
-    [self playWithImageViewWithURLString:hongkongTVPath];
+    [self playWithImageViewWithURLString:videoPath];
 }
 
 - (void)playWithImageViewWithURLString:(NSString *)URLString {

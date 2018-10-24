@@ -50,6 +50,7 @@
 		0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */; };
 		0495E8DB1EFE5DE500958C4F /* UIView+XMSView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */; };
 		0495E8E11EFF41D800958C4F /* FFmpegManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8E01EFF41D800958C4F /* FFmpegManager.m */; };
+		04C4ECC12180C3C0009B20CC /* test.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 04C4ECC02180C3C0009B20CC /* test.mp4 */; };
 		04DAEC4E2108B8650048ACA3 /* fragmentshader_RGB.fmsd in Resources */ = {isa = PBXBuildFile; fileRef = 04DAEC4B2108B8640048ACA3 /* fragmentshader_RGB.fmsd */; };
 		04DAEC4F2108B8650048ACA3 /* ESCOpenGLESView.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DAEC4C2108B8650048ACA3 /* ESCOpenGLESView.m */; };
 		04DAEC502108B8650048ACA3 /* vertexshader_RGB.vtsd in Resources */ = {isa = PBXBuildFile; fileRef = 04DAEC4D2108B8650048ACA3 /* vertexshader_RGB.vtsd */; };
@@ -245,6 +246,7 @@
 		0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+XMSView.m"; sourceTree = "<group>"; };
 		0495E8DF1EFF41D800958C4F /* FFmpegManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegManager.h; sourceTree = "<group>"; };
 		0495E8E01EFF41D800958C4F /* FFmpegManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFmpegManager.m; sourceTree = "<group>"; };
+		04C4ECC02180C3C0009B20CC /* test.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.mp4; sourceTree = "<group>"; };
 		04DAEC4A2108B8640048ACA3 /* ESCOpenGLESView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCOpenGLESView.h; sourceTree = "<group>"; };
 		04DAEC4B2108B8640048ACA3 /* fragmentshader_RGB.fmsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragmentshader_RGB.fmsd; sourceTree = "<group>"; };
 		04DAEC4C2108B8650048ACA3 /* ESCOpenGLESView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCOpenGLESView.m; sourceTree = "<group>"; };
@@ -738,6 +740,7 @@
 		F0F9344D20FD84FB00E6A334 /* resource */ = {
 			isa = PBXGroup;
 			children = (
+				04C4ECC02180C3C0009B20CC /* test.mp4 */,
 				047B7B0E1EF2C47800E4F0F8 /* LaunchScreen.storyboard */,
 				047B7B0C1EF2C47800E4F0F8 /* Assets.xcassets */,
 				F0F9344B20FD84F500E6A334 /* demo.mp4 */,
@@ -811,6 +814,7 @@
 				047B7B0D1EF2C47800E4F0F8 /* Assets.xcassets in Resources */,
 				0417839A210C6CD5004A2841 /* vertexshader_YUV.vtsd in Resources */,
 				047B7B0B1EF2C47800E4F0F8 /* Main.storyboard in Resources */,
+				04C4ECC12180C3C0009B20CC /* test.mp4 in Resources */,
 				04178399210C6CD5004A2841 /* fragmentshader_YUV.fmsd in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
