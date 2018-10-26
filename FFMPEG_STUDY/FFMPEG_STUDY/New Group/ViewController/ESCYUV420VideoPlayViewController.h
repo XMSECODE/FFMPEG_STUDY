@@ -10,4 +10,7 @@
 
 @interface ESCYUV420VideoPlayViewController : UIViewController
 
+@property(nonatomic,copy)NSString* videoPath;
+
+
 @end

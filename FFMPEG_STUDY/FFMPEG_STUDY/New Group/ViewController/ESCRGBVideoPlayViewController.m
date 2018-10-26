@@ -57,15 +57,14 @@
         make.height.equalTo(self.view).multipliedBy(0.6);
     }];
     
-    [self playHKTV];
+    [self playVideo];
 }
 
-- (void)playHKTV {
-    NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
+- (void)playVideo {
     
     self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
     
-    [self playWithImageViewWithURLString:hongkongTVPath];
+    [self playWithImageViewWithURLString:self.videoPath];
 }
 
 - (void)playWithImageViewWithURLString:(NSString *)URLString {

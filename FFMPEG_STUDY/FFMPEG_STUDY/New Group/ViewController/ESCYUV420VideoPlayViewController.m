@@ -130,7 +130,7 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"开始录制视频" style:UIBarButtonItemStyleDone target:self action:@selector(startRecorderVideo)];
 
     
-    [self playHKTV];
+    [self playVideo];
 }
 
 - (void)dealloc {
@@ -186,13 +186,11 @@
     });
 }
 
-- (void)playHKTV {
-    NSString *videoPath = [[NSBundle mainBundle] pathForResource:@"test.mp4" ofType:nil];
-//    NSString *hongkongTVPath = @"rtmp://live.hkstv.hk.lxdns.com/live/hks";
+- (void)playVideo {
     
-    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger   channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
+    self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
     
-    [self playWithImageViewWithURLString:videoPath];
+    [self playWithImageViewWithURLString:self.videoPath];
 }
 
 - (void)playWithImageViewWithURLString:(NSString *)URLString {

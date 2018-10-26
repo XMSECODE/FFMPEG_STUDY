@@ -50,7 +50,7 @@
 		0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */; };
 		0495E8DB1EFE5DE500958C4F /* UIView+XMSView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */; };
 		0495E8E11EFF41D800958C4F /* FFmpegManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8E01EFF41D800958C4F /* FFmpegManager.m */; };
-		04C4ECC12180C3C0009B20CC /* test.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 04C4ECC02180C3C0009B20CC /* test.mp4 */; };
+		04C4ECC12180C3C0009B20CC /* test_1080p.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 04C4ECC02180C3C0009B20CC /* test_1080p.mp4 */; };
 		04DAEC4E2108B8650048ACA3 /* fragmentshader_RGB.fmsd in Resources */ = {isa = PBXBuildFile; fileRef = 04DAEC4B2108B8640048ACA3 /* fragmentshader_RGB.fmsd */; };
 		04DAEC4F2108B8650048ACA3 /* ESCOpenGLESView.m in Sources */ = {isa = PBXBuildFile; fileRef = 04DAEC4C2108B8650048ACA3 /* ESCOpenGLESView.m */; };
 		04DAEC502108B8650048ACA3 /* vertexshader_RGB.vtsd in Resources */ = {isa = PBXBuildFile; fileRef = 04DAEC4D2108B8650048ACA3 /* vertexshader_RGB.vtsd */; };
@@ -61,6 +61,8 @@
 		F023F5212112A93100335B8A /* ESCYUVToH264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F023F5202112A93100335B8A /* ESCYUVToH264Encoder.m */; };
 		F0740401213D264D00BA562A /* ESCffmpegRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = F0740400213D264D00BA562A /* ESCffmpegRecorder.m */; };
 		F079562520FF2FF700F3AF26 /* ESCPCMRedecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F079562420FF2FF700F3AF26 /* ESCPCMRedecoder.m */; };
+		F081D8FF2182F1E200F7A360 /* test_720p.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F081D8FE2182F1E200F7A360 /* test_720p.mp4 */; };
+		F081D9012182F29C00F7A360 /* test_540p.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F081D9002182F29C00F7A360 /* test_540p.mp4 */; };
 		F0B883251F441B5F00042391 /* FFmpegRemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = F0B883241F441B5F00042391 /* FFmpegRemuxer.m */; };
 		F0F9344C20FD84F500E6A334 /* demo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F0F9344B20FD84F500E6A334 /* demo.mp4 */; };
 /* End PBXBuildFile section */
@@ -246,7 +248,7 @@
 		0495E8DA1EFE5DE500958C4F /* UIView+XMSView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+XMSView.m"; sourceTree = "<group>"; };
 		0495E8DF1EFF41D800958C4F /* FFmpegManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegManager.h; sourceTree = "<group>"; };
 		0495E8E01EFF41D800958C4F /* FFmpegManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFmpegManager.m; sourceTree = "<group>"; };
-		04C4ECC02180C3C0009B20CC /* test.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.mp4; sourceTree = "<group>"; };
+		04C4ECC02180C3C0009B20CC /* test_1080p.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_1080p.mp4; sourceTree = "<group>"; };
 		04DAEC4A2108B8640048ACA3 /* ESCOpenGLESView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCOpenGLESView.h; sourceTree = "<group>"; };
 		04DAEC4B2108B8640048ACA3 /* fragmentshader_RGB.fmsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragmentshader_RGB.fmsd; sourceTree = "<group>"; };
 		04DAEC4C2108B8650048ACA3 /* ESCOpenGLESView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCOpenGLESView.m; sourceTree = "<group>"; };
@@ -266,6 +268,8 @@
 		F0740400213D264D00BA562A /* ESCffmpegRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCffmpegRecorder.m; sourceTree = "<group>"; };
 		F079562320FF2FF700F3AF26 /* ESCPCMRedecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCPCMRedecoder.h; sourceTree = "<group>"; };
 		F079562420FF2FF700F3AF26 /* ESCPCMRedecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCPCMRedecoder.m; sourceTree = "<group>"; };
+		F081D8FE2182F1E200F7A360 /* test_720p.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_720p.mp4; sourceTree = "<group>"; };
+		F081D9002182F29C00F7A360 /* test_540p.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_540p.mp4; sourceTree = "<group>"; };
 		F0B883231F441B5F00042391 /* FFmpegRemuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpegRemuxer.h; sourceTree = "<group>"; };
 		F0B883241F441B5F00042391 /* FFmpegRemuxer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFmpegRemuxer.m; sourceTree = "<group>"; };
 		F0F9344B20FD84F500E6A334 /* demo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = demo.mp4; sourceTree = "<group>"; };
@@ -740,7 +744,9 @@
 		F0F9344D20FD84FB00E6A334 /* resource */ = {
 			isa = PBXGroup;
 			children = (
-				04C4ECC02180C3C0009B20CC /* test.mp4 */,
+				F081D9002182F29C00F7A360 /* test_540p.mp4 */,
+				F081D8FE2182F1E200F7A360 /* test_720p.mp4 */,
+				04C4ECC02180C3C0009B20CC /* test_1080p.mp4 */,
 				047B7B0E1EF2C47800E4F0F8 /* LaunchScreen.storyboard */,
 				047B7B0C1EF2C47800E4F0F8 /* Assets.xcassets */,
 				F0F9344B20FD84F500E6A334 /* demo.mp4 */,
@@ -779,7 +785,7 @@
 				TargetAttributes = {
 					047B7AFC1EF2C47800E4F0F8 = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = 4SF28MHQDQ;
+						DevelopmentTeam = NZ6KCMA9HH;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -807,6 +813,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F081D8FF2182F1E200F7A360 /* test_720p.mp4 in Resources */,
 				F0F9344C20FD84F500E6A334 /* demo.mp4 in Resources */,
 				04DAEC4E2108B8650048ACA3 /* fragmentshader_RGB.fmsd in Resources */,
 				047B7B101EF2C47900E4F0F8 /* LaunchScreen.storyboard in Resources */,
@@ -814,7 +821,8 @@
 				047B7B0D1EF2C47800E4F0F8 /* Assets.xcassets in Resources */,
 				0417839A210C6CD5004A2841 /* vertexshader_YUV.vtsd in Resources */,
 				047B7B0B1EF2C47800E4F0F8 /* Main.storyboard in Resources */,
-				04C4ECC12180C3C0009B20CC /* test.mp4 in Resources */,
+				F081D9012182F29C00F7A360 /* test_540p.mp4 in Resources */,
+				04C4ECC12180C3C0009B20CC /* test_1080p.mp4 in Resources */,
 				04178399210C6CD5004A2841 /* fragmentshader_YUV.fmsd in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -980,7 +988,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 4SF28MHQDQ;
+				DEVELOPMENT_TEAM = NZ6KCMA9HH;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/FFMPEG_STUDY/Vender/FFmpeg-iOS/include";
 				INFOPLIST_FILE = "$(SRCROOT)/FFMPEG_STUDY/other/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -999,7 +1007,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 4SF28MHQDQ;
+				DEVELOPMENT_TEAM = NZ6KCMA9HH;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/FFMPEG_STUDY/Vender/FFmpeg-iOS/include";
 				INFOPLIST_FILE = "$(SRCROOT)/FFMPEG_STUDY/other/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;

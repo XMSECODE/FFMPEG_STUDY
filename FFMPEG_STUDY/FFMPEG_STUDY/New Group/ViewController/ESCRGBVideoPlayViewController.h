@@ -10,4 +10,6 @@
 
 @interface ESCRGBVideoPlayViewController : UIViewController
 
+@property(nonatomic,copy)NSString* videoPath;
+
 @end

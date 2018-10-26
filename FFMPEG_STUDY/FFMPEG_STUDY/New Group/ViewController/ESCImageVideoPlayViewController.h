@@ -10,4 +10,6 @@
 
 @interface ESCImageVideoPlayViewController : UIViewController
 
+@property(nonatomic,copy)NSString* videoPath;
+
 @end
