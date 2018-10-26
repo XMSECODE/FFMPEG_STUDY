@@ -34,6 +34,14 @@
         failure:(void(^)(NSError *error))failure
       decodeEnd:(void(^)(void))decodeEnd;
 
+
+- (void)openURL:(NSString *)urlString
+        failure:(void(^)(NSError *error))failure;
+- (void)readFrameVideoSuccess:(void(^)(AVFrame *frame,AVPacket *packet))videoSuccess
+                 audioSuccess:(void(^)(AVFrame *frame,AVPacket *packet))audioSuccess
+                      failure:(void(^)(NSError *error))failure
+                    decodeEnd:(void(^)(void))decodeEnd;
+
 - (void)stop;
 
 

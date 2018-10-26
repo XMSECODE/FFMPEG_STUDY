@@ -427,7 +427,7 @@
                 glDeleteTextures(1, &_texture);
             }
             
-            glClearColor(1, 0, 0, 1);
+            glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT);
         
             //创建纹理

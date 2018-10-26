@@ -196,15 +196,19 @@
 - (void)playWithImageViewWithURLString:(NSString *)URLString {
     __weak __typeof(self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [[FFmpegManager sharedManager] openURL:URLString videoSuccess:^(AVFrame *frame,AVPacket *packet) {
-            [weakSelf handleVideoFrame:frame packet:packet];
-        } audioSuccess:^(AVFrame *frame,AVPacket *packet) {
-            [weakSelf handleAudioFrame:frame];
-        } failure:^(NSError *error) {
+        [[FFmpegManager sharedManager] openURL:URLString failure:^(NSError *error) {
             NSLog(@"error == %@",error.localizedDescription);
-        } decodeEnd:^{
-            
         }];
+        
+//        [[FFmpegManager sharedManager] openURL:URLString videoSuccess:^(AVFrame *frame,AVPacket *packet) {
+//            [weakSelf handleVideoFrame:frame packet:packet];
+//        } audioSuccess:^(AVFrame *frame,AVPacket *packet) {
+//            [weakSelf handleAudioFrame:frame];
+//        } failure:^(NSError *error) {
+//            NSLog(@"error == %@",error.localizedDescription);
+//        } decodeEnd:^{
+//
+//        }];
     });
 }
 
@@ -250,6 +254,7 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
 }
 
 - (void)handleVideoFrame:(AVFrame *)videoFrame packet:(AVPacket *)packet {
+    printf("接收到视频数据\n");
     if (self.videoWidth != videoFrame->width || self.videoHeight != videoFrame->height) {
         self.videoHeight = videoFrame->height;
         self.videoWidth = videoFrame->width;
@@ -296,9 +301,10 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
 }
 
 - (void)handleAudioFrame:(AVFrame *)audioFrame {
+    printf("接收到音频数据\n");
     if (self.timer == nil && self.audioFrameArray.count > 100) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.timer = [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(play) userInfo:nil repeats:YES];
+            self.timer = [NSTimer scheduledTimerWithTimeInterval:0.01 target:self selector:@selector(play) userInfo:nil repeats:YES];
             NSLog(@"timer");
         });
     }

@@ -115,6 +115,21 @@ static FFmpegManager *staticFFmpegManager;
     [self openURL:urlString videoSuccess:videoSuccess audioSuccess:audioSuccess failure:failure isGetFirstVideoFrame:NO decodeEnd:decodeEnd];
 }
 
+- (void)openURL:(NSString *)urlString
+        failure:(void(^)(NSError *error))failure {
+    [self openURL:urlString videoSuccess:nil audioSuccess:nil failure:failure decodeEnd:nil];
+}
+
+- (void)readFrameVideoSuccess:(void(^)(AVFrame *frame,AVPacket *packet))videoSuccess
+                 audioSuccess:(void(^)(AVFrame *frame,AVPacket *packet))audioSuccess
+                      failure:(void(^)(NSError *error))failure
+                    decodeEnd:(void(^)(void))decodeEnd {
+    self.audioSuccess = audioSuccess;
+    self.videoSuccess = videoSuccess;
+    self.decodeEnd = decodeEnd;
+    [self readMediaDataInPlayQueue];
+}
+
 - (void)stop {
     
     [self.playOperationQueue cancelAllOperations];
@@ -272,12 +287,8 @@ isGetFirstVideoFrame:(BOOL)isGetFirstVideoFrame
     _audioFrame = av_frame_alloc();
     _packet = av_packet_alloc();
 
-    
-    self.playTime = [NSTimer scheduledTimerWithTimeInterval:1.0 / 60.0 target:self selector:@selector(readMediaDataInPlayQueue) userInfo:nil repeats:YES];
-    
     self.playState = FFPlayStatePlaying;
     
-    [[NSRunLoop currentRunLoop] run];
 }
 
 - (void)readMediaDataInPlayQueue {
