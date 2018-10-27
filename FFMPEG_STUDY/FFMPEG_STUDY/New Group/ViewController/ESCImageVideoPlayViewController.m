@@ -29,6 +29,8 @@
 
 @property(nonatomic,strong)ECSwsscaleManager* swsscaleManager;
 
+@property(nonatomic,strong)FFmpegManager* ffmpegManager;
+
 @end
 
 @implementation ESCImageVideoPlayViewController
@@ -57,7 +59,7 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    [[FFmpegManager sharedManager] stop];
+    [self.ffmpegManager stop];
 //    [self.timer invalidate];
 }
 
@@ -73,7 +75,8 @@
 - (void)playWithImageViewWithURLString:(NSString *)URLString {
     __weak __typeof(self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [[FFmpegManager sharedManager] openURL:URLString videoSuccess:^(AVFrame *frame,AVPacket *packet) {
+        self.ffmpegManager = [[FFmpegManager alloc] init];
+        [self.ffmpegManager openURL:URLString videoSuccess:^(AVFrame *frame,AVPacket *packet) {
             [weakSelf handleVideoFrame:frame];
         } audioSuccess:^(AVFrame *frame,AVPacket *packet) {
             [weakSelf handleAudioFrame:frame];

@@ -73,6 +73,8 @@
 
 @property(nonatomic,strong)ESCffmpegRecorder* ffmpegRecorder;
 
+@property(nonatomic,strong)FFmpegManager* ffmpegManager;
+
 @end
 
 @implementation ESCYUV420VideoPlayViewController
@@ -139,7 +141,7 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    [[FFmpegManager sharedManager] stop];
+    [self.ffmpegManager stop];
     [self.timer invalidate];
 }
 
@@ -196,7 +198,8 @@
 - (void)playWithImageViewWithURLString:(NSString *)URLString {
     __weak __typeof(self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [[FFmpegManager sharedManager] openURL:URLString failure:^(NSError *error) {
+        self.ffmpegManager = [[FFmpegManager alloc] init];
+        [self.ffmpegManager openURL:URLString failure:^(NSError *error) {
             NSLog(@"error == %@",error.localizedDescription);
         }];
         

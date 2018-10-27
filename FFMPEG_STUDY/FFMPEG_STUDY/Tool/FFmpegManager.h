@@ -11,8 +11,6 @@
 
 @interface FFmpegManager : NSObject
 
-+ (instancetype)sharedManager;
-
 - (void)getFirstVideoFrameWithURL:(NSString *)urlString
                           success:(void(^)(AVFrame *firstFrame))success
                           failure:(void(^)(NSError *error))failure

@@ -53,17 +53,7 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
 
 @end
 
-static FFmpegManager *staticFFmpegManager;
-
 @implementation FFmpegManager
-
-+ (instancetype)sharedManager {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        staticFFmpegManager = [[FFmpegManager alloc] init];
-    });
-    return staticFFmpegManager;
-}
 
 - (instancetype)init{
     self = [super init];
@@ -77,6 +67,7 @@ static FFmpegManager *staticFFmpegManager;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         av_register_all();
+        avcodec_register_all();
         avformat_network_init();
     });
     self.playOperationQueue = [[NSOperationQueue alloc] init];
