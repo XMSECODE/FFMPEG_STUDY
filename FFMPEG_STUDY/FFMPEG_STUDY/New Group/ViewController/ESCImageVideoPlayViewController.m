@@ -13,7 +13,7 @@
 #import "ESCAudioStreamPlayer.h"
 
 #import "ECSwsscaleManager.h"
-#import "FFmpegManager.h"
+#import "ESCFFmpegFileTool.h"
 #import "ESCPCMRedecoder.h"
 #import "ESCAudioUnitStreamPlayer.h"
 
@@ -29,7 +29,7 @@
 
 @property(nonatomic,strong)ECSwsscaleManager* swsscaleManager;
 
-@property(nonatomic,strong)FFmpegManager* ffmpegManager;
+@property(nonatomic,strong)ESCFFmpegFileTool* ffmpegManager;
 
 @end
 
@@ -75,14 +75,10 @@
 - (void)playWithImageViewWithURLString:(NSString *)URLString {
     __weak __typeof(self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        self.ffmpegManager = [[FFmpegManager alloc] init];
-        [self.ffmpegManager openURL:URLString videoSuccess:^(AVFrame *frame,AVPacket *packet) {
-            [weakSelf handleVideoFrame:frame];
-        } audioSuccess:^(AVFrame *frame,AVPacket *packet) {
-            [weakSelf handleAudioFrame:frame];
+        self.ffmpegManager = [[ESCFFmpegFileTool alloc] init];
+        [self.ffmpegManager openURL:URLString success:^(id para) {
+            
         } failure:^(NSError *error) {
-            NSLog(@"error == %@",error.localizedDescription);
-        } decodeEnd:^{
             
         }];
     });

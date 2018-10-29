@@ -18,7 +18,7 @@
 #import "ESCAudioStreamPlayer.h"
 
 #import "ECSwsscaleManager.h"
-#import "FFmpegManager.h"
+#import "ESCFFmpegFileTool.h"
 #import "FFmpegRemuxer.h"
 #import "ESCOpenGLESView.h"
 #import "ESCPCMRedecoder.h"
@@ -67,19 +67,19 @@
 
 @property(nonatomic,assign)BOOL isStartRecord;
 
-@property(nonatomic,assign)NSInteger videoWidth;
-
-@property(nonatomic,assign)NSInteger videoHeight;
+@property(nonatomic,strong)ESCMediaInfoModel* mediaInfoModel;
 
 @property(nonatomic,strong)ESCffmpegRecorder* ffmpegRecorder;
 
-@property(nonatomic,strong)FFmpegManager* ffmpegManager;
+@property(nonatomic,strong)ESCFFmpegFileTool* ffmpegManager;
+
+@property(nonatomic,strong)NSMutableArray<ESCFrameDataModel*>* audioPacketModelArray;
+
+@property(nonatomic,strong)NSMutableArray<ESCFrameDataModel*>* videoPacketModelArray;
 
 @end
 
 @implementation ESCYUV420VideoPlayViewController
-
-
 
 
 - (void)viewDidLoad {
@@ -191,57 +191,76 @@
 - (void)playVideo {
     
     self.audioPlayer = [[ESCAudioStreamPlayer alloc] initWithSampleRate:48000 formatID:kAudioFormatLinearPCM formatFlags:kAudioFormatFlagIsSignedInteger channelsPerFrame:2 bitsPerChannel:32 framesPerPacket:1];
-    
-    [self playWithImageViewWithURLString:self.videoPath];
-}
-
-- (void)playWithImageViewWithURLString:(NSString *)URLString {
+    self.audioPacketModelArray = [NSMutableArray array];
+    self.videoPacketModelArray = [NSMutableArray array];
     __weak __typeof(self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        self.ffmpegManager = [[FFmpegManager alloc] init];
-        [self.ffmpegManager openURL:URLString failure:^(NSError *error) {
-            NSLog(@"error == %@",error.localizedDescription);
+        self.ffmpegManager = [[ESCFFmpegFileTool alloc] init];
+        [self.ffmpegManager openURL:self.videoPath success:^(ESCMediaInfoModel *infoModel) {
+            self.mediaInfoModel = infoModel;
+            //开始读取数据
+            [self play];
+        } failure:^(NSError *error) {
+            //提示失败
+            NSLog(@"%@",error);
         }];
-        
-//        [[FFmpegManager sharedManager] openURL:URLString videoSuccess:^(AVFrame *frame,AVPacket *packet) {
-//            [weakSelf handleVideoFrame:frame packet:packet];
-//        } audioSuccess:^(AVFrame *frame,AVPacket *packet) {
-//            [weakSelf handleAudioFrame:frame];
-//        } failure:^(NSError *error) {
-//            NSLog(@"error == %@",error.localizedDescription);
-//        } decodeEnd:^{
-//
-//        }];
     });
+}
+
+- (void)readData {
+    //读取数据
+    [self.ffmpegManager readPacketVideoSuccess:^(ESCFrameDataModel *model) {
+        [self.videoPacketModelArray addObject:model];
+    } audioSuccess:^(ESCFrameDataModel *model) {
+        [self.audioPacketModelArray addObject:model];
+    } failure:^(NSError *error) {
+        
+    } decodeEnd:^{
+        
+    }];
 }
 
 - (void)play {
+
     dispatch_async(self.queue, ^{
-        if (self.startTime == 0) {
-            self.startTime = CACurrentMediaTime();
-        }
-        self.currentTime = (CACurrentMediaTime() - self.startTime) * 1000;
-
-        if (self.videoFrameArray.count > 0) {
-            ESCMediaDataModel *videoModel = [self.videoFrameArray firstObject];
-            NSInteger videopts = videoModel.pts;
-
-            if (videopts - self.currentTime <= 50) {
-                [self.videoFrameArray removeObject:videoModel];
-                [self.openGLESView loadYUV420PDataWithYData:videoModel.yData uData:videoModel.uData vData:videoModel.vData width:self.width height:self.height];
-            }
-            
-            ESCMediaDataModel *audioModel = [self.audioFrameArray firstObject];
-            if (audioModel) {
-//                printf("audio data==%d==%d==%d\n",self.audioFrameArray.count,videopts,audioModel.pts);
-                if (audioModel.pts - self.currentTime < 100) {
-                    [self.audioFrameArray removeObject:audioModel];
-                    [self.audioPlayer play:audioModel.audioData];
-                }
+        //缓存数据
+        while (1) {
+            if (self.videoPacketModelArray.count <= 50) {
+                [self readData];
+            }else {
+                //缓存完成
+                printf("缓存完成\n");
+                break;
             }
         }
-
+        //开始定时解码播放
+        
+        NSTimer *playTimer = [NSTimer timerWithTimeInterval:1.0 / self.mediaInfoModel.videoFrameRate target:self selector:@selector(decodeAndRender) userInfo:nil repeats:YES];
+        [[NSRunLoop currentRunLoop] addTimer:playTimer forMode:NSDefaultRunLoopMode];
+        [[NSRunLoop currentRunLoop] run];
+        self.timer = playTimer;
     });
+}
+
+- (void)decodeAndRender {
+    double currentTime = CACurrentMediaTime();
+    
+    printf("开始解码渲染%lf\n",currentTime - self.startTime);
+    self.startTime = currentTime;
+    [self readData];
+    if (self.videoPacketModelArray.count > 0) {
+        ESCFrameDataModel *videoModel = self.videoPacketModelArray.firstObject;
+        [self.videoPacketModelArray removeObject:videoModel];
+        [self.ffmpegManager decodePacket:videoModel videoSuccess:^(ESCFrameDataModel *model) {
+//            printf("解码完成\n");
+            [self handleVideoFrame:model.frame];
+        } audioSuccess:nil failure:^(NSError *error) {
+            
+        }];
+    }
+    if (self.audioPacketModelArray.count > 0) {
+        ESCFrameDataModel *audioModel = self.audioPacketModelArray.firstObject;
+    }
 }
 
 NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
@@ -256,12 +275,7 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
     return md;
 }
 
-- (void)handleVideoFrame:(AVFrame *)videoFrame packet:(AVPacket *)packet {
-    printf("接收到视频数据\n");
-    if (self.videoWidth != videoFrame->width || self.videoHeight != videoFrame->height) {
-        self.videoHeight = videoFrame->height;
-        self.videoWidth = videoFrame->width;
-    }
+- (void)handleVideoFrame:(AVFrame *)videoFrame {
     @autoreleasepool {
         if (self.swsscaleManager == nil) {
             self.swsscaleManager = [[ECSwsscaleManager alloc] init];
@@ -278,28 +292,34 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
                 self.width = videoFrame->width;
                 self.height = videoFrame->height;
             }
-            dispatch_async(self.queue, ^{
-                ESCMediaDataModel *model = [[ESCMediaDataModel alloc] init];
-                model.type = 0;
-                model.yData = ydata;
-                model.uData =udata;
-                model.vData = vdata;
-
-                model.pts = pts;
-                [self.videoFrameArray addObject:model];
+//            printf("渲染数据");
+//                if (self.startTime == 0) {
+//                    self.startTime = CACurrentMediaTime();
+//                }
+            //                self.currentTime = (CACurrentMediaTime() - self.startTime) * 1000;
+            
+                //                    if (videopts - self.currentTime <= 50) {
+            [self.openGLESView loadYUV420PDataWithYData:ydata uData:udata vData:vdata width:self.width height:self.height];
+            //                    }
+            
+            //                    ESCMediaDataModel *audioModel = [self.audioFrameArray firstObject];
+            //                    if (audioModel) {
+            //                        //                printf("audio data==%d==%d==%d\n",self.audioFrameArray.count,videopts,audioModel.pts);
+            //                        if (audioModel.pts - self.currentTime < 100) {
+            //                            [self.audioFrameArray removeObject:audioModel];
+            //                            [self.audioPlayer play:audioModel.audioData];
+            //                        }
+            //                    }
+            if (self.encoder && self.isStartRecord == YES) {
+                NSMutableData *yuvData = [NSMutableData data];
+                [yuvData appendData:ydata];
+                [yuvData appendData:udata];
+                [yuvData appendData:vdata];
                 
-                if (self.encoder && self.isStartRecord == YES) {
-                    NSMutableData *yuvData = [NSMutableData data];
-                    [yuvData appendData:ydata];
-                    [yuvData appendData:udata];
-                    [yuvData appendData:vdata];
-
-                    [self.encoder encoderYUVData:yuvData];
-                }
-            });
-           
-           
+                [self.encoder encoderYUVData:yuvData];
+            }
         }
+        
     }
 }
 
