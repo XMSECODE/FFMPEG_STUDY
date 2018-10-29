@@ -7,17 +7,9 @@
 //
 
 #import "ESCYUV420VideoPlayViewController.h"
-#import <AVFoundation/AVFoundation.h>
-#import "avformat.h"
-#import "avcodec.h"
-#import "swscale.h"
-#import "imgutils.h"
-#import "opt.h"
 #import "Header.h"
 #import "ESCPCMRedecoder.h"
 #import "ESCAudioStreamPlayer.h"
-
-#import "ECSwsscaleManager.h"
 #import "ESCFFmpegFileTool.h"
 #import "FFmpegRemuxer.h"
 #import "ESCOpenGLESView.h"
@@ -37,8 +29,6 @@
 
 @property(nonatomic,strong)ESCPCMRedecoder* aacToPCMDecoder;
 
-@property(nonatomic,strong)ECSwsscaleManager* swsscaleManager;
-
 @property(nonatomic,strong)NSMutableArray <ESCMediaDataModel *>* videoFrameArray;
 
 @property(nonatomic,strong)NSMutableArray<ESCMediaDataModel*>* audioFrameArray;
@@ -49,7 +39,7 @@
 
 @property(nonatomic,strong)NSTimer* timer;
 
-@property(nonatomic,strong)dispatch_queue_t queue;
+@property(nonatomic,strong)NSOperationQueue* playQueue;
 
 @property(nonatomic,assign)double startTime;
 
@@ -76,6 +66,8 @@
 @property(nonatomic,strong)NSMutableArray<ESCFrameDataModel*>* audioPacketModelArray;
 
 @property(nonatomic,strong)NSMutableArray<ESCFrameDataModel*>* videoPacketModelArray;
+
+@property(nonatomic,strong)NSRunLoop* playrunloop;
 
 @end
 
@@ -109,7 +101,8 @@
     self.videoFrameArray = [NSMutableArray array];
     self.audioFrameArray = [NSMutableArray array];
     
-    self.queue = dispatch_queue_create("ff", DISPATCH_QUEUE_SERIAL);
+    self.playQueue = [[NSOperationQueue alloc] init];
+    self.playQueue.maxConcurrentOperationCount = 1;
     self.title = @"YUV420 Player";
     
     self.view.backgroundColor = [UIColor whiteColor];
@@ -141,13 +134,20 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    [self.ffmpegManager stop];
-    [self.timer invalidate];
+    [self.playQueue cancelAllOperations];
+    [self.playQueue addOperationWithBlock:^{
+        [self.timer invalidate];
+        self.timer = nil;
+        [self.playrunloop cancelPerformSelectorsWithTarget:self];
+        [self.ffmpegManager stop];
+        self.ffmpegManager = nil;
+    }];
 }
 
 - (void)startRecorderVideo {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"停止录制视频" style:UIBarButtonItemStyleDone target:self action:@selector(stopRecorderVideo)];
-    dispatch_async(self.queue, ^{
+    
+    [self.playQueue addOperationWithBlock:^{
         if (self.encoder == nil) {
             self.encoder = [[ESCYUVToH264Encoder alloc] init];
             NSString *cachesPath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
@@ -159,33 +159,31 @@
             self.saveH264Path = saveH264Path;
             self.saveMp4Path = mp4Path;
             self.isStartRecord = YES;
-//            [self.encoder setupVideoWidth:self.width height:self.height frameRate:25 h264FilePath:saveH264Path];
+            //            [self.encoder setupVideoWidth:self.width height:self.height frameRate:25 h264FilePath:saveH264Path];
             [self.encoder setupVideoWidth:self.width height:self.height frameRate:25 delegate:self];
-//            self.h264StreamToMp4FileTool = [[ESCH264StreamToMp4FileTool alloc] initWithVideoSize:CGSizeMake(self.width, self.height) filePath:self.saveMp4Path frameRate:25];
-
+            //            self.h264StreamToMp4FileTool = [[ESCH264StreamToMp4FileTool alloc] initWithVideoSize:CGSizeMake(self.width, self.height) filePath:self.saveMp4Path frameRate:25];
+            
             self.ffmpegRecorder = [ESCffmpegRecorder recordFileWithFilePath:self.saveMp4Path codecType:AV_CODEC_ID_H264 videoWidth:self.width videoHeight:self.height videoFrameRate:25];
         }
-        
-        
-    });
-    
+    }];
 }
 
 - (void)stopRecorderVideo {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"开始录制视频" style:UIBarButtonItemStyleDone target:self action:@selector(startRecorderVideo)];
-    dispatch_async(self.queue, ^{
+    
+    [self.playQueue addOperationWithBlock:^{
         self.isStartRecord = NO;
         
         if(self.encoder){
             [self.encoder endYUVDataStream];
             self.encoder = nil;
-//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//                dispatch_async(dispatch_get_global_queue(0, 0), ^{
-//                    [ESCH264FileToMp4FileTool ESCH264FileToMp4FileToolWithh264FilePath:self.saveH264Path mp4FilePath:self.saveMp4Path videoWidth:self.width videoHeight:self.height frameRate:25];
-//                });
-//            });
+            //            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            //                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            //                    [ESCH264FileToMp4FileTool ESCH264FileToMp4FileToolWithh264FilePath:self.saveH264Path mp4FilePath:self.saveMp4Path videoWidth:self.width videoHeight:self.height frameRate:25];
+            //                });
+            //            });
         }
-    });
+    }];
 }
 
 - (void)playVideo {
@@ -194,7 +192,7 @@
     self.audioPacketModelArray = [NSMutableArray array];
     self.videoPacketModelArray = [NSMutableArray array];
     __weak __typeof(self)weakSelf = self;
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    [self.playQueue addOperationWithBlock:^{
         self.ffmpegManager = [[ESCFFmpegFileTool alloc] init];
         [self.ffmpegManager openURL:self.videoPath success:^(ESCMediaInfoModel *infoModel) {
             self.mediaInfoModel = infoModel;
@@ -204,6 +202,27 @@
             //提示失败
             NSLog(@"%@",error);
         }];
+    }];
+}
+
+- (void)play {
+    //缓存数据
+    while (1) {
+        if (self.videoPacketModelArray.count <= 50) {
+            [self readData];
+        }else {
+            //缓存完成
+            printf("缓存完成\n");
+            break;
+        }
+    }
+    //开始定时解码播放
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        NSTimer *playTimer = [NSTimer timerWithTimeInterval:1.0 / self.mediaInfoModel.videoFrameRate target:self selector:@selector(decodeAndRender) userInfo:nil repeats:YES];
+        self.timer = playTimer;
+        self.playrunloop = [NSRunLoop currentRunLoop];
+        [[NSRunLoop currentRunLoop] addTimer:playTimer forMode:NSRunLoopCommonModes];
+        [[NSRunLoop currentRunLoop] run];
     });
 }
 
@@ -213,6 +232,7 @@
         [self.videoPacketModelArray addObject:model];
     } audioSuccess:^(ESCFrameDataModel *model) {
         [self.audioPacketModelArray addObject:model];
+        [self decodeAndRender];
     } failure:^(NSError *error) {
         
     } decodeEnd:^{
@@ -220,47 +240,30 @@
     }];
 }
 
-- (void)play {
-
-    dispatch_async(self.queue, ^{
-        //缓存数据
-        while (1) {
-            if (self.videoPacketModelArray.count <= 50) {
-                [self readData];
-            }else {
-                //缓存完成
-                printf("缓存完成\n");
-                break;
-            }
-        }
-        //开始定时解码播放
-        
-        NSTimer *playTimer = [NSTimer timerWithTimeInterval:1.0 / self.mediaInfoModel.videoFrameRate target:self selector:@selector(decodeAndRender) userInfo:nil repeats:YES];
-        [[NSRunLoop currentRunLoop] addTimer:playTimer forMode:NSDefaultRunLoopMode];
-        [[NSRunLoop currentRunLoop] run];
-        self.timer = playTimer;
-    });
-}
-
 - (void)decodeAndRender {
-    double currentTime = CACurrentMediaTime();
-    
-    printf("开始解码渲染%lf\n",currentTime - self.startTime);
-    self.startTime = currentTime;
-    [self readData];
-    if (self.videoPacketModelArray.count > 0) {
-        ESCFrameDataModel *videoModel = self.videoPacketModelArray.firstObject;
-        [self.videoPacketModelArray removeObject:videoModel];
-        [self.ffmpegManager decodePacket:videoModel videoSuccess:^(ESCFrameDataModel *model) {
-//            printf("解码完成\n");
-            [self handleVideoFrame:model.frame];
-        } audioSuccess:nil failure:^(NSError *error) {
-            
-        }];
-    }
-    if (self.audioPacketModelArray.count > 0) {
-        ESCFrameDataModel *audioModel = self.audioPacketModelArray.firstObject;
-    }
+    [self.playQueue addOperationWithBlock:^{
+        [self readData];
+        if (self.videoPacketModelArray.count > 0) {
+            ESCFrameDataModel *videoModel = self.videoPacketModelArray.firstObject;
+            [self.videoPacketModelArray removeObject:videoModel];
+            [self.ffmpegManager decodePacket:videoModel
+                              outPixelFormat:ESCPixelFormatYUV420
+                                videoSuccess:^(ESCFrameDataModel *model) {
+                //            printf("解码完成\n");
+                                    
+                                    //计时
+                                    double currentTime = CACurrentMediaTime();
+                                    printf("开始解码渲染%lf==\n",currentTime - self.startTime);
+                                    self.startTime = currentTime;
+                                    [self handleVideoFrame:model.frame];
+            } audioSuccess:nil failure:^(NSError *error) {
+                
+            }];
+        }
+        if (self.audioPacketModelArray.count > 0) {
+            ESCFrameDataModel *audioModel = self.audioPacketModelArray.firstObject;
+        }
+    }];
 }
 
 NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
@@ -277,11 +280,6 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
 
 - (void)handleVideoFrame:(AVFrame *)videoFrame {
     @autoreleasepool {
-        if (self.swsscaleManager == nil) {
-            self.swsscaleManager = [[ECSwsscaleManager alloc] init];
-            [self.swsscaleManager initWithAVFrame:videoFrame];
-        }
-        
         NSInteger pts = videoFrame->pts;
         self.receiveVideoFrameCount++;
         if (self.openGLESView) {
@@ -343,13 +341,14 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
         }
         
         NSData *audioData = [NSData dataWithBytes:pcmFrame->data[0] length:pcmFrame->nb_samples * 2 * 4];
-        dispatch_async(self.queue, ^{
+        [self.playQueue addOperationWithBlock:^{
             ESCMediaDataModel *model = [[ESCMediaDataModel alloc] init];
             model.type = 1;
             model.audioData = audioData;
             model.pts = pts;
             [self.audioFrameArray addObject:model];
-        });
+            
+        }];
     }
 }
 

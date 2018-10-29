@@ -44,7 +44,7 @@
 		047B7BA51EF2C83E00E4F0F8 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA41EF2C83E00E4F0F8 /* CoreMedia.framework */; };
 		047B7BA71EF2C84900E4F0F8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA61EF2C84900E4F0F8 /* CoreGraphics.framework */; };
 		047B7BA91EF2C85500E4F0F8 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047B7BA81EF2C85500E4F0F8 /* AudioToolbox.framework */; };
-		0495E8C91EFE483E00958C4F /* ECSwsscaleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8C81EFE483E00958C4F /* ECSwsscaleManager.m */; };
+		0495E8C91EFE483E00958C4F /* ESCSwsscaleTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8C81EFE483E00958C4F /* ESCSwsscaleTool.m */; };
 		0495E8CF1EFE488500958C4F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8CE1EFE488500958C4F /* main.m */; };
 		0495E8D41EFE497A00958C4F /* NSError+ECError.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8D31EFE497A00958C4F /* NSError+ECError.m */; };
 		0495E8D81EFE5D3700958C4F /* JPFPSStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 0495E8D71EFE5D3700958C4F /* JPFPSStatus.m */; };
@@ -238,8 +238,8 @@
 		047B7BA41EF2C83E00E4F0F8 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		047B7BA61EF2C84900E4F0F8 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		047B7BA81EF2C85500E4F0F8 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		0495E8C71EFE483E00958C4F /* ECSwsscaleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSwsscaleManager.h; sourceTree = "<group>"; };
-		0495E8C81EFE483E00958C4F /* ECSwsscaleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSwsscaleManager.m; sourceTree = "<group>"; };
+		0495E8C71EFE483E00958C4F /* ESCSwsscaleTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCSwsscaleTool.h; sourceTree = "<group>"; };
+		0495E8C81EFE483E00958C4F /* ESCSwsscaleTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCSwsscaleTool.m; sourceTree = "<group>"; };
 		0495E8CE1EFE488500958C4F /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		0495E8D11EFE495D00958C4F /* Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Header.h; sourceTree = "<group>"; };
 		0495E8D21EFE497A00958C4F /* NSError+ECError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+ECError.h"; sourceTree = "<group>"; };
@@ -696,8 +696,8 @@
 				F06657872186DD0400749253 /* ESCMediaInfoModel.m */,
 				F0B883231F441B5F00042391 /* FFmpegRemuxer.h */,
 				F0B883241F441B5F00042391 /* FFmpegRemuxer.m */,
-				0495E8C71EFE483E00958C4F /* ECSwsscaleManager.h */,
-				0495E8C81EFE483E00958C4F /* ECSwsscaleManager.m */,
+				0495E8C71EFE483E00958C4F /* ESCSwsscaleTool.h */,
+				0495E8C81EFE483E00958C4F /* ESCSwsscaleTool.m */,
 				F079562320FF2FF700F3AF26 /* ESCPCMRedecoder.h */,
 				F079562420FF2FF700F3AF26 /* ESCPCMRedecoder.m */,
 			);
@@ -863,7 +863,7 @@
 				04394851210D9AFA00C7BECA /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,
 				0439484C210D9AFA00C7BECA /* MASConstraintMaker.m in Sources */,
 				F00D9DDE2115789F00EDE1A1 /* ESCH264FileToMp4FileTool.m in Sources */,
-				0495E8C91EFE483E00958C4F /* ECSwsscaleManager.m in Sources */,
+				0495E8C91EFE483E00958C4F /* ESCSwsscaleTool.m in Sources */,
 				047B7B081EF2C47800E4F0F8 /* ViewController.m in Sources */,
 				04394853210D9AFA00C7BECA /* ViewController+MASAdditions.m in Sources */,
 				0495E8E11EFF41D800958C4F /* ESCFFmpegFileTool.m in Sources */,

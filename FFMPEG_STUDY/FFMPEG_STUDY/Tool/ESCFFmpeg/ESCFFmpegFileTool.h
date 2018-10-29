@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "ESCFrameDataModel.h"
 #import "ESCMediaInfoModel.h"
+#import "ESCSwsscaleTool.h"
 
 @interface ESCFFmpegFileTool : NSObject
 
@@ -21,10 +22,11 @@
                       failure:(void(^)(NSError *error))failure
                     decodeEnd:(void(^)(void))decodeEnd;
 
-- (void)decodePacket:(ESCFrameDataModel *)packet
-       videoSuccess:(void(^)(ESCFrameDataModel *model))videoSuccess
-       audioSuccess:(void(^)(ESCFrameDataModel *model))audioSuccess
-            failure:(void(^)(NSError *error))failure;
+- (void)decodePacket:(ESCFrameDataModel *)model
+      outPixelFormat:(ESCPixelFormat)pixelFormat
+        videoSuccess:(void(^)(ESCFrameDataModel *model))videoSuccess
+        audioSuccess:(void(^)(ESCFrameDataModel *model))audioSuccess
+             failure:(void(^)(NSError *error))failure;
 
 - (void)stop;
 

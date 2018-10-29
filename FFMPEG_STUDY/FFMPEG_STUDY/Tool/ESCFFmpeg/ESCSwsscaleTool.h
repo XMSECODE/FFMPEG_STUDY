@@ -10,17 +10,20 @@
 #import <UIKit/UIKit.h>
 #import "avformat.h"
 
-@interface ECSwsscaleManager : NSObject
+typedef enum : NSUInteger {
+    ESCPixelFormatRGB,
+    ESCPixelFormatYUV420
+} ESCPixelFormat;
 
-- (void)initWithAVFrame:(AVFrame *)frame;
+@interface ESCSwsscaleTool : NSObject
 
+- (void)setupWithAVFrame:(AVFrame *)frame outFormat:(ESCPixelFormat)pixelFormat;
 
 /**
  下面两个方法会自动释放传入的frame
  */
 - (UIImage *)getImageFromAVFrame:(AVFrame *)frame;
-- (AVFrame *)getRGBAVFrameFromOtherFormat:(AVFrame *)frame;
-
+- (AVFrame *)getAVFrame:(AVFrame *)inFrame;
 
 /**
  保存AVFrame为PNG格式到本地，会转换为RGB24格式

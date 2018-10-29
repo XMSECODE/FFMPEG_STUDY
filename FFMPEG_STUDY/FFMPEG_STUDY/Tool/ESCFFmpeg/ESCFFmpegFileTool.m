@@ -47,6 +47,8 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
 
 @property(nonatomic,assign)FFPlayState playState;
 
+@property(nonatomic,strong)ESCSwsscaleTool* swsscaleManager;
+
 @end
 
 @implementation ESCFFmpegFileTool
@@ -202,11 +204,19 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
 }
 
 - (void)decodePacket:(ESCFrameDataModel *)model
+      outPixelFormat:(ESCPixelFormat)pixelFormat
         videoSuccess:(void(^)(ESCFrameDataModel *model))videoSuccess
         audioSuccess:(void(^)(ESCFrameDataModel *model))audioSuccess
              failure:(void(^)(NSError *error))failure {
     self.decodeVideoPacketSuccess = videoSuccess;
     self.decodeAudioPacketSuccess = audioSuccess;
+    
+    enum AVPixelFormat outFormat;
+    if (pixelFormat == ESCPixelFormatYUV420) {
+        outFormat = AV_PIX_FMT_YUV420P;
+    }else {
+        outFormat = AV_PIX_FMT_RGB24;
+    }
     
     int result = 0;
     
@@ -216,8 +226,19 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
         result = avcodec_receive_frame(_videoCodecContext, videoFrame);
             switch (result) {
                 case 0:{
+                    AVFrame *resultFrame;
+                    if (videoFrame->format != outFormat) {
+                        if (self.swsscaleManager == nil) {
+                            self.swsscaleManager = [[ESCSwsscaleTool alloc] init];
+                            [self.swsscaleManager setupWithAVFrame:videoFrame outFormat:pixelFormat];
+                        }
+                        resultFrame = [self.swsscaleManager getAVFrame:videoFrame];
+                        resultFrame->format = outFormat;
+                    }else {
+                        resultFrame = videoFrame;
+                    }
                     ESCFrameDataModel *videoModel = [[ESCFrameDataModel alloc] init];
-                    videoModel.frame = videoFrame;
+                    videoModel.frame = resultFrame;
                     videoModel.type = ESCFrameDataModelTypeVideoFrame;
                     self.decodeVideoPacketSuccess(videoModel);
                     av_frame_free(&videoFrame);
@@ -288,7 +309,7 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
     avcodec_close(_videoCodecContext);
     avcodec_close(_audioCodeContext);
     avformat_close_input(&_formatContext);
-    
+    [self.swsscaleManager destroy];
     printf("play stop!");
     if (self.decodeEnd) {
         self.decodeEnd();

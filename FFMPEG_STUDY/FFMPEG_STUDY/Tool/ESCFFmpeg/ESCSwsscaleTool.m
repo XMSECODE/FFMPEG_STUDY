@@ -6,18 +6,24 @@
 //  Copyright © 2017年 XMSECODE. All rights reserved.
 //
 
-#import "ECSwsscaleManager.h"
+#import "ESCSwsscaleTool.h"
 #import "swscale.h"
 #import "imgutils.h"
 #import "Header.h"
 
-@interface ECSwsscaleManager()
+@interface ESCSwsscaleTool()
 
 @property(nonatomic,assign)struct SwsContext * swsContext;
 
+@property(nonatomic,assign)enum AVPixelFormat pixelFormat;
+
+@property(nonatomic,assign)int width;
+
+@property(nonatomic,assign)int height;
+
 @end
 
-@implementation ECSwsscaleManager
+@implementation ESCSwsscaleTool
 
 - (UIImage *)getImageFromAVFrame:(AVFrame *)frame {
 
@@ -37,11 +43,42 @@
     return image;
 }
 
-- (void)initWithAVFrame:(AVFrame *)frame {
-    struct SwsContext *swsContext = sws_getContext(frame->width, frame->height, AV_PIX_FMT_YUV420P, frame->width, frame->height, AV_PIX_FMT_RGB24, SWS_BICUBIC, NULL, NULL, NULL);
+- (void)setupWithAVFrame:(AVFrame *)frame outFormat:(ESCPixelFormat)pixelFormat {
+    enum AVPixelFormat format;
+    if (pixelFormat == ESCPixelFormatRGB) {
+        format = AV_PIX_FMT_RGB24;
+    }else {
+        format = AV_PIX_FMT_YUV420P;
+    }
+    self.pixelFormat = format;
+    struct SwsContext *swsContext = sws_getContext(frame->width, frame->height, frame->format, frame->width, frame->height, format, SWS_BICUBIC, NULL, NULL, NULL);
+    self.width = frame->width;
+    self.height = frame->height;
     if (swsContext) {
         self.swsContext = swsContext;
     }
+}
+
+- (AVFrame *)getAVFrame:(AVFrame *)inFrame {
+    AVFrame *resultFrame = av_frame_alloc();
+    
+    int result = av_image_alloc(resultFrame->data, resultFrame->linesize, self.width, self.height, self.pixelFormat, 1);
+    
+    if (result< 0) {
+        printf( "Could not allocate destination image\n");
+        av_frame_free(&resultFrame);
+        return nil;;
+    }
+    int result_height = sws_scale(self.swsContext, (const uint8_t* const*)inFrame->data, inFrame->linesize, 0, inFrame->height, resultFrame->data, resultFrame->linesize);
+    
+    if (result_height == 0) {
+        av_free(resultFrame->data[0]);
+        av_frame_free(&resultFrame);
+        return nil;
+    }
+    resultFrame->width = self.width;
+    resultFrame->height = self.height;
+    return resultFrame;
 }
 
 - (AVFrame *)getRGBAVFrameFromOtherFormat:(AVFrame *)frame {
