@@ -260,7 +260,6 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
                 default:
                     break;
             }
-            av_packet_unref(model.packet);
         }else if (model.packet->stream_index == self.audioStreamID && self.decodeAudioPacketSuccess) {
             result = avcodec_send_packet(_audioCodeContext, model.packet);
             int i = 0;
@@ -296,8 +295,24 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
                     break;
                 }
             }
-            av_packet_unref(model.packet);
         }
+    AVPacket *packet = model.packet;
+    av_packet_unref(model.packet);
+    av_packet_free(&packet);
+}
+
+- (void)freeModelArray:(NSArray <ESCFrameDataModel *>*)modelArray {
+    for (ESCFrameDataModel *model in modelArray) {
+        if (model.type == ESCFrameDataModelTypeAudioPacket || model.type == ESCFrameDataModelTypeVideoPacket) {
+            AVPacket *packet = model.packet;
+            av_packet_unref(model.packet);
+            av_packet_free(&packet);
+        }else {
+            AVFrame *frame = model.frame;
+            av_frame_unref(frame);
+            av_frame_free(&frame);
+        }
+    }
 }
 
 - (void)stop {

@@ -28,6 +28,8 @@
         audioSuccess:(void(^)(ESCFrameDataModel *model))audioSuccess
              failure:(void(^)(NSError *error))failure;
 
+- (void)freeModelArray:(NSArray <ESCFrameDataModel *>*)modelArray;
+
 - (void)stop;
 
 

@@ -29,10 +29,6 @@
 
 @property(nonatomic,strong)ESCPCMRedecoder* aacToPCMDecoder;
 
-@property(nonatomic,strong)NSMutableArray <ESCMediaDataModel *>* videoFrameArray;
-
-@property(nonatomic,strong)NSMutableArray<ESCMediaDataModel*>* audioFrameArray;
-
 @property(nonatomic,assign)NSInteger width;
 
 @property(nonatomic,assign)NSInteger height;
@@ -97,9 +93,6 @@
 //    NSLog(@"time===========%f",time);
 //    
 //    });
-
-    self.videoFrameArray = [NSMutableArray array];
-    self.audioFrameArray = [NSMutableArray array];
     
     self.playQueue = [[NSOperationQueue alloc] init];
     self.playQueue.maxConcurrentOperationCount = 1;
@@ -140,7 +133,11 @@
         self.timer = nil;
         [self.playrunloop cancelPerformSelectorsWithTarget:self];
         [self.ffmpegManager stop];
+        [self.ffmpegManager freeModelArray:self.audioPacketModelArray];
+        [self.ffmpegManager freeModelArray:self.videoPacketModelArray];
         self.ffmpegManager = nil;
+        [self.audioPlayer stop];
+        [self.aacToPCMDecoder destroy];
     }];
 }
 
@@ -197,7 +194,7 @@
         [self.ffmpegManager openURL:self.videoPath success:^(ESCMediaInfoModel *infoModel) {
             self.mediaInfoModel = infoModel;
             //开始读取数据
-            [self play];
+            [weakSelf play];
         } failure:^(NSError *error) {
             //提示失败
             NSLog(@"%@",error);
@@ -260,8 +257,14 @@
                 
             }];
         }
-        if (self.audioPacketModelArray.count > 0) {
+        while (self.audioPacketModelArray.count > 0) {
             ESCFrameDataModel *audioModel = self.audioPacketModelArray.firstObject;
+            [self.audioPacketModelArray removeObject:audioModel];
+            [self.ffmpegManager decodePacket:audioModel outPixelFormat:0 videoSuccess:nil audioSuccess:^(ESCFrameDataModel *model) {
+                [self handleAudioFrame:model.frame];
+            } failure:^(NSError *error) {
+                
+            }];
         }
     }];
 }
@@ -300,14 +303,7 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
             [self.openGLESView loadYUV420PDataWithYData:ydata uData:udata vData:vdata width:self.width height:self.height];
             //                    }
             
-            //                    ESCMediaDataModel *audioModel = [self.audioFrameArray firstObject];
-            //                    if (audioModel) {
-            //                        //                printf("audio data==%d==%d==%d\n",self.audioFrameArray.count,videopts,audioModel.pts);
-            //                        if (audioModel.pts - self.currentTime < 100) {
-            //                            [self.audioFrameArray removeObject:audioModel];
-            //                            [self.audioPlayer play:audioModel.audioData];
-            //                        }
-            //                    }
+  
             if (self.encoder && self.isStartRecord == YES) {
                 NSMutableData *yuvData = [NSMutableData data];
                 [yuvData appendData:ydata];
@@ -323,12 +319,7 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
 
 - (void)handleAudioFrame:(AVFrame *)audioFrame {
     printf("接收到音频数据\n");
-    if (self.timer == nil && self.audioFrameArray.count > 100) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.timer = [NSTimer scheduledTimerWithTimeInterval:0.01 target:self selector:@selector(play) userInfo:nil repeats:YES];
-            NSLog(@"timer");
-        });
-    }
+    
     if (self.aacToPCMDecoder == nil) {
         self.aacToPCMDecoder = [[ESCPCMRedecoder alloc] init];
         [self.aacToPCMDecoder initConvertWithFrame:audioFrame];
@@ -341,14 +332,13 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
         }
         
         NSData *audioData = [NSData dataWithBytes:pcmFrame->data[0] length:pcmFrame->nb_samples * 2 * 4];
-        [self.playQueue addOperationWithBlock:^{
-            ESCMediaDataModel *model = [[ESCMediaDataModel alloc] init];
-            model.type = 1;
-            model.audioData = audioData;
-            model.pts = pts;
-            [self.audioFrameArray addObject:model];
-            
-        }];
+            //                printf("audio data==%d==%d==%d\n",self.audioFrameArray.count,videopts,audioModel.pts);
+//        if (audioModel.pts - self.currentTime < 100) {
+        [self.audioPlayer play:audioData];
+//        }
+        
+        
+
     }
 }
 

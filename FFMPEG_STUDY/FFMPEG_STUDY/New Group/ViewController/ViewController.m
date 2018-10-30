@@ -24,9 +24,9 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *videoPath = [[NSBundle mainBundle] pathForResource:@"test_540p.mp4" ofType:nil];
+//    NSString *videoPath = [[NSBundle mainBundle] pathForResource:@"test_540p.mp4" ofType:nil];
 //    NSString *videoPath = [[NSBundle mainBundle] pathForResource:@"test_720p.mp4" ofType:nil];
-//    NSString *videoPath = [[NSBundle mainBundle] pathForResource:@"test_1080p.mp4" ofType:nil];
+    NSString *videoPath = [[NSBundle mainBundle] pathForResource:@"test_1080p.mp4" ofType:nil];
 //    NSString *videoPath = [[NSBundle mainBundle] pathForResource:@"demo.mp4" ofType:nil];
     if (indexPath.row == 0) {
         ESCImageVideoPlayViewController *viewController = [[ESCImageVideoPlayViewController alloc] init];
