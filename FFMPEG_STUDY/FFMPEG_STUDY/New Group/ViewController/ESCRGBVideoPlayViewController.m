@@ -49,7 +49,6 @@
     [super viewDidLoad];
     
     self.title = @"RGB Player";
-    self.navigationController.navigationBar.barTintColor = [UIColor clearColor];
 
     self.view.backgroundColor = [UIColor whiteColor];
     
