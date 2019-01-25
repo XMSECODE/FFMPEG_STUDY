@@ -2474,7 +2474,7 @@ int av_demuxer_open(AVFormatContext *ic);
  * @todo Let the user decide somehow what information is needed so that
  *       we do not waste time getting stuff the user does not need.
  *
- * 读取一个媒体文件的packets来得到刘信息。这个对于没有headers的文件流来说是很有用的，比如MPEG。这个函数也会在MPEG-2重复帧的模式下计算真的帧速率。
+ * 读取一个媒体文件的packets来得到流信息。这个对于没有headers的文件流来说是很有用的，比如MPEG。这个函数也会在MPEG-2重复帧的模式下计算真的帧速率。
  *
  * 这个逻辑文件位置不会因为这个方法而发生改变。检查的packets可能会被缓存，供以后使用。
  *
