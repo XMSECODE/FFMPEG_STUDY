@@ -148,8 +148,6 @@
             [weakSelf decodeAndRender];
         } failure:^(NSError *error) {
             
-        } decodeEnd:^{
-            
         }];
     }];
 }

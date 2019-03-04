@@ -37,6 +37,8 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
 
 @property(nonatomic,copy)void(^readAudioPacketSuccess)(ESCFrameDataModel *model);
 
+@property(nonatomic,copy)void(^readPacketFailure)(NSError *error);
+
 @property(nonatomic,copy)void(^decodeVideoPacketSuccess)(ESCFrameDataModel *model);
 
 @property(nonatomic,copy)void(^decodeAudioPacketSuccess)(ESCFrameDataModel *model);
@@ -198,10 +200,10 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
 
 - (void)readPacketVideoSuccess:(void(^)(ESCFrameDataModel *model))videoSuccess
                   audioSuccess:(void(^)(ESCFrameDataModel *model))audioSuccess
-                       failure:(void(^)(NSError *error))failure
-                     decodeEnd:(void(^)(void))decodeEnd {
+                       failure:(void(^)(NSError *error))failure {
     self.readVideoPacketSuccess = videoSuccess;
     self.readAudioPacketSuccess = audioSuccess;
+    self.readPacketFailure = failure;
     [self readMediaData];
 }
 
@@ -244,7 +246,7 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
                     videoModel.type = ESCFrameDataModelTypeVideoFrame;
                     self.decodeVideoPacketSuccess(videoModel);
                     av_frame_free(&videoFrame);
-                    return;
+                    break;
                 }
                     break;
                     
@@ -347,7 +349,7 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
             self.readAudioPacketSuccess(model);
         }
     }else {
-        NSLog(@"读取数据失败");
+        self.readPacketFailure(nil);
     }
 }
 

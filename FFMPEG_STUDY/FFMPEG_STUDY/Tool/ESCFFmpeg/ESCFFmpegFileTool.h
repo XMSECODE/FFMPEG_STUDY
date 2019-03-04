@@ -18,9 +18,8 @@
         failure:(void(^)(NSError *error))failure;
 
 - (void)readPacketVideoSuccess:(void(^)(ESCFrameDataModel *model))videoSuccess
-                 audioSuccess:(void(^)(ESCFrameDataModel *model))audioSuccess
-                      failure:(void(^)(NSError *error))failure
-                    decodeEnd:(void(^)(void))decodeEnd;
+                  audioSuccess:(void(^)(ESCFrameDataModel *model))audioSuccess
+                       failure:(void(^)(NSError *error))failure;
 
 - (void)decodePacket:(ESCFrameDataModel *)model
       outPixelFormat:(ESCPixelFormat)pixelFormat

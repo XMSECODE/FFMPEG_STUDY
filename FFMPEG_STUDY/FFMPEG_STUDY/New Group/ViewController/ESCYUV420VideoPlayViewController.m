@@ -127,53 +127,58 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    [self stopPlay];
+}
+
+- (void)stopPlay {
     [self.playQueue cancelAllOperations];
+    __weak __typeof(self)weakSelf = self;
     [self.playQueue addOperationWithBlock:^{
-        [self.timer invalidate];
-        self.timer = nil;
-        [self.playrunloop cancelPerformSelectorsWithTarget:self];
-        [self.ffmpegManager stop];
-        [self.ffmpegManager freeModelArray:self.audioPacketModelArray];
-        [self.ffmpegManager freeModelArray:self.videoPacketModelArray];
-        self.ffmpegManager = nil;
-        [self.audioPlayer stop];
-        [self.aacToPCMDecoder destroy];
+        [weakSelf.timer invalidate];
+        weakSelf.timer = nil;
+        [weakSelf.playrunloop cancelPerformSelectorsWithTarget:weakSelf];
+        [weakSelf.ffmpegManager stop];
+        [weakSelf.ffmpegManager freeModelArray:weakSelf.audioPacketModelArray];
+        [weakSelf.ffmpegManager freeModelArray:weakSelf.videoPacketModelArray];
+        weakSelf.ffmpegManager = nil;
+        [weakSelf.audioPlayer stop];
+        [weakSelf.aacToPCMDecoder destroy];
     }];
 }
 
 - (void)startRecorderVideo {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"停止录制视频" style:UIBarButtonItemStyleDone target:self action:@selector(stopRecorderVideo)];
-    
+    __weak __typeof(self)weakSelf = self;
     [self.playQueue addOperationWithBlock:^{
-        if (self.encoder == nil) {
-            self.encoder = [[ESCYUVToH264Encoder alloc] init];
+        if (weakSelf.encoder == nil) {
+            weakSelf.encoder = [[ESCYUVToH264Encoder alloc] init];
             NSString *cachesPath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             dateFormatter.dateFormat = @"yyyy_MM_dd_HH_mm_ss";
             NSString *datestring = [dateFormatter stringFromDate:[NSDate date]];
             NSString *saveH264Path = [NSString stringWithFormat:@"%@/%@.h264",cachesPath,datestring];
             NSString *mp4Path = [NSString stringWithFormat:@"%@/%@.mp4",cachesPath,datestring];
-            self.saveH264Path = saveH264Path;
-            self.saveMp4Path = mp4Path;
-            self.isStartRecord = YES;
+            weakSelf.saveH264Path = saveH264Path;
+            weakSelf.saveMp4Path = mp4Path;
+            weakSelf.isStartRecord = YES;
             //            [self.encoder setupVideoWidth:self.width height:self.height frameRate:25 h264FilePath:saveH264Path];
-            [self.encoder setupVideoWidth:self.width height:self.height frameRate:25 delegate:self];
+            [weakSelf.encoder setupVideoWidth:weakSelf.width height:weakSelf.height frameRate:25 delegate:weakSelf];
             //            self.h264StreamToMp4FileTool = [[ESCH264StreamToMp4FileTool alloc] initWithVideoSize:CGSizeMake(self.width, self.height) filePath:self.saveMp4Path frameRate:25];
             
-            self.ffmpegRecorder = [ESCffmpegRecorder recordFileWithFilePath:self.saveMp4Path codecType:AV_CODEC_ID_H264 videoWidth:self.width videoHeight:self.height videoFrameRate:25];
+            weakSelf.ffmpegRecorder = [ESCffmpegRecorder recordFileWithFilePath:weakSelf.saveMp4Path codecType:AV_CODEC_ID_H264 videoWidth:weakSelf.width videoHeight:weakSelf.height videoFrameRate:25];
         }
     }];
 }
 
 - (void)stopRecorderVideo {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"开始录制视频" style:UIBarButtonItemStyleDone target:self action:@selector(startRecorderVideo)];
-    
+    __weak __typeof(self)weakSelf = self;
     [self.playQueue addOperationWithBlock:^{
-        self.isStartRecord = NO;
+        weakSelf.isStartRecord = NO;
         
-        if(self.encoder){
-            [self.encoder endYUVDataStream];
-            self.encoder = nil;
+        if(weakSelf.encoder){
+            [weakSelf.encoder endYUVDataStream];
+            weakSelf.encoder = nil;
             //            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             //                dispatch_async(dispatch_get_global_queue(0, 0), ^{
             //                    [ESCH264FileToMp4FileTool ESCH264FileToMp4FileToolWithh264FilePath:self.saveH264Path mp4FilePath:self.saveMp4Path videoWidth:self.width videoHeight:self.height frameRate:25];
@@ -190,9 +195,9 @@
     self.videoPacketModelArray = [NSMutableArray array];
     __weak __typeof(self)weakSelf = self;
     [self.playQueue addOperationWithBlock:^{
-        self.ffmpegManager = [[ESCFFmpegFileTool alloc] init];
-        [self.ffmpegManager openURL:self.videoPath success:^(ESCMediaInfoModel *infoModel) {
-            self.mediaInfoModel = infoModel;
+        weakSelf.ffmpegManager = [[ESCFFmpegFileTool alloc] init];
+        [weakSelf.ffmpegManager openURL:weakSelf.videoPath success:^(ESCMediaInfoModel *infoModel) {
+            weakSelf.mediaInfoModel = infoModel;
             //开始读取数据
             [weakSelf play];
         } failure:^(NSError *error) {
@@ -214,10 +219,11 @@
         }
     }
     //开始定时解码播放
+    __weak __typeof(self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        NSTimer *playTimer = [NSTimer timerWithTimeInterval:1.0 / self.mediaInfoModel.videoFrameRate target:self selector:@selector(decodeAndRender) userInfo:nil repeats:YES];
-        self.timer = playTimer;
-        self.playrunloop = [NSRunLoop currentRunLoop];
+        NSTimer *playTimer = [NSTimer timerWithTimeInterval:1.0 / weakSelf.mediaInfoModel.videoFrameRate target:weakSelf selector:@selector(decodeAndRender) userInfo:nil repeats:YES];
+        weakSelf.timer = playTimer;
+        weakSelf.playrunloop = [NSRunLoop currentRunLoop];
         [[NSRunLoop currentRunLoop] addTimer:playTimer forMode:NSRunLoopCommonModes];
         [[NSRunLoop currentRunLoop] run];
     });
@@ -225,43 +231,43 @@
 
 - (void)readData {
     //读取数据
+    __weak __typeof(self)weakSelf = self;
     [self.ffmpegManager readPacketVideoSuccess:^(ESCFrameDataModel *model) {
-        [self.videoPacketModelArray addObject:model];
+        [weakSelf.videoPacketModelArray addObject:model];
     } audioSuccess:^(ESCFrameDataModel *model) {
-        [self.audioPacketModelArray addObject:model];
-        [self decodeAndRender];
+        [weakSelf.audioPacketModelArray addObject:model];
+        [weakSelf decodeAndRender];
     } failure:^(NSError *error) {
-        
-    } decodeEnd:^{
-        
+        [self stopPlay];
     }];
 }
 
 - (void)decodeAndRender {
+    __weak __typeof(self)weakSelf = self;
     [self.playQueue addOperationWithBlock:^{
-        [self readData];
-        if (self.videoPacketModelArray.count > 0) {
-            ESCFrameDataModel *videoModel = self.videoPacketModelArray.firstObject;
-            [self.videoPacketModelArray removeObject:videoModel];
-            [self.ffmpegManager decodePacket:videoModel
+        [weakSelf readData];
+        if (weakSelf.videoPacketModelArray.count > 0) {
+            ESCFrameDataModel *videoModel = weakSelf.videoPacketModelArray.firstObject;
+            [weakSelf.videoPacketModelArray removeObject:videoModel];
+            [weakSelf.ffmpegManager decodePacket:videoModel
                               outPixelFormat:ESCPixelFormatYUV420
                                 videoSuccess:^(ESCFrameDataModel *model) {
                 //            printf("解码完成\n");
                                     
                                     //计时
                                     double currentTime = CACurrentMediaTime();
-                                    printf("开始解码渲染%lf==\n",currentTime - self.startTime);
-                                    self.startTime = currentTime;
-                                    [self handleVideoFrame:model.frame];
+                                    printf("开始解码渲染%lf==\n",currentTime - weakSelf.startTime);
+                                    weakSelf.startTime = currentTime;
+                                    [weakSelf handleVideoFrame:model.frame];
             } audioSuccess:nil failure:^(NSError *error) {
                 
             }];
         }
-        while (self.audioPacketModelArray.count > 0) {
-            ESCFrameDataModel *audioModel = self.audioPacketModelArray.firstObject;
-            [self.audioPacketModelArray removeObject:audioModel];
-            [self.ffmpegManager decodePacket:audioModel outPixelFormat:0 videoSuccess:nil audioSuccess:^(ESCFrameDataModel *model) {
-                [self handleAudioFrame:model.frame];
+        while (weakSelf.audioPacketModelArray.count > 0) {
+            ESCFrameDataModel *audioModel = weakSelf.audioPacketModelArray.firstObject;
+            [weakSelf.audioPacketModelArray removeObject:audioModel];
+            [weakSelf.ffmpegManager decodePacket:audioModel outPixelFormat:0 videoSuccess:nil audioSuccess:^(ESCFrameDataModel *model) {
+                [weakSelf handleAudioFrame:model.frame];
             } failure:^(NSError *error) {
                 
             }];
