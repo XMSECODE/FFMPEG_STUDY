@@ -68,6 +68,10 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
     });
 }
 
+- (void)dealloc {
+    NSLog(@"%@====%s",self,__FUNCTION__);
+}
+
 #pragma mark - Public
 - (void)openURL:(NSString *)urlString
         success:(void(^)(ESCMediaInfoModel *infoModel))success
@@ -320,7 +324,7 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
     avcodec_close(_audioCodeContext);
     avformat_close_input(&_formatContext);
     [self.swsscaleManager destroy];
-    printf("play stop!");
+    printf("play stop!\n");
     if (self.decodeEnd) {
         self.decodeEnd();
     }

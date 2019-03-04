@@ -78,6 +78,38 @@
     return self;
 }
 
+- (void)dealloc {
+    NSLog(@"%@====%s",self,__FUNCTION__);
+    
+    if(self.context) {
+        [EAGLContext setCurrentContext:nil];
+    }
+    if (self.mYUVGLProgId) {
+        glDeleteProgram(self.mYUVGLProgId);
+    }
+    if (self.mGLProgId) {
+        glDeleteProgram(self.mGLProgId);
+    }
+    if (_frameBuffer) {
+        glDeleteFramebuffers(1, &_frameBuffer);
+    }
+    if (_renderBuffer) {
+        glDeleteRenderbuffers(1, &_renderBuffer);
+    }
+    if (_texture) {
+        glDeleteTextures(1, &_texture);
+    }
+    if (_ytexture) {
+        glDeleteTextures(1, &_ytexture);
+    }
+    if (_utexture) {
+        glDeleteTextures(1, &_utexture);
+    }
+    if (_vtexture) {
+        glDeleteTextures(1, &_vtexture);
+    }
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
     
