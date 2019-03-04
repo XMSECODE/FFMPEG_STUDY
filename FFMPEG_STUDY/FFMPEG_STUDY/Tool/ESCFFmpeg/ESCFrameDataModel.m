@@ -10,4 +10,8 @@
 
 @implementation ESCFrameDataModel
 
+- (void)dealloc {
+    av_packet_free(&_packet);
+}
+
 @end

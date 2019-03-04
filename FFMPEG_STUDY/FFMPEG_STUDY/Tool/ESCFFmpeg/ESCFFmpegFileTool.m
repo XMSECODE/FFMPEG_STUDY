@@ -43,8 +43,6 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
 
 @property(nonatomic,copy)void(^decodeEnd)(void);
 
-@property(nonatomic,weak)NSTimer* playTime;
-
 @property(nonatomic,assign)FFPlayState playState;
 
 @property(nonatomic,strong)ESCSwsscaleTool* swsscaleManager;
@@ -316,9 +314,6 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
 }
 
 - (void)stop {
-    if (self.playTime) {
-        [self.playTime invalidate];
-    }
     self.playState = FFPlayStateStop;
     
     avcodec_close(_videoCodecContext);
