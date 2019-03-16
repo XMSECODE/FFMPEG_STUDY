@@ -133,9 +133,9 @@
     //设置layer属性
     CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
     NSDictionary *dict = @{kEAGLDrawablePropertyRetainedBacking:@(NO),
-                           kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGB565
+                           kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8
                            };
-    [eaglLayer setOpaque:YES];
+
     [eaglLayer setDrawableProperties:dict];
     //创建上下文
     [self setupContext];
@@ -193,6 +193,7 @@
 
 #pragma mark - 编译RGB_GPU程序
 - (void)setupRGBGPUProgram {
+    //编译顶点着色器、纹理着色器
     GLuint vertexShader = [self compileShader:@"vertexshader_RGB.vtsd" withType:GL_VERTEX_SHADER];
     GLuint fragmentShader = [self compileShader:@"fragmentshader_RGB.fmsd" withType:GL_FRAGMENT_SHADER];
     
@@ -225,9 +226,10 @@
 
 #pragma mark - 编译YUV_GPU程序
 - (void)setupYUVGPUProgram {
+    //编译顶点着色器、纹理着色器
     GLuint vertexShader = [self compileShader:@"vertexshader_YUV.vtsd" withType:GL_VERTEX_SHADER];
     GLuint fragmentShader = [self compileShader:@"fragmentshader_YUV.fmsd" withType:GL_FRAGMENT_SHADER];
-    
+    //绑定链接程序
     GLuint programHandle = glCreateProgram();
     glAttachShader(programHandle, vertexShader);
     glAttachShader(programHandle, fragmentShader);
@@ -242,9 +244,10 @@
         NSLog(@"%@", messageStr);
         return;
     }
-    
+    //使用程序
     glUseProgram(programHandle);
     self.mYUVGLProgId = programHandle;
+    //绑定变量
     _mYUVGLPosition = glGetAttribLocation(programHandle, "position");
     glEnableVertexAttribArray(_mYUVGLPosition);
     
