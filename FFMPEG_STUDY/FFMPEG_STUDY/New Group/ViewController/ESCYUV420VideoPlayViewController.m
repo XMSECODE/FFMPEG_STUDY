@@ -15,6 +15,7 @@
 #import "ESCOpenGLESView.h"
 #import "ESCPCMRedecoder.h"
 #import "ESCMediaDataModel.h"
+#import "ESCFFmpegFilterTool.h"
 
 @interface ESCYUV420VideoPlayViewController ()
 
@@ -53,6 +54,8 @@
 @property(nonatomic,strong)NSMutableArray<ESCFrameDataModel*>* videoPacketModelArray;
 
 @property(nonatomic,strong)NSRunLoop* playrunloop;
+
+@property(nonatomic,strong)ESCFFmpegFilterTool* filterTool;
 
 @end
 
@@ -130,6 +133,7 @@
         weakSelf.ffmpegManager = nil;
         [weakSelf.audioPlayer stop];
         [weakSelf.aacToPCMDecoder destroy];
+        [weakSelf.filterTool destroy];
     }];
 }
 
@@ -203,7 +207,30 @@
                                     double currentTime = CACurrentMediaTime();
 //                                    printf("开始解码渲染%lf==\n",currentTime - weakSelf.startTime);
                                     weakSelf.startTime = currentTime;
-                                    [weakSelf handleVideoFrame:model.frame];
+                                    if (weakSelf.filterTool == nil) {
+                                        weakSelf.filterTool = [[ESCFFmpegFilterTool alloc] init];
+                                        /*
+                                         //const char *filter_descr = "scale=78:24,transpose=cclock";
+                                         //const char *filter_descr = "scale=300:100,transpose=cclock";
+                                         //const char *filter_descr = "drawbox=x=100:y=200:w=200:h=260:color=red@0.5";
+                                         //const char *filter_descr = "drawgrid=w=iw/3:h=ih/3:t=2:c=green@0.5";
+                                         //const char *filter_descr = "drawgrid=w=iw/3:h=ih/3:t=2:c=green@0.5,drawbox=x=100:y=200:w=200:h=260:color=red@0.5";
+                                         //const char *filter_descr = "edgedetect=low=0.1:high=0.4";
+                                         */
+                                        [weakSelf.filterTool setupWithWidth:model.frame->width
+                                                                 height:model.frame->height
+                                                            pixelFormat:model.frame->format
+                                                              time_base:model.frame->sample_aspect_ratio
+                                                    sample_aspect_ratio:model.frame->sample_aspect_ratio
+                                                               filter_descr:@"edgedetect=low=0.1:high=0.4"];
+                                    }
+                                    AVFrame *resultFrame = [self.filterTool filterFrame:model.frame];
+                                    if (resultFrame != NULL) {
+                                        model.frame = resultFrame;
+                                        [weakSelf handleVideoFrame:model.frame needFree:YES];
+                                    }else{
+                                        [weakSelf handleVideoFrame:model.frame needFree:NO];
+                                    }
             } audioSuccess:nil failure:^(NSError *error) {
                 
             }];
@@ -232,7 +259,7 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
     return md;
 }
 
-- (void)handleVideoFrame:(AVFrame *)videoFrame {
+- (void)handleVideoFrame:(AVFrame *)videoFrame needFree:(BOOL)needFree{
     @autoreleasepool {
         NSInteger pts = videoFrame->pts;
         self.receiveVideoFrameCount++;
@@ -243,6 +270,9 @@ NSData * copyFrameData(UInt8 *src, int linesize, int width, int height) {
             if (self.width == 0 || self.height == 0) {
                 self.width = videoFrame->width;
                 self.height = videoFrame->height;
+            }
+            if (needFree) {
+                av_frame_free(&videoFrame);
             }
 //            printf("渲染数据");
 //                if (self.startTime == 0) {

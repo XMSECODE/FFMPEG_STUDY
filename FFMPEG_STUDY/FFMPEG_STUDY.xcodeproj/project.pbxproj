@@ -59,6 +59,7 @@
 		F00D9DDE2115789F00EDE1A1 /* ESCH264FileToMp4FileTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F00D9DDB2115789F00EDE1A1 /* ESCH264FileToMp4FileTool.m */; };
 		F00D9DDF2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F00D9DDD2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m */; };
 		F023F5212112A93100335B8A /* ESCYUVToH264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F023F5202112A93100335B8A /* ESCYUVToH264Encoder.m */; };
+		F0627E1E225DC09B00BC74A0 /* ESCFFmpegFilterTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F0627E1D225DC09B00BC74A0 /* ESCFFmpegFilterTool.m */; };
 		F06657852186B7BE00749253 /* ESCFrameDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F06657842186B7BE00749253 /* ESCFrameDataModel.m */; };
 		F06657882186DD0400749253 /* ESCMediaInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F06657872186DD0400749253 /* ESCMediaInfoModel.m */; };
 		F0740401213D264D00BA562A /* ESCffmpegRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = F0740400213D264D00BA562A /* ESCffmpegRecorder.m */; };
@@ -266,6 +267,8 @@
 		F00D9DDD2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCH264StreamToMp4FileTool.m; sourceTree = "<group>"; };
 		F023F51F2112A93100335B8A /* ESCYUVToH264Encoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCYUVToH264Encoder.h; sourceTree = "<group>"; };
 		F023F5202112A93100335B8A /* ESCYUVToH264Encoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCYUVToH264Encoder.m; sourceTree = "<group>"; };
+		F0627E1C225DC09B00BC74A0 /* ESCFFmpegFilterTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCFFmpegFilterTool.h; sourceTree = "<group>"; };
+		F0627E1D225DC09B00BC74A0 /* ESCFFmpegFilterTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCFFmpegFilterTool.m; sourceTree = "<group>"; };
 		F06657832186B7BE00749253 /* ESCFrameDataModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCFrameDataModel.h; sourceTree = "<group>"; };
 		F06657842186B7BE00749253 /* ESCFrameDataModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCFrameDataModel.m; sourceTree = "<group>"; };
 		F06657862186DD0400749253 /* ESCMediaInfoModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCMediaInfoModel.h; sourceTree = "<group>"; };
@@ -431,10 +434,10 @@
 			isa = PBXGroup;
 			children = (
 				047B7B2F1EF2C4CF00E4F0F8 /* avfilter.h */,
-				047B7B301EF2C4CF00E4F0F8 /* avfiltergraph.h */,
 				047B7B311EF2C4CF00E4F0F8 /* buffersink.h */,
 				047B7B321EF2C4CF00E4F0F8 /* buffersrc.h */,
 				047B7B331EF2C4CF00E4F0F8 /* version.h */,
+				047B7B301EF2C4CF00E4F0F8 /* avfiltergraph.h */,
 			);
 			path = libavfilter;
 			sourceTree = "<group>";
@@ -700,6 +703,8 @@
 				0495E8C81EFE483E00958C4F /* ESCSwsscaleTool.m */,
 				F079562320FF2FF700F3AF26 /* ESCPCMRedecoder.h */,
 				F079562420FF2FF700F3AF26 /* ESCPCMRedecoder.m */,
+				F0627E1C225DC09B00BC74A0 /* ESCFFmpegFilterTool.h */,
+				F0627E1D225DC09B00BC74A0 /* ESCFFmpegFilterTool.m */,
 			);
 			path = ESCFFmpeg;
 			sourceTree = "<group>";
@@ -813,6 +818,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -872,6 +878,7 @@
 				040D9F7E20FF888D00EE76E6 /* ESCAudioStreamPlayer.m in Sources */,
 				047B7B051EF2C47800E4F0F8 /* AppDelegate.m in Sources */,
 				0439484A210D9AFA00C7BECA /* MASCompositeConstraint.m in Sources */,
+				F0627E1E225DC09B00BC74A0 /* ESCFFmpegFilterTool.m in Sources */,
 				04394850210D9AFA00C7BECA /* NSArray+MASAdditions.m in Sources */,
 				F079562520FF2FF700F3AF26 /* ESCPCMRedecoder.m in Sources */,
 				F00D9DDF2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m in Sources */,
