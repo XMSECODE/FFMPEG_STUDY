@@ -57,6 +57,8 @@
 
 @property(nonatomic,strong)ESCFFmpegFilterTool* filterTool;
 
+@property(nonatomic,assign)int temIndex;
+
 @end
 
 @implementation ESCYUV420VideoPlayViewController
@@ -191,6 +193,7 @@
     }];
 }
 
+
 - (void)decodeAndRender {
     __weak __typeof(self)weakSelf = self;
     [self.playQueue addOperationWithBlock:^{
@@ -208,6 +211,7 @@
 //                                    printf("开始解码渲染%lf==\n",currentTime - weakSelf.startTime);
                                     weakSelf.startTime = currentTime;
                                     if (weakSelf.filterTool == nil) {
+                                        
                                         weakSelf.filterTool = [[ESCFFmpegFilterTool alloc] init];
                                         /*
                                          //const char *filter_descr = "scale=78:24,transpose=cclock";
@@ -216,13 +220,24 @@
                                          //const char *filter_descr = "drawgrid=w=iw/3:h=ih/3:t=2:c=green@0.5";
                                          //const char *filter_descr = "drawgrid=w=iw/3:h=ih/3:t=2:c=green@0.5,drawbox=x=100:y=200:w=200:h=260:color=red@0.5";
                                          //const char *filter_descr = "edgedetect=low=0.1:high=0.4";
+                                         colorlevels=romin=0.5:gomin=0.5:bomin=0.5
+                                         colorbalance=rs=.3
+                                         //颜色调整
+                                         colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3
+                                         crop=w=100:h=100:x=300:y=500
+                                         pad=width=640:height=480:x=0:y=40:color=red
+                                         rotate=45*PI/180
+                                         scale=700:400:force_original_aspect_ratio=decrease, pad=1280:720:(1280-in_w)/2:(720-in_h)/2,rotate=PI*11/180
                                          */
+                                        NSString *filter = [NSString stringWithFormat:@"scale=700:400:force_original_aspect_ratio=decrease, pad=1280:720:(1280-in_w)/2:(720-in_h)/2,rotate=PI*%d/180",self.temIndex++];
                                         [weakSelf.filterTool setupWithWidth:model.frame->width
-                                                                 height:model.frame->height
-                                                            pixelFormat:model.frame->format
-                                                              time_base:model.frame->sample_aspect_ratio
-                                                    sample_aspect_ratio:model.frame->sample_aspect_ratio
-                                                               filter_descr:@"edgedetect=low=0.1:high=0.4"];
+                                                                     height:model.frame->height
+                                                                pixelFormat:model.frame->format
+                                                                  time_base:model.frame->sample_aspect_ratio
+                                                        sample_aspect_ratio:model.frame->sample_aspect_ratio
+                                                               filter_descr:filter];
+                                        
+                                        
                                     }
                                     AVFrame *resultFrame = [self.filterTool filterFrame:model.frame];
                                     if (resultFrame != NULL) {
@@ -231,6 +246,8 @@
                                     }else{
                                         [weakSelf handleVideoFrame:model.frame needFree:NO];
                                     }
+                                    [self.filterTool destroy];
+                                    self.filterTool = nil;
             } audioSuccess:nil failure:^(NSError *error) {
                 
             }];
