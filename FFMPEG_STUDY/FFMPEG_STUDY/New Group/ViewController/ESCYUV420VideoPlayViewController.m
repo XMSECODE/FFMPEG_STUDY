@@ -57,7 +57,9 @@
 
 @property(nonatomic,strong)ESCFFmpegFilterTool* filterTool;
 
-@property(nonatomic,assign)int temIndex;
+@property(nonatomic,assign)int rotateValue;
+
+@property(nonatomic,assign)int paddingValue;
 
 @end
 
@@ -229,7 +231,19 @@
                                          rotate=45*PI/180
                                          scale=700:400:force_original_aspect_ratio=decrease, pad=1280:720:(1280-in_w)/2:(720-in_h)/2,rotate=PI*11/180
                                          */
-                                        NSString *filter = [NSString stringWithFormat:@"scale=700:400:force_original_aspect_ratio=decrease, pad=1280:720:(1280-in_w)/2:(720-in_h)/2,rotate=PI*%d/180",self.temIndex++];
+                                        int owidth = model.frame->width;
+                                        int oheight = model.frame->height;
+                                        int nwidth = owidth - self.paddingValue++;
+                                        int nheight = oheight - self.paddingValue++;
+                                        if (nwidth < 0) {
+                                            nwidth = 0;
+                                        }
+                                        if (nheight < 0) {
+                                            nheight = 0;
+                                        }
+                                        NSString *filter = [NSString stringWithFormat:@"scale=%d:%d:force_original_aspect_ratio=decrease, pad=%d:%d:(%d-in_w)/2:(%d-in_h)/2,rotate=PI*%d/180",nwidth,nheight,owidth,oheight,owidth,oheight,self.rotateValue++];
+                                        
+                                        NSLog(@"%@",filter);
                                         [weakSelf.filterTool setupWithWidth:model.frame->width
                                                                      height:model.frame->height
                                                                 pixelFormat:model.frame->format
