@@ -241,8 +241,11 @@
                                         if (nheight < 0) {
                                             nheight = 0;
                                         }
+                                        //缩小
                                         NSString *filter = [NSString stringWithFormat:@"scale=%d:%d:force_original_aspect_ratio=decrease, pad=%d:%d:(%d-in_w)/2:(%d-in_h)/2,rotate=PI*%d/180",nwidth,nheight,owidth,oheight,owidth,oheight,self.rotateValue++];
-                                        
+                                        //放大
+                                        //crop=out_w=2/4*in_w:out_h=2/4*in_h,scale=1920:1080,rotate=PI*90/180
+                                        filter = @"crop=out_w=2/4*in_w:out_h=2/4*in_h,scale=1920:1080,rotate=PI*90/180";
                                         NSLog(@"%@",filter);
                                         [weakSelf.filterTool setupWithWidth:model.frame->width
                                                                      height:model.frame->height
@@ -255,6 +258,7 @@
                                     }
                                     AVFrame *resultFrame = [self.filterTool filterFrame:model.frame];
                                     if (resultFrame != NULL) {
+                                        NSLog(@"%d=====%d",resultFrame->width,resultFrame->height);
                                         model.frame = resultFrame;
                                         [weakSelf handleVideoFrame:model.frame needFree:YES];
                                     }else{
