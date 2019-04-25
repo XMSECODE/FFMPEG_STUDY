@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-void yuvCodecToVideoH264(const char *input_file_name);
-
 @class ESCYUVToH264Encoder;
 
 @protocol ESCYUVToH264EncoderDelegate<NSObject>
@@ -29,6 +27,9 @@ void yuvCodecToVideoH264(const char *input_file_name);
 @interface ESCYUVToH264Encoder : NSObject
 
 @property(nonatomic,weak)id delegate;
+
+//sps和pps数据是否包含在关键帧前面，默认为YES
+@property(nonatomic,assign)BOOL spsAndPpsIsIncludedInIframe;
 
 
 /**
