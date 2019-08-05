@@ -100,7 +100,7 @@
     self.openGLESView = openglesView;
     self.openGLESView.type = ESCVideoDataTypeYUV420;
     [self.view addSubview:openglesView];
-    
+    self.openGLESView.showType = ESCOpenGLESViewShowTypeAspectFit;
     [self.openGLESView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view);
         make.left.equalTo(self.view);
@@ -212,50 +212,50 @@
                                     double currentTime = CACurrentMediaTime();
 //                                    printf("开始解码渲染%lf==\n",currentTime - weakSelf.startTime);
                                     weakSelf.startTime = currentTime;
-                                    if (weakSelf.filterTool == nil) {
-                                        
-                                        weakSelf.filterTool = [[ESCFFmpegFilterTool alloc] init];
-                                        /*
-                                         //const char *filter_descr = "scale=78:24,transpose=cclock";
-                                         //const char *filter_descr = "scale=300:100,transpose=cclock";
-                                         //const char *filter_descr = "drawbox=x=100:y=200:w=200:h=260:color=red@0.5";
-                                         //const char *filter_descr = "drawgrid=w=iw/3:h=ih/3:t=2:c=green@0.5";
-                                         //const char *filter_descr = "drawgrid=w=iw/3:h=ih/3:t=2:c=green@0.5,drawbox=x=100:y=200:w=200:h=260:color=red@0.5";
-                                         //const char *filter_descr = "edgedetect=low=0.1:high=0.4";
-                                         colorlevels=romin=0.5:gomin=0.5:bomin=0.5
-                                         colorbalance=rs=.3
-                                         //颜色调整
-                                         colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3
-                                         crop=w=100:h=100:x=300:y=500
-                                         pad=width=640:height=480:x=0:y=40:color=red
-                                         rotate=45*PI/180
-                                         scale=700:400:force_original_aspect_ratio=decrease, pad=1280:720:(1280-in_w)/2:(720-in_h)/2,rotate=PI*11/180
-                                         */
-                                        int owidth = model.frame->width;
-                                        int oheight = model.frame->height;
-                                        int nwidth = owidth - self.paddingValue++;
-                                        int nheight = oheight - self.paddingValue++;
-                                        if (nwidth < 0) {
-                                            nwidth = 0;
-                                        }
-                                        if (nheight < 0) {
-                                            nheight = 0;
-                                        }
-                                        //缩小
-                                        NSString *filter = [NSString stringWithFormat:@"scale=%d:%d:force_original_aspect_ratio=decrease, pad=%d:%d:(%d-in_w)/2:(%d-in_h)/2,rotate=PI*%d/180",nwidth,nheight,owidth,oheight,owidth,oheight,self.rotateValue++];
-                                        //放大
-                                        //crop=out_w=2/4*in_w:out_h=2/4*in_h,scale=1920:1080,rotate=PI*90/180
-                                        filter = @"crop=out_w=2/4*in_w:out_h=2/4*in_h,scale=1920:1080,rotate=PI*90/180";
-                                        NSLog(@"%@",filter);
-                                        [weakSelf.filterTool setupWithWidth:model.frame->width
-                                                                     height:model.frame->height
-                                                                pixelFormat:model.frame->format
-                                                                  time_base:model.frame->sample_aspect_ratio
-                                                        sample_aspect_ratio:model.frame->sample_aspect_ratio
-                                                               filter_descr:filter];
-                                        
-                                        
-                                    }
+//                                    if (weakSelf.filterTool == nil) {
+//                                        
+//                                        weakSelf.filterTool = [[ESCFFmpegFilterTool alloc] init];
+//                                        /*
+//                                         //const char *filter_descr = "scale=78:24,transpose=cclock";
+//                                         //const char *filter_descr = "scale=300:100,transpose=cclock";
+//                                         //const char *filter_descr = "drawbox=x=100:y=200:w=200:h=260:color=red@0.5";
+//                                         //const char *filter_descr = "drawgrid=w=iw/3:h=ih/3:t=2:c=green@0.5";
+//                                         //const char *filter_descr = "drawgrid=w=iw/3:h=ih/3:t=2:c=green@0.5,drawbox=x=100:y=200:w=200:h=260:color=red@0.5";
+//                                         //const char *filter_descr = "edgedetect=low=0.1:high=0.4";
+//                                         colorlevels=romin=0.5:gomin=0.5:bomin=0.5
+//                                         colorbalance=rs=.3
+//                                         //颜色调整
+//                                         colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3
+//                                         crop=w=100:h=100:x=300:y=500
+//                                         pad=width=640:height=480:x=0:y=40:color=red
+//                                         rotate=45*PI/180
+//                                         scale=700:400:force_original_aspect_ratio=decrease, pad=1280:720:(1280-in_w)/2:(720-in_h)/2,rotate=PI*11/180
+//                                         */
+//                                        int owidth = model.frame->width;
+//                                        int oheight = model.frame->height;
+//                                        int nwidth = owidth - self.paddingValue++;
+//                                        int nheight = oheight - self.paddingValue++;
+//                                        if (nwidth < 0) {
+//                                            nwidth = 0;
+//                                        }
+//                                        if (nheight < 0) {
+//                                            nheight = 0;
+//                                        }
+//                                        //缩小
+//                                        NSString *filter = [NSString stringWithFormat:@"scale=%d:%d:force_original_aspect_ratio=decrease, pad=%d:%d:(%d-in_w)/2:(%d-in_h)/2,rotate=PI*%d/180",nwidth,nheight,owidth,oheight,owidth,oheight,self.rotateValue++];
+//                                        //放大
+//                                        //crop=out_w=2/4*in_w:out_h=2/4*in_h,scale=1920:1080,rotate=PI*90/180
+//                                        filter = @"crop=out_w=2/4*in_w:out_h=2/4*in_h,scale=1920:1080,rotate=PI*90/180";
+//                                        NSLog(@"%@",filter);
+//                                        [weakSelf.filterTool setupWithWidth:model.frame->width
+//                                                                     height:model.frame->height
+//                                                                pixelFormat:model.frame->format
+//                                                                  time_base:model.frame->sample_aspect_ratio
+//                                                        sample_aspect_ratio:model.frame->sample_aspect_ratio
+//                                                               filter_descr:filter];
+//                                        
+//                                        
+//                                    }
                                     AVFrame *resultFrame = [self.filterTool filterFrame:model.frame];
                                     if (resultFrame != NULL) {
                                         NSLog(@"%d=====%d",resultFrame->width,resultFrame->height);

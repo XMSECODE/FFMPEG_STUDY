@@ -59,6 +59,7 @@
 		F00D9DDE2115789F00EDE1A1 /* ESCH264FileToMp4FileTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F00D9DDB2115789F00EDE1A1 /* ESCH264FileToMp4FileTool.m */; };
 		F00D9DDF2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F00D9DDD2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m */; };
 		F023F5212112A93100335B8A /* ESCYUVToH264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = F023F5202112A93100335B8A /* ESCYUVToH264Encoder.m */; };
+		F055E81922F7DD300097E035 /* IMG_2123.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F055E81822F7DD2F0097E035 /* IMG_2123.mp4 */; };
 		F0627E1E225DC09B00BC74A0 /* ESCFFmpegFilterTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F0627E1D225DC09B00BC74A0 /* ESCFFmpegFilterTool.m */; };
 		F06657852186B7BE00749253 /* ESCFrameDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F06657842186B7BE00749253 /* ESCFrameDataModel.m */; };
 		F06657882186DD0400749253 /* ESCMediaInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F06657872186DD0400749253 /* ESCMediaInfoModel.m */; };
@@ -267,6 +268,7 @@
 		F00D9DDD2115789F00EDE1A1 /* ESCH264StreamToMp4FileTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCH264StreamToMp4FileTool.m; sourceTree = "<group>"; };
 		F023F51F2112A93100335B8A /* ESCYUVToH264Encoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCYUVToH264Encoder.h; sourceTree = "<group>"; };
 		F023F5202112A93100335B8A /* ESCYUVToH264Encoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCYUVToH264Encoder.m; sourceTree = "<group>"; };
+		F055E81822F7DD2F0097E035 /* IMG_2123.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = IMG_2123.mp4; sourceTree = "<group>"; };
 		F0627E1C225DC09B00BC74A0 /* ESCFFmpegFilterTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCFFmpegFilterTool.h; sourceTree = "<group>"; };
 		F0627E1D225DC09B00BC74A0 /* ESCFFmpegFilterTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ESCFFmpegFilterTool.m; sourceTree = "<group>"; };
 		F06657832186B7BE00749253 /* ESCFrameDataModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCFrameDataModel.h; sourceTree = "<group>"; };
@@ -768,6 +770,7 @@
 			isa = PBXGroup;
 			children = (
 				F081D9002182F29C00F7A360 /* test_540p.mp4 */,
+				F055E81822F7DD2F0097E035 /* IMG_2123.mp4 */,
 				F081D8FE2182F1E200F7A360 /* test_720p.mp4 */,
 				04C4ECC02180C3C0009B20CC /* test_1080p.mp4 */,
 				047B7B0E1EF2C47800E4F0F8 /* LaunchScreen.storyboard */,
@@ -840,6 +843,7 @@
 				F081D8FF2182F1E200F7A360 /* test_720p.mp4 in Resources */,
 				F0F9344C20FD84F500E6A334 /* demo.mp4 in Resources */,
 				04DAEC4E2108B8650048ACA3 /* fragmentshader_RGB.fmsd in Resources */,
+				F055E81922F7DD300097E035 /* IMG_2123.mp4 in Resources */,
 				047B7B101EF2C47900E4F0F8 /* LaunchScreen.storyboard in Resources */,
 				04DAEC502108B8650048ACA3 /* vertexshader_RGB.vtsd in Resources */,
 				047B7B0D1EF2C47800E4F0F8 /* Assets.xcassets in Resources */,
