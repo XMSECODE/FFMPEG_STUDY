@@ -107,52 +107,58 @@ typedef struct {
 // MARK: - Draw Methods
 
 - (void)redraw {
-    if (!self.device || !self.commandQueue) return;
-    CGSize drawableSize = self.metalLayer.drawableSize;
-    if (drawableSize.width <=0 || drawableSize.height <= 0) return;
-    id<CAMetalDrawable> drawable = [self.metalLayer nextDrawable];
-    if (!drawable) return;
-    id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
-
-    MTLRenderPassDescriptor *desc = [MTLRenderPassDescriptor renderPassDescriptor];
-    desc.colorAttachments[0].texture = drawable.texture;
-    desc.colorAttachments[0].loadAction = MTLLoadActionClear;
-    desc.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
-    desc.colorAttachments[0].storeAction = MTLStoreActionStore;
-
-    id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
-
-    Vertex quadVertices[4];
-    float quadW = self.imgWidth, quadH = self.imgHeight;
-    float viewW = drawableSize.width, viewH = drawableSize.height;
-    float sx=1, sy=1;
-//    float dx=0, dy=0;
-    if (self.showType == ESCOpenGLESViewShowTypeAspectFit && quadW > 0 && quadH > 0) {
-        float scaleW = viewW / quadW, scaleH = viewH / quadH;
-        float scale = MIN(scaleW, scaleH);
-        sx = (quadW * scale) / viewW;
-        sy = (quadH * scale) / viewH;
-    }
-    // (NDC, texcoord)
-    quadVertices[0] = (Vertex){ {-sx, -sy}, { 0, 1} };
-    quadVertices[1] = (Vertex){ { sx, -sy}, { 1, 1} };
-    quadVertices[2] = (Vertex){ {-sx,  sy}, { 0, 0} };
-    quadVertices[3] = (Vertex){ { sx,  sy}, { 1, 0} };
-    [encoder setVertexBytes:quadVertices length:sizeof(quadVertices) atIndex:0];
-
-    if (self.type == ESCVideoDataTypeRGBA || self.type == ESCVideoDataTypeRGB) {
-        [encoder setRenderPipelineState:self.pipelineRGBA];
-        if (self.textureRGBA) [encoder setFragmentTexture:self.textureRGBA atIndex:0];
-    } else if (self.type == ESCVideoDataTypeYUV420) {
-        [encoder setRenderPipelineState:self.pipelineYUV];
-        if (self.textureY) [encoder setFragmentTexture:self.textureY atIndex:0];
-        if (self.textureU) [encoder setFragmentTexture:self.textureU atIndex:1];
-        if (self.textureV) [encoder setFragmentTexture:self.textureV atIndex:2];
-    }
-    [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
-    [encoder endEncoding];
-    [commandBuffer presentDrawable:drawable];
-    [commandBuffer commit];
+    dispatch_async(self.metal_Queue, ^{
+        
+        
+        if (!self.device || !self.commandQueue) return;
+        CGSize drawableSize = self.metalLayer.drawableSize;
+        if (drawableSize.width <=0 || drawableSize.height <= 0) return;
+        id<CAMetalDrawable> drawable = [self.metalLayer nextDrawable];
+        if (!drawable) return;
+        id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
+        
+        MTLRenderPassDescriptor *desc = [MTLRenderPassDescriptor renderPassDescriptor];
+        desc.colorAttachments[0].texture = drawable.texture;
+        desc.colorAttachments[0].loadAction = MTLLoadActionClear;
+        desc.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
+        desc.colorAttachments[0].storeAction = MTLStoreActionStore;
+        
+        id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
+        
+        Vertex quadVertices[4];
+        float quadW = self.imgWidth, quadH = self.imgHeight;
+        float viewW = drawableSize.width, viewH = drawableSize.height;
+        float sx=1, sy=1;
+        //    float dx=0, dy=0;
+        if (self.showType == ESCOpenGLESViewShowTypeAspectFit && quadW > 0 && quadH > 0) {
+            float scaleW = viewW / quadW, scaleH = viewH / quadH;
+            float scale = MIN(scaleW, scaleH);
+            sx = (quadW * scale) / viewW;
+            sy = (quadH * scale) / viewH;
+        }
+        // (NDC, texcoord)
+        quadVertices[0] = (Vertex){ {-sx, -sy}, { 0, 1} };
+        quadVertices[1] = (Vertex){ { sx, -sy}, { 1, 1} };
+        quadVertices[2] = (Vertex){ {-sx,  sy}, { 0, 0} };
+        quadVertices[3] = (Vertex){ { sx,  sy}, { 1, 0} };
+        [encoder setVertexBytes:quadVertices length:sizeof(quadVertices) atIndex:0];
+        
+        if (self.type == ESCVideoDataTypeRGBA || self.type == ESCVideoDataTypeRGB) {
+            [encoder setRenderPipelineState:self.pipelineRGBA];
+            if (self.textureRGBA) [encoder setFragmentTexture:self.textureRGBA atIndex:0];
+        } else if (self.type == ESCVideoDataTypeYUV420) {
+            [encoder setRenderPipelineState:self.pipelineYUV];
+            if (self.textureY) [encoder setFragmentTexture:self.textureY atIndex:0];
+            if (self.textureU) [encoder setFragmentTexture:self.textureU atIndex:1];
+            if (self.textureV) [encoder setFragmentTexture:self.textureV atIndex:2];
+        }
+        [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
+        [encoder endEncoding];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [commandBuffer presentDrawable:drawable];
+            [commandBuffer commit];
+        });
+    });
 }
 
 // MARK: - Data Loading
@@ -187,9 +193,8 @@ typedef struct {
     NSUInteger bytesPerRow = width * (self.type==ESCVideoDataTypeRGBA? 4:3);
     [texture replaceRegion:MTLRegionMake2D(0, 0, width, height) mipmapLevel:0 withBytes:data bytesPerRow:bytesPerRow];
     self.textureRGBA = texture;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self redraw];
-    });
+
+    [self redraw];
 }
 
 - (void)loadYUV420PDataWithYData:(NSData *)yData uData:(NSData *)uData vData:(NSData *)vData width:(NSInteger)width height:(NSInteger)height {
@@ -214,24 +219,21 @@ typedef struct {
         self.textureY = ytex;
         self.textureU = utex;
         self.textureV = vtex;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self redraw];
-        });
+
+        [self redraw];
     });
 }
 
 - (void)setType:(ESCVideoDataType)type {
     _type = type;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self redraw];
-    });
+
+    [self redraw];
 }
 
 - (void)setShowType:(ESCOpenGLESViewShowType)showType {
     _showType = showType;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self redraw];
-    });
+
+    [self redraw];
 }
 
 @end
