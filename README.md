@@ -1,2 +1,3 @@
 # FFMPEG_STUDY
 尝试使用FFMPEG
+FFMPEG版本已更新至8.0
