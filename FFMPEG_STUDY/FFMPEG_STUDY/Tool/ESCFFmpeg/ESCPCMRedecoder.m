@@ -22,17 +22,31 @@
 @implementation ESCPCMRedecoder
 
 - (void)initConvertWithFrame:(AVFrame *)frame {
-    SwrContext *swrContext = swr_alloc_set_opts(NULL, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S32, 48000, frame->channel_layout, frame->format, frame->sample_rate, 0, 0);
-    if (swrContext == NULL) {
+    // 设置输出声道布局
+    AVChannelLayout out_ch_layout;
+    av_channel_layout_default(&out_ch_layout, 2); // 2 = 立体声STEREO
+
+    // SwrContext推荐新形式
+    SwrContext *swrContext = NULL;
+
+    int ret = swr_alloc_set_opts2(&swrContext,
+                                  &out_ch_layout, AV_SAMPLE_FMT_S32, 48000,        // 输出
+                                  &frame->ch_layout, frame->format, frame->sample_rate, // 输入
+                                  0, NULL);
+    
+    if (ret < 0 || !swrContext) {
         NSLog(@"create swrcontext failed!");
-    }else {
+    } else {
         self.swrContext = swrContext;
     }
+
     AVFrame *PCMFrame = av_frame_alloc();
     PCMFrame->sample_rate = 48000;
-    PCMFrame->channel_layout = AV_CH_LAYOUT_STEREO;
+    av_channel_layout_copy(&PCMFrame->ch_layout, &out_ch_layout); // 新版API替代channel_layout
     PCMFrame->format = AV_SAMPLE_FMT_S32;
     self.pcmFrame = PCMFrame;
+
+    av_channel_layout_uninit(&out_ch_layout); // 用完layout需释放
 }
 
 - (void)destroy {

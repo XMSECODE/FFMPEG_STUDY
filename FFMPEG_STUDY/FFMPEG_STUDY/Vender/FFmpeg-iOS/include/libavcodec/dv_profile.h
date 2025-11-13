@@ -23,7 +23,6 @@
 
 #include "libavutil/pixfmt.h"
 #include "libavutil/rational.h"
-#include "avcodec.h"
 
 /* minimum number of bytes to read from a DV stream in order to
  * determine the profile */
@@ -65,21 +64,18 @@ typedef struct AVDVProfile {
  * @param frame the compressed data buffer
  * @param buf_size size of the buffer in bytes
  * @return the DV profile for the supplied data or NULL on failure
- 得到一个DV配置文件给frame提供压缩
  */
 const AVDVProfile *av_dv_frame_profile(const AVDVProfile *sys,
                                        const uint8_t *frame, unsigned buf_size);
 
 /**
  * Get a DV profile for the provided stream parameters.
- 得到一个DV配置文件给stream parameters
  */
 const AVDVProfile *av_dv_codec_profile(int width, int height, enum AVPixelFormat pix_fmt);
 
 /**
  * Get a DV profile for the provided stream parameters.
  * The frame rate is used as a best-effort parameter.
- 得到一个DV配置文件给stream parameters。frame rate是被使用的最优参数。
  */
 const AVDVProfile *av_dv_codec_profile2(int width, int height, enum AVPixelFormat pix_fmt, AVRational frame_rate);
 

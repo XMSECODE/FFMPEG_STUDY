@@ -64,8 +64,6 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
 - (void)initFFMPEG {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        av_register_all();
-        avcodec_register_all();
         avformat_network_init();
     });
 }
@@ -73,7 +71,6 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
 - (void)dealloc {
     NSLog(@"%@====%s",self,__FUNCTION__);
 }
-
 #pragma mark - Public
 - (void)openURL:(NSString *)urlString
         success:(void(^)(ESCMediaInfoModel *infoModel))success
@@ -86,10 +83,12 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
     
     AVInputFormat *inputFormat = NULL;
     AVDictionary *avDictionary = NULL;
-    
     const char *url = [urlString cStringUsingEncoding:NSUTF8StringEncoding];
     int result = avformat_open_input(&_formatContext, url, inputFormat, &avDictionary);
     if (result != 0) {
+        char errbuf[256] = {0};
+        av_strerror(result, errbuf, sizeof(errbuf));
+        NSLog(@"ffmpeg avformat_open_input failed: [%d] %s", result, errbuf);
         NSError *error = [NSError EC_errorWithLocalizedDescription:@"open url failure,please check url is available"];
         failure(error);
         return;
@@ -139,22 +138,22 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
     AVCodecParameters *audioCodecParameters = _formatContext->streams[audioStreamID]->codecpar;
     AVStream *audioStream = _formatContext->streams[audioStreamID];
     printf("codec Par :%d,format %d\n",audioCodecParameters->frame_size,audioCodecParameters->format);
-    printf("--codec_type--%d\n--codec_id--%d\n--format--%d\n--bit_rate--%lld\n--sample_rate--%d\n--channel_layout--%llu\n--channels--%d\n---frame_size-%d\n",
+    printf("--codec_type--%d\n--codec_id--%d\n--format--%d\n--bit_rate--%lld\n--sample_rate--%d\n---frame_size-%d\n",
            audioCodecParameters->codec_type,
            audioCodecParameters->codec_id,
            audioCodecParameters->format,
            audioCodecParameters->bit_rate,
            audioCodecParameters->sample_rate,
-           audioCodecParameters->channel_layout,
-           audioCodecParameters->channels,
+//           audioCodecParameters->channel_layout,
+//           audioCodecParameters->channels,
            audioCodecParameters->frame_size);
     printf("==================\n");
     
     
-    AVCodec *Videocodec = avcodec_find_decoder(videoStream->codecpar->codec_id);
+    const AVCodec *Videocodec = avcodec_find_decoder(videoStream->codecpar->codec_id);
     _videoCodecContext = avcodec_alloc_context3(Videocodec);
     
-    AVCodec *audioCodec = avcodec_find_decoder(audioStream->codecpar->codec_id);
+    const AVCodec *audioCodec = avcodec_find_decoder(audioStream->codecpar->codec_id);
     _audioCodeContext = avcodec_alloc_context3(audioCodec);
     
     if((result = avcodec_parameters_to_context(_videoCodecContext, videoStream->codecpar)) < 0) {
@@ -322,8 +321,8 @@ typedef NS_ENUM(NSUInteger, FFPlayState) {
 - (void)stop {
     self.playState = FFPlayStateStop;
     
-    avcodec_close(_videoCodecContext);
-    avcodec_close(_audioCodeContext);
+    avcodec_free_context(&_videoCodecContext);
+    avcodec_free_context(&_audioCodeContext);
     avformat_close_input(&_formatContext);
     [self.swsscaleManager destroy];
     printf("play stop!\n");

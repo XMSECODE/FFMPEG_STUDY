@@ -10,6 +10,7 @@
 #import "ESCImageVideoPlayViewController.h"
 #import "ESCRGBVideoPlayViewController.h"
 #import "ESCYUV420VideoPlayViewController.h"
+#import "ESCYUV420MetalVideoPlayViewController.h"
 
 @interface ViewController ()
 
@@ -40,6 +41,10 @@
         [self.navigationController pushViewController:viewController animated:YES];
     }else if (indexPath.row == 2) {
         ESCYUV420VideoPlayViewController *viewController = [[ESCYUV420VideoPlayViewController alloc] init];
+        viewController.videoPath = videoPath;
+        [self.navigationController pushViewController:viewController animated:YES];
+    }else if (indexPath.row == 3) {
+        ESCYUV420MetalVideoPlayViewController *viewController = [[ESCYUV420MetalVideoPlayViewController alloc] init];
         viewController.videoPath = videoPath;
         [self.navigationController pushViewController:viewController animated:YES];
     }

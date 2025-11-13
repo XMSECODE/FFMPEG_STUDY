@@ -29,6 +29,15 @@
  * Public libavcodec Videotoolbox header.
  */
 
+/**
+ * @defgroup lavc_codec_hwaccel_videotoolbox VideoToolbox Decoder
+ * @ingroup lavc_codec_hwaccel
+ *
+ * Hardware accelerated decoding using VideoToolbox on Apple Platforms
+ *
+ * @{
+ */
+
 #include <stdint.h>
 
 #define Picture QuickdrawPicture
@@ -36,6 +45,8 @@
 #undef Picture
 
 #include "libavcodec/avcodec.h"
+
+#include "libavutil/attributes.h"
 
 /**
  * This struct holds all the information that needs to be passed
@@ -46,15 +57,8 @@
 typedef struct AVVideotoolboxContext {
     /**
      * Videotoolbox decompression session object.
-     * Created and freed the caller.
      */
     VTDecompressionSessionRef session;
-
-    /**
-     * The output callback that must be passed to the session.
-     * Set by av_videottoolbox_default_init()
-     */
-    VTDecompressionOutputCallback output_callback;
 
     /**
      * CVPixelBuffer Format Type that Videotoolbox will use for decoded frames.
@@ -65,62 +69,14 @@ typedef struct AVVideotoolboxContext {
 
     /**
      * CoreMedia Format Description that Videotoolbox will use to create the decompression session.
-     * Set by the caller.
      */
     CMVideoFormatDescriptionRef cm_fmt_desc;
 
     /**
      * CoreMedia codec type that Videotoolbox will use to create the decompression session.
-     * Set by the caller.
      */
     int cm_codec_type;
 } AVVideotoolboxContext;
-
-/**
- * Allocate and initialize a Videotoolbox context.
- *
- * This function should be called from the get_format() callback when the caller
- * selects the AV_PIX_FMT_VIDETOOLBOX format. The caller must then create
- * the decoder object (using the output callback provided by libavcodec) that
- * will be used for Videotoolbox-accelerated decoding.
- *
- * When decoding with Videotoolbox is finished, the caller must destroy the decoder
- * object and free the Videotoolbox context using av_free().
- *
- * @return the newly allocated context or NULL on failure
- 分配和初始化一个Videotoolbox context。这个方法应该在当用户调用get_format()选择AV_PIX_FMT_VIDETOOLBOX样式时回调调用。调用者必须创建一个将用于Videotoolbox-accelerated解码的解码器对象（使用libavcodec提供的回调输出）。
- 当Videotoolbox完成解码是，调用者必须使用销毁decoder对象，使用av_free()释放Videotoolbox context。
- */
-AVVideotoolboxContext *av_videotoolbox_alloc_context(void);
-
-/**
- * This is a convenience function that creates and sets up the Videotoolbox context using
- * an internal implementation.
- *
- * @param avctx the corresponding codec context
- *
- * @return >= 0 on success, a negative AVERROR code on failure
- */
-int av_videotoolbox_default_init(AVCodecContext *avctx);
-
-/**
- * This is a convenience function that creates and sets up the Videotoolbox context using
- * an internal implementation.
- *
- * @param avctx the corresponding codec context
- * @param vtctx the Videotoolbox context to use
- *
- * @return >= 0 on success, a negative AVERROR code on failure
- */
-int av_videotoolbox_default_init2(AVCodecContext *avctx, AVVideotoolboxContext *vtctx);
-
-/**
- * This function must be called to free the Videotoolbox context initialized with
- * av_videotoolbox_default_init().
- *
- * @param avctx the corresponding codec context
- */
-void av_videotoolbox_default_free(AVCodecContext *avctx);
 
 /**
  * @}

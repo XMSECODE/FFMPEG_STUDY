@@ -35,7 +35,7 @@
  * Useful to check and match library version in order to maintain
  * backward compatibility.
  *
- * The FFmpeg libraries follow a versioning sheme very similar to
+ * The FFmpeg libraries follow a versioning scheme very similar to
  * Semantic Versioning (http://semver.org/)
  * The difference is that the component called PATCH is called MICRO in FFmpeg
  * and its value is reset to 100 instead of 0 to keep it above or equal to 100.
@@ -72,14 +72,14 @@
 /**
  * @defgroup lavu_ver Version and Build diagnostics
  *
- * Macros and function useful to check at compiletime and at runtime
+ * Macros and function useful to check at compile time and at runtime
  * which version of libavutil is in use.
  *
  * @{
  */
 
-#define LIBAVUTIL_VERSION_MAJOR  55
-#define LIBAVUTIL_VERSION_MINOR  58
+#define LIBAVUTIL_VERSION_MAJOR  60
+#define LIBAVUTIL_VERSION_MINOR   8
 #define LIBAVUTIL_VERSION_MICRO 100
 
 #define LIBAVUTIL_VERSION_INT   AV_VERSION_INT(LIBAVUTIL_VERSION_MAJOR, \
@@ -105,37 +105,11 @@
  * @{
  */
 
-#ifndef FF_API_VDPAU
-#define FF_API_VDPAU                    (LIBAVUTIL_VERSION_MAJOR < 56)
-#endif
-#ifndef FF_API_XVMC
-#define FF_API_XVMC                     (LIBAVUTIL_VERSION_MAJOR < 56)
-#endif
-#ifndef FF_API_OPT_TYPE_METADATA
-#define FF_API_OPT_TYPE_METADATA        (LIBAVUTIL_VERSION_MAJOR < 56)
-#endif
-#ifndef FF_API_DLOG
-#define FF_API_DLOG                     (LIBAVUTIL_VERSION_MAJOR < 56)
-#endif
-#ifndef FF_API_VAAPI
-#define FF_API_VAAPI                    (LIBAVUTIL_VERSION_MAJOR < 56)
-#endif
-#ifndef FF_API_FRAME_QP
-#define FF_API_FRAME_QP                 (LIBAVUTIL_VERSION_MAJOR < 56)
-#endif
-#ifndef FF_API_PLUS1_MINUS1
-#define FF_API_PLUS1_MINUS1             (LIBAVUTIL_VERSION_MAJOR < 56)
-#endif
-#ifndef FF_API_ERROR_FRAME
-#define FF_API_ERROR_FRAME              (LIBAVUTIL_VERSION_MAJOR < 56)
-#endif
-#ifndef FF_API_CRC_BIG_TABLE
-#define FF_API_CRC_BIG_TABLE            (LIBAVUTIL_VERSION_MAJOR < 56)
-#endif
-#ifndef FF_API_PKT_PTS
-#define FF_API_PKT_PTS                  (LIBAVUTIL_VERSION_MAJOR < 56)
-#endif
-
+#define FF_API_MOD_UINTP2               (LIBAVUTIL_VERSION_MAJOR < 61)
+#define FF_API_RISCV_FD_ZBA             (LIBAVUTIL_VERSION_MAJOR < 61)
+#define FF_API_VULKAN_FIXED_QUEUES      (LIBAVUTIL_VERSION_MAJOR < 61)
+#define FF_API_OPT_INT_LIST             (LIBAVUTIL_VERSION_MAJOR < 61)
+#define FF_API_OPT_PTR                  (LIBAVUTIL_VERSION_MAJOR < 61)
 
 /**
  * @}

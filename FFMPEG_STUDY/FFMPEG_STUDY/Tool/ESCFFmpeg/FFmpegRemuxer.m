@@ -38,8 +38,6 @@
     [self initBasicInfo:filePath];
     
     int errorCode;
-    //1.注册FFmpeg所有编解码器。
-    av_register_all();
     
     //2.1avformat_open_input
     errorCode = avformat_open_input(&pInFormatContext, in_filename, 0, NULL);
@@ -90,8 +88,9 @@
         
         pOutCodeContext->codec_tag = 0;
         if (pOutFormatContext->oformat->flags & AVFMT_GLOBALHEADER) {
-            pOutFormatContext->flags |= CODEC_FLAG_GLOBAL_HEADER;
+            pOutCodeContext->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
         }
+        
         errorCode = avcodec_parameters_from_context(out_stream->codecpar, pOutCodeContext);
         if (errorCode < 0) {
             printf("failed to copy  context input to output stream codec context!");

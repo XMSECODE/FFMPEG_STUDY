@@ -1,5 +1,5 @@
 //
-//  ESCffmpegRecorder
+//  ESCffmpegRecorder.m
 //  CloudViews
 //
 //  Created by xiang on 2018/8/9.
@@ -13,30 +13,21 @@
 #import <libavutil/mathematics.h>
 #import <libavutil/timestamp.h>
 #import <libavformat/avformat.h>
+#import <libavcodec/avcodec.h>
 #import <libswscale/swscale.h>
 #import <libswresample/swresample.h>
 
-#define MAX_NALUS_SZIE (5000)
-
+#define MAX_NALUS_SIZE (5000)
 
 @interface ESCffmpegRecorder ()
-
-@property(nonatomic,assign)AVFormatContext *formatContext;
-
-@property(nonatomic,assign)    AVStream * o_video_stream;
-
-@property(nonatomic,assign)char *strH264Nalu;
-
-@property(nonatomic,assign)int iH264NaluSize;
-
-@property(nonatomic,assign)int64_t v_pts;
-
-@property(nonatomic,assign)int64_t v_dts;
-
-@property(nonatomic,assign)int64_t a_pts;
-
-@property(nonatomic,assign)int64_t a_dts;
-
+@property(nonatomic,assign) AVFormatContext *formatContext;
+@property(nonatomic,assign) AVStream *o_video_stream;
+@property(nonatomic,assign) uint8_t  *strH264Nalu;
+@property(nonatomic,assign) int iH264NaluSize;
+@property(nonatomic,assign) int64_t v_pts;
+@property(nonatomic,assign) int64_t v_dts;
+// 保持CodecContext（用于extradata管理，写帧等），需后续free
+@property(nonatomic,assign) AVCodecContext *videoCodecContext;
 @end
 
 @implementation ESCffmpegRecorder
@@ -45,383 +36,178 @@
                              codecType:(NSInteger)codecType
                             videoWidth:(NSInteger)videoWidth
                            videoHeight:(NSInteger)videoHeight
-                        videoFrameRate:(NSInteger)videoFrameRate {
+                        videoFrameRate:(NSInteger)videoFrameRate
+{
     ESCffmpegRecorder *record = [[ESCffmpegRecorder alloc] init];
-    char strh264nalu[MAX_NALUS_SZIE] = {0};
-    record.strH264Nalu = strh264nalu;
-    av_register_all();
-    avcodec_register_all();
-    
-    AVFormatContext *formatContext;
+    // 分配H264 nalu缓存
+    record.strH264Nalu = av_malloc(MAX_NALUS_SIZE);
+
+    AVFormatContext *formatContext = NULL;
     const char *fileCharPath = [filePath cStringUsingEncoding:NSUTF8StringEncoding];
-    NSInteger ret = avformat_alloc_output_context2(&formatContext, NULL, NULL, fileCharPath);
-    if (formatContext == nil) {
-        printf("formatContext alloc failed!");
+    int ret = avformat_alloc_output_context2(&formatContext, NULL, NULL, fileCharPath);
+    if (!formatContext || ret < 0) {
+        printf("formatContext alloc failed!\n");
         return nil;
     }
-        formatContext->video_codec_id = AV_CODEC_ID_H265;
-        if (ret < 0) {
-            printf("alloc failed!");
-            return nil;
-        }
-        if (!formatContext)
-        {
-            printf("Could not deduce output format from file extension\n");
-            return nil;
-        }
-        
-        AVStream *o_video_stream;
-        o_video_stream = avformat_new_stream(formatContext, NULL);
-        AVCodecContext *c;
-        c = o_video_stream->codec;
-        
-        o_video_stream->time_base = (AVRational){ 1, videoFrameRate };
-        c->bit_rate = 800000;
-        c->codec_type = AVMEDIA_TYPE_VIDEO;
-        c->codec_id = codecType;
-        
-        
-        c->time_base       =  (AVRational){ 1, videoFrameRate };
-        o_video_stream->time_base = c->time_base ;
-        
-        printf("1AVCodec(%d.%d)  AVStream(%d.%d)\n",c ->time_base.num,c ->time_base.den,o_video_stream->time_base.num,o_video_stream->time_base.den);
-        
-        
-        c->width = videoWidth;
-        c->height = videoHeight;
-        c->pix_fmt =0;
-        c->flags = 0;
-        if (formatContext->oformat->flags & AVFMT_GLOBALHEADER) {
-            c->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
-        }
-        
-        
-        av_dump_format(formatContext, 0, fileCharPath, 1);
-        
-        ret = avio_open(&formatContext->pb, fileCharPath, AVIO_FLAG_WRITE);
-        if (ret < 0) {
-            printf("open io failed!");
-            return nil;
-        }
-        
-        ret = avformat_write_header(formatContext, NULL);
-        if (ret < 0) {
-            printf("write header failed!");
-            return nil;
-        }
-        
-            //            AVCodec *codec = avcodec_find_decoder(pFormat->o_video_stream->codecpar->codec_id);
-            //            c = avcodec_alloc_context3(codec);
-        
-            //        AVCodecParameters *parameters = pFormat->o_video_stream->codecpar;
-            //        parameters->bit_rate = 400000;
-            //        parameters->codec_type = AVMEDIA_TYPE_VIDEO;
-            //        parameters->codec_id = RF_ConvertCode(pVideoStream->codec_id);
-            //        parameters->width = pVideoStream->video_width;
-            //        parameters->height = pVideoStream->video_height;
-            //        parameters->format = 0;
-            //        pFormat->o_video_stream->event_flags = 0;
-            //
-            //
-        
-            
-        
-        
-        //    if( pAudioStream != NULL )
-        //    {
-        //        AVCodec * AudioCodec = NULL;
-        //
-        //        if(   pAudioStream->codec_id == CODECID_A_PCM )
-        //        {
-        //            pFormat->o_audio_stream = avformat_new_stream(pFormat->o_fmt_ctx, NULL);
-        //        }else
-        //        {
-        //            AudioCodec  = avcodec_find_encoder(RF_ConvertCode(pAudioStream->codec_id));
-        //             if (!AudioCodec) {
-        //                    fprintf(stderr, "Could not find encoder for '%s'\n",avcodec_get_name(RF_ConvertCode(pAudioStream->codec_id)));
-        //                    exit(1);
-        //                }
-        //
-        //             pFormat->o_audio_stream = avformat_new_stream(pFormat->o_fmt_ctx, AudioCodec);
-        //        }
-        //
-        //        {
-        //            AVCodecContext *c;
-        //            c = pFormat->o_audio_stream->codec;
-        //            c->codec_type = AVMEDIA_TYPE_AUDIO;
-        //            c->codec_id = RF_ConvertCode(pAudioStream->codec_id);
-        //            c->sample_fmt  = RF_ConvertAudioBitWitdh(pAudioStream->audio_sample_fmt);
-        //            c->sample_rate = pAudioStream->audio_sample_rate;
-        //            c->channel_layout = RF_ConvertAudioMode(pAudioStream->audio_channel_layout);
-        //            c->channels        = av_get_channel_layout_nb_channels(c->channel_layout);
-        //            pFormat->o_audio_stream->time_base = (AVRational){ 1, c->sample_rate };
-        //            c->time_base       =   pFormat->o_audio_stream->time_base;
-        //
-        //            /*
-        //
-        //
-        //            c->codec_type = AVMEDIA_TYPE_AUDIO;
-        //            c->codec_id = AV_CODEC_ID_AC3;
-        //            c->sample_fmt  = AV_SAMPLE_FMT_S16;
-        //            c->bit_rate    = 128000;
-        //            c->sample_rate = 8000;
-        //            c->channel_layout = AV_CH_LAYOUT_MONO;
-        //            c->channels        = av_get_channel_layout_nb_channels(c->channel_layout);
-        //            printf("1audio channels=%d channel_layout=%d\n", c->channels,c->channel_layout);
-        //            pFormat->o_audio_stream->time_base = (AVRational){ 1, c->sample_rate };
-        //            c->time_base       =   pFormat->o_audio_stream->time_base;
-        //            */
-        //
-        //            if (pFormat->o_fmt_ctx->oformat->flags & AVFMT_GLOBALHEADER)
-        //                c->flags |= CODEC_FLAG_GLOBAL_HEADER;
-        //
-        //
-        //            if( pAudioStream->codec_id == CODECID_A_PCM)
-        //            {
-        //                if( pAudioStream->audio_sample_rate == 8000)
-        //                    pFormat->audio_duration = 160;
-        //                else
-        //                    pFormat->audio_duration = 160;
-        //
-        //                c->bit_rate    =   128000;
-        //                // c->frame_size   = 640;
-        //            }else if( pAudioStream->codec_id == CODECID_A_AC3)
-        //            {
-        //            /*
-        //                if( pAudioStream->audio_sample_rate == 8000)
-        //                    pFormat->audio_duration = 1536;
-        //                else
-        //                    pFormat->audio_duration = 1536;
-        //
-        //                c->bit_rate    =   12800;
-        //            *///    c->frame_size   = 320;
-        //                c->sample_fmt  = AV_SAMPLE_FMT_FLTP;
-        //                open_audio(AudioCodec,pFormat,NULL);
-        //
-        //            }else if( pAudioStream->codec_id == CODECID_A_AAC)
-        //            {
-        //                //c->sample_fmt  = AV_SAMPLE_FMT_FLTP;
-        //                //c->channel_layout = AV_CH_LAYOUT_STEREO;
-        //                //c->channels = 2;
-        //                //c->sample_rate = 11025;
-        //                c->bit_rate    =   24000;
-        //
-        //                open_audio(AudioCodec,pFormat,NULL);
-        //            }
-        //            else if( pAudioStream->codec_id == CODECID_A_MP3)
-        //            {
-        //                c->sample_rate = 24000;
-        //
-        //                open_audio(AudioCodec,pFormat,NULL);
-        //            }
-        //
-        //
-        //
-        //        }
-        //
-        //    }
+    // 明确视频编码类型
+    formatContext->video_codec_id = (int)codecType;
+
+    AVStream *videoStream = avformat_new_stream(formatContext, NULL);
+    if (!videoStream) {
+        printf("alloc video stream failed!\n");
+        avformat_free_context(formatContext);
+        return nil;
+    }
+
+    // 选择编码器
+    const AVCodec *codec = avcodec_find_encoder(codecType);
+    if (!codec) {
+        printf("encoder not found!\n");
+        avformat_free_context(formatContext);
+        return nil;
+    }
+
+    AVCodecContext *codecContext = avcodec_alloc_context3(codec);
+    if (!codecContext) {
+        printf("codec alloc failed!\n");
+        avformat_free_context(formatContext);
+        return nil;
+    }
+
+    // 视频参数设置
+    codecContext->codec_type = AVMEDIA_TYPE_VIDEO;
+    codecContext->codec_id = codecType;
+    codecContext->bit_rate = 800000;
+    codecContext->width = videoWidth;
+    codecContext->height = videoHeight;
+    codecContext->time_base = (AVRational){ 1, (int)videoFrameRate };
+    codecContext->framerate = (AVRational){ (int)videoFrameRate, 1 };
+    codecContext->gop_size = 12; // 可选
+    codecContext->pix_fmt = AV_PIX_FMT_YUV420P;
+    codecContext->flags = 0;
+    if (formatContext->oformat->flags & AVFMT_GLOBALHEADER) {
+        codecContext->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+    }
+    
+    // 打开编码器
+    ret = avcodec_open2(codecContext, codec, NULL);
+    if (ret < 0) {
+        printf("open encoder failed!\n");
+        avcodec_free_context(&codecContext);
+        avformat_free_context(formatContext);
+        return nil;
+    }
+
+    // 从 codecContext 拷贝参数到 stream->codecpar
+    ret = avcodec_parameters_from_context(videoStream->codecpar, codecContext);
+    if (ret < 0) {
+        printf("copy codecpar failed!\n");
+        avcodec_free_context(&codecContext);
+        avformat_free_context(formatContext);
+        return nil;
+    }
+
+    // 时间基一一致
+    videoStream->time_base = codecContext->time_base;
+
+    // 打开输出
+    av_dump_format(formatContext, 0, fileCharPath, 1);
+    ret = avio_open(&formatContext->pb, fileCharPath, AVIO_FLAG_WRITE);
+    if (ret < 0) {
+        printf("open io failed!\n");
+        avcodec_free_context(&codecContext);
+        avformat_free_context(formatContext);
+        return nil;
+    }
+
+    ret = avformat_write_header(formatContext, NULL);
+    if (ret < 0) {
+        printf("write header failed!\n");
+        avcodec_free_context(&codecContext);
+        avio_close(formatContext->pb);
+        avformat_free_context(formatContext);
+        return nil;
+    }
+
     record.formatContext = formatContext;
-    record.o_video_stream = o_video_stream;
+    record.o_video_stream = videoStream;
+    record.videoCodecContext = codecContext;
+    record.v_pts = 0;
+    record.v_dts = 0;
+    record.iH264NaluSize = 0;
     return record;
 }
 
-+ (instancetype)recordFileWithFilePath:(NSString *)filePath
-                             codecType:(NSInteger)codecType
-                            videoWidth:(NSInteger)videoWidth
-                           videoHeight:(NSInteger)videoHeight
-                        videoFrameRate:(NSInteger)videoFrameRate
-                     audioSampleFormat:(NSInteger)audioSampleFormat
-                       audioSampleRate:(NSInteger)audioSampleRate
-                    audioChannelLayout:(NSInteger)audioChannelLayout
-                         audioChannels:(NSInteger)audioChannels {
-    return nil;
-}
-
 - (void)writeVideoFrame:(void *)data length:(NSInteger)length {
-    
-        int8_t *pData = data;
-        int iLen = length;
-        int ret = 0;
-        AVPacket i_pkt;
-        av_init_packet(&i_pkt);
-        i_pkt.size = iLen;
-        i_pkt.data = pData;
-        
-        // h264 ∂±
-        if( pData[0] == 0x0 && pData[1] == 0x0 && pData[2] == 0x0 && pData[3] == 0x1 && (pData[4]&0x0f) == (0x67&0x0f) )
-        {
-            AVCodecContext *c = self.o_video_stream->codec;
-//            c = pFormat->o_video_stream->codec;
-            if( c->extradata_size == 0 )
-            {
-                int nalus_num = 0;
-                char * ptrBuf = NULL;
-                int num = 0;
-                ptrBuf = pData;
-                if( (ptrBuf[4] & 0x0f) == (0x67 & 0x0f) )
-                {
-                    for(num = 0; num < 80; num++)
-                    {
-                        if( ptrBuf[num]  == 0x65 )
-                        {
-                            nalus_num = num - 4;
-                            
-                            
-                            memcpy(self.strH264Nalu,ptrBuf,nalus_num);
-                            self.iH264NaluSize = nalus_num;
-                            c->extradata = (unsigned char*)self.strH264Nalu;
-                            c->extradata_size = self.iH264NaluSize;
-                            
-                            {
-                                int i = 0;
-                                for( i = 0; i < c->extradata_size;i++)
-                                {
-                                    printf("%x ",c->extradata[i]);
-                                    
-                                }
-                                printf("[%d]\n",c->extradata_size);
-                            }
-                            
-                            break;
-                        }
-                    }
+    if (!self.formatContext || !self.o_video_stream || !self.videoCodecContext) return;
+    uint8_t *pData = (uint8_t *)data;
+    int iLen = (int)length;
+    AVPacket pkt;
+    av_init_packet(&pkt);
+    pkt.size = iLen;
+    pkt.data = pData;
+    pkt.stream_index = self.o_video_stream->index;
+
+    // Demo: 临时extradata设置（此写法实际场景应提前整理extradata再set）
+    if (iLen > 4 && pData[0] == 0x0 && pData[1] == 0x0 && pData[2] == 0x0 && pData[3] == 0x1) {
+        // 仅举例：H264/H265的SPS/PPS/NALU提取
+        if ((self.videoCodecContext->codec_id == AV_CODEC_ID_H264 && (pData[4] & 0x0f) == (0x67 & 0x0f))
+            || (self.videoCodecContext->codec_id == AV_CODEC_ID_HEVC && pData[4] == 0x40)) {
+            // 这里通常只放sps/pps，如果没有请跳过，否则写header可能无效
+            int nalus_num = 0;
+            for (int num = 0; num < iLen; num++) {
+                // 简单例子，实际需完整NALU查找
+                if (pData[num] == 0x68 || pData[num] == 0x90) {
+                    nalus_num = num;
+                    break;
                 }
             }
-            
-            
-            i_pkt.flags |= AV_PKT_FLAG_KEY;
+            if (nalus_num > 0 && nalus_num < MAX_NALUS_SIZE) {
+                memcpy(self.strH264Nalu, pData, nalus_num);
+                self.iH264NaluSize = nalus_num;
+                // 更新extradata
+                av_freep(&self.videoCodecContext->extradata);
+                self.videoCodecContext->extradata = av_malloc(self.iH264NaluSize + AV_INPUT_BUFFER_PADDING_SIZE);
+                memcpy(self.videoCodecContext->extradata, self.strH264Nalu, self.iH264NaluSize);
+                self.videoCodecContext->extradata_size = self.iH264NaluSize;
+                avcodec_parameters_from_context(self.o_video_stream->codecpar, self.videoCodecContext);
+            }
+            pkt.flags |= AV_PKT_FLAG_KEY;
         }
-        
-        //h265 ∂±
-        if( pData[0] == 0x0 && pData[1] == 0x0 && pData[2] == 0x0 && pData[3] == 0x1 &&  pData[4] == 0x40  )
-        {
-            AVCodecContext *c = self.o_video_stream->codec;
-//            if( c->extradata_size == 0 )
-//            {
-//                int nalus_num = 0;
-//                char * ptrBuf = NULL;
-//                int num = 0;
-//                ptrBuf = pData;
-////                if( ptrBuf[4] == 0x40 )
-////                {
-////                    for(num = 0; num < MAX_NALUS_SZIE; num++)
-////                    {
-////                        if( num >= iLen )
-////                        {
-////                            printf("not get nalus\n");
-////                            break;
-////                        }
-////
-////                        if( (ptrBuf[num]  == 0x4e && ptrBuf[num-1]  == 0x1  && ptrBuf[num-2]  == 0x0) ||
-////                           (ptrBuf[num]  == 0x26 && ptrBuf[num-1]  == 0x1  && ptrBuf[num-2]  == 0x0) )
-////                        {
-////                            nalus_num = num - 4;
-////
-////
-////                            memcpy(self.strH264Nalu,ptrBuf,nalus_num);
-////                            self.iH264NaluSize = nalus_num;
-////                            c->extradata = (unsigned char*)self.strH264Nalu;
-////                            c->extradata_size = self.iH264NaluSize;
-////
-////                            {
-////                                int i = 0;
-////                                for( i = 0; i < c->extradata_size;i++)
-////                                {
-////                                    printf("%x ",c->extradata[i]);
-////
-////                                }
-////                                printf("[%d]\n",c->extradata_size);
-////                            }
-////
-////                            nalus_num = num - 4;
-////                            i_pkt.data = pData + nalus_num;
-////                            i_pkt.size = iLen - nalus_num;
-////
-////                            break;
-////                        }
-////                    }
-////                }
-////            }else
-////            {
-////                int nalus_num = 0;
-////                char * ptrBuf = NULL;
-////                int num = 0;
-////                ptrBuf = pData;
-////                if( ptrBuf[4] == 0x40 )
-////                {
-////                    for(num = 0; num < MAX_NALUS_SZIE; num++)
-////                    {
-////                        if( num >= iLen )
-////                        {
-////                            break;
-////                        }
-////
-////                        if( (ptrBuf[num]  == 0x4e && ptrBuf[num-1]  == 0x1  && ptrBuf[num-2]  == 0x0) ||
-////                           (ptrBuf[num]  == 0x26 && ptrBuf[num-1]  == 0x1  && ptrBuf[num-2]  == 0x0) )
-////                        {
-////                            nalus_num = num - 4;
-////                            i_pkt.data = pData + nalus_num;
-////                            i_pkt.size = iLen - nalus_num;
-////                            break;
-////                        }
-////                    }
-////                }
-//            }
-            
-            i_pkt.flags |= AV_PKT_FLAG_KEY;
-        }
-        
-        //if( i_pkt.flags & AV_PKT_FLAG_KEY )
-        //    DPRINTK("[%d] %x %x %x %x %x %x\n",i_pkt.size,i_pkt.data[0],i_pkt.data[1],i_pkt.data[2],i_pkt.data[3],i_pkt.data[4],i_pkt.data[5]);
-        
-        i_pkt.dts = self.v_dts;
-        i_pkt.pts = self.v_pts;
-    
-    ret = [self writeFrame:_formatContext time_base:&_o_video_stream->codec->time_base stream:_o_video_stream packet:&i_pkt];
-//        ret = write_frame(_formatContext,&_o_video_stream->codec->time_base,_o_video_stream,&i_pkt);
-    
-        self.v_dts++;
-        self.v_pts++;
-    
-}
+    }
 
-- (int)writeFrame:(AVFormatContext*)fmt_ctx time_base:(AVRational *)time_base stream:(AVStream *)stream packet:(AVPacket *)pkt {
-    /* rescale output packet timestamp values from codec to stream timebase */
-    av_packet_rescale_ts(pkt, *time_base, stream->time_base);
-    pkt->stream_index = stream->index;
-    
-    //log_packet(fmt_ctx, pkt);
-    return av_interleaved_write_frame(fmt_ctx, pkt);
-}
+    pkt.dts = self.v_dts;
+    pkt.pts = self.v_pts;
 
-- (void)writeAudioFrame:(void *)data length:(NSInteger)length {
-    
+    // write frame
+    av_packet_rescale_ts(&pkt, self.videoCodecContext->time_base, self.o_video_stream->time_base);
+    int ret = av_interleaved_write_frame(self.formatContext, &pkt);
+    if (ret < 0) {
+        printf("write frame failed! %d\n", ret);
+    }
+
+    self.v_dts++;
+    self.v_pts++;
+    // 注意：pkt并未由编码器分配，不需unref!!!
 }
 
 - (void)stopRecord {
-    if( _formatContext )
-    {
-        av_write_trailer(_formatContext);
-        
-//        if( pFormat->o_audio_stream )
-//        {
-//            avcodec_close(pFormat->o_audio_stream->codec);
-//            av_frame_free(&pFormat->frame);
-//            av_frame_free(&pFormat->tmp_frame);
-//            swr_free(&pFormat->swr_ctx);
-//        }
-        
-        
-        if( _o_video_stream )
-        {
-            _o_video_stream->codec->extradata_size = 0;
-            _o_video_stream->codec->extradata = NULL;
-            
-            avcodec_close(_o_video_stream->codec);
+    if (self.formatContext) {
+        av_write_trailer(self.formatContext);
+
+        if (self.videoCodecContext) {
+            avcodec_free_context(&_videoCodecContext);
         }
-        
-        avio_close(_formatContext->pb);
-        avformat_free_context(_formatContext);
+        if (self.formatContext->pb) {
+            avio_close(self.formatContext->pb);
+        }
+        avformat_free_context(self.formatContext);
+        self.formatContext = NULL;
+        self.o_video_stream = NULL;
+    }
+    if (self.strH264Nalu) {
+        av_freep(&_strH264Nalu);
+        self.strH264Nalu = NULL;
     }
 }
 

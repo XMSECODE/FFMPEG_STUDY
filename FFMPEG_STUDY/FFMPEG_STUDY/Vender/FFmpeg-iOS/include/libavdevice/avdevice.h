@@ -19,7 +19,13 @@
 #ifndef AVDEVICE_AVDEVICE_H
 #define AVDEVICE_AVDEVICE_H
 
+#include "version_major.h"
+#ifndef HAVE_AV_CONFIG_H
+/* When included as part of the ffmpeg build, only include the major version
+ * to avoid unnecessary rebuilds. When included externally, keep including
+ * the full version information. */
 #include "version.h"
+#endif
 
 /**
  * @file
@@ -52,25 +58,21 @@
 
 /**
  * Return the LIBAVDEVICE_VERSION_INT constant.
- 返回LIBAVDEVICE_VERSION_INT常量
  */
 unsigned avdevice_version(void);
 
 /**
  * Return the libavdevice build-time configuration.
- 返回libavdevice编译的配置
  */
 const char *avdevice_configuration(void);
 
 /**
  * Return the libavdevice license.
- 返回libavdevice许可证
  */
 const char *avdevice_license(void);
 
 /**
  * Initialize libavdevice and register all the input and output devices.
- 初始化libavdevice和注册所有的输入与输出设备。
  */
 void avdevice_register_all(void);
 
@@ -80,9 +82,8 @@ void avdevice_register_all(void);
  * If d is NULL, returns the first registered input audio/video device,
  * if d is non-NULL, returns the next registered input audio/video device after d
  * or NULL if d is the last one.
- audio 输入设备的迭代器。假如d是NULL，返回第一个注册的输入audio、vider设备，假如d不是NULL，返回d的下一个注册的输入audio、video设备。假如返回NULL，则d是最后一个。
  */
-AVInputFormat *av_input_audio_device_next(AVInputFormat  *d);
+const AVInputFormat *av_input_audio_device_next(const AVInputFormat  *d);
 
 /**
  * Video input devices iterator.
@@ -90,9 +91,8 @@ AVInputFormat *av_input_audio_device_next(AVInputFormat  *d);
  * If d is NULL, returns the first registered input audio/video device,
  * if d is non-NULL, returns the next registered input audio/video device after d
  * or NULL if d is the last one.
- video 输入设备的迭代器。假如d是NULL，返回第一个注册的输入audio、vider设备，假如d不是NULL，返回d的下一个注册的输入audio、video设备。假如返回NULL，则d是最后一个。
  */
-AVInputFormat *av_input_video_device_next(AVInputFormat  *d);
+const AVInputFormat *av_input_video_device_next(const AVInputFormat  *d);
 
 /**
  * Audio output devices iterator.
@@ -100,9 +100,8 @@ AVInputFormat *av_input_video_device_next(AVInputFormat  *d);
  * If d is NULL, returns the first registered output audio/video device,
  * if d is non-NULL, returns the next registered output audio/video device after d
  * or NULL if d is the last one.
- audio 输出设备的迭代器。假如d是NULL，返回第一个注册的输出audio、vider设备，假如d不是NULL，返回d的下一个注册的输出audio、video设备。假如返回NULL，则d是最后一个。
  */
-AVOutputFormat *av_output_audio_device_next(AVOutputFormat *d);
+const AVOutputFormat *av_output_audio_device_next(const AVOutputFormat *d);
 
 /**
  * Video output devices iterator.
@@ -110,9 +109,8 @@ AVOutputFormat *av_output_audio_device_next(AVOutputFormat *d);
  * If d is NULL, returns the first registered output audio/video device,
  * if d is non-NULL, returns the next registered output audio/video device after d
  * or NULL if d is the last one.
- video 输出设备的迭代器。假如d是NULL，返回第一个注册的输出audio、vider设备，假如d不是NULL，返回d的下一个注册的输出audio、video设备。假如返回NULL，则d是最后一个。
  */
-AVOutputFormat *av_output_video_device_next(AVOutputFormat *d);
+const AVOutputFormat *av_output_video_device_next(const AVOutputFormat *d);
 
 typedef struct AVDeviceRect {
     int x;      /**< x coordinate of top left corner */
@@ -310,7 +308,6 @@ enum AVDevToAppMessageType {
  * @param data_size size of message data.
  * @return >= 0 on success, negative on error.
  *         AVERROR(ENOSYS) when device doesn't implement handler of the message.
- 从应用发送一个控制消息给设备。
  */
 int avdevice_app_to_dev_control_message(struct AVFormatContext *s,
                                         enum AVAppToDevMessageType type,
@@ -325,136 +322,10 @@ int avdevice_app_to_dev_control_message(struct AVFormatContext *s,
  * @param data_size size of message data.
  * @return >= 0 on success, negative on error.
  *         AVERROR(ENOSYS) when application doesn't implement handler of the message.
- 从device发送一个控制消息给应用。
  */
 int avdevice_dev_to_app_control_message(struct AVFormatContext *s,
                                         enum AVDevToAppMessageType type,
                                         void *data, size_t data_size);
-
-/**
- * Following API allows user to probe device capabilities (supported codecs,
- * pixel formats, sample formats, resolutions, channel counts, etc).
- * It is build on top op AVOption API.
- * Queried capabilities make it possible to set up converters of video or audio
- * parameters that fit to the device.
- *
- * List of capabilities that can be queried:
- *  - Capabilities valid for both audio and video devices:
- *    - codec:          supported audio/video codecs.
- *                      type: AV_OPT_TYPE_INT (AVCodecID value)
- *  - Capabilities valid for audio devices:
- *    - sample_format:  supported sample formats.
- *                      type: AV_OPT_TYPE_INT (AVSampleFormat value)
- *    - sample_rate:    supported sample rates.
- *                      type: AV_OPT_TYPE_INT
- *    - channels:       supported number of channels.
- *                      type: AV_OPT_TYPE_INT
- *    - channel_layout: supported channel layouts.
- *                      type: AV_OPT_TYPE_INT64
- *  - Capabilities valid for video devices:
- *    - pixel_format:   supported pixel formats.
- *                      type: AV_OPT_TYPE_INT (AVPixelFormat value)
- *    - window_size:    supported window sizes (describes size of the window size presented to the user).
- *                      type: AV_OPT_TYPE_IMAGE_SIZE
- *    - frame_size:     supported frame sizes (describes size of provided video frames).
- *                      type: AV_OPT_TYPE_IMAGE_SIZE
- *    - fps:            supported fps values
- *                      type: AV_OPT_TYPE_RATIONAL
- *
- * Value of the capability may be set by user using av_opt_set() function
- * and AVDeviceCapabilitiesQuery object. Following queries will
- * limit results to the values matching already set capabilities.
- * For example, setting a codec may impact number of formats or fps values
- * returned during next query. Setting invalid value may limit results to zero.
- *
- * Example of the usage basing on opengl output device:
- *
- * @code
- *  AVFormatContext *oc = NULL;
- *  AVDeviceCapabilitiesQuery *caps = NULL;
- *  AVOptionRanges *ranges;
- *  int ret;
- *
- *  if ((ret = avformat_alloc_output_context2(&oc, NULL, "opengl", NULL)) < 0)
- *      goto fail;
- *  if (avdevice_capabilities_create(&caps, oc, NULL) < 0)
- *      goto fail;
- *
- *  //query codecs
- *  if (av_opt_query_ranges(&ranges, caps, "codec", AV_OPT_MULTI_COMPONENT_RANGE)) < 0)
- *      goto fail;
- *  //pick codec here and set it
- *  av_opt_set(caps, "codec", AV_CODEC_ID_RAWVIDEO, 0);
- *
- *  //query format
- *  if (av_opt_query_ranges(&ranges, caps, "pixel_format", AV_OPT_MULTI_COMPONENT_RANGE)) < 0)
- *      goto fail;
- *  //pick format here and set it
- *  av_opt_set(caps, "pixel_format", AV_PIX_FMT_YUV420P, 0);
- *
- *  //query and set more capabilities
- *
- * fail:
- *  //clean up code
- *  avdevice_capabilities_free(&query, oc);
- *  avformat_free_context(oc);
- * @endcode
- */
-
-/**
- * Structure describes device capabilities.
- *
- * It is used by devices in conjunction with av_device_capabilities AVOption table
- * to implement capabilities probing API based on AVOption API. Should not be used directly.
- */
-typedef struct AVDeviceCapabilitiesQuery {
-    const AVClass *av_class;
-    AVFormatContext *device_context;
-    enum AVCodecID codec;
-    enum AVSampleFormat sample_format;
-    enum AVPixelFormat pixel_format;
-    int sample_rate;
-    int channels;
-    int64_t channel_layout;
-    int window_width;
-    int window_height;
-    int frame_width;
-    int frame_height;
-    AVRational fps;
-} AVDeviceCapabilitiesQuery;
-
-/**
- * AVOption table used by devices to implement device capabilities API. Should not be used by a user.
- */
-extern const AVOption av_device_capabilities[];
-
-/**
- * Initialize capabilities probing API based on AVOption API.
- *
- * avdevice_capabilities_free() must be called when query capabilities API is
- * not used anymore.
- *
- * @param[out] caps      Device capabilities data. Pointer to a NULL pointer must be passed.
- * @param s              Context of the device.
- * @param device_options An AVDictionary filled with device-private options.
- *                       On return this parameter will be destroyed and replaced with a dict
- *                       containing options that were not found. May be NULL.
- *                       The same options must be passed later to avformat_write_header() for output
- *                       devices or avformat_open_input() for input devices, or at any other place
- *                       that affects device-private options.
- *
- * @return >= 0 on success, negative otherwise.
- */
-int avdevice_capabilities_create(AVDeviceCapabilitiesQuery **caps, AVFormatContext *s,
-                                 AVDictionary **device_options);
-
-/**
- * Free resources created by avdevice_capabilities_create()
- *
- * @param caps Device capabilities data to be freed.
- * @param s    Context of the device.
- */
-void avdevice_capabilities_free(AVDeviceCapabilitiesQuery **caps, AVFormatContext *s);
 
 /**
  * Structure describes basic parameters of the device.
@@ -462,6 +333,8 @@ void avdevice_capabilities_free(AVDeviceCapabilitiesQuery **caps, AVFormatContex
 typedef struct AVDeviceInfo {
     char *device_name;                   /**< device name, format depends on device */
     char *device_description;            /**< human friendly name */
+    enum AVMediaType *media_types;       /**< array indicating what media types(s), if any, a device can provide. If null, cannot provide any */
+    int nb_media_types;                  /**< length of media_types array, 0 if device cannot provide any media types */
 } AVDeviceInfo;
 
 /**
@@ -491,7 +364,7 @@ int avdevice_list_devices(struct AVFormatContext *s, AVDeviceInfoList **device_l
 /**
  * Convenient function to free result of avdevice_list_devices().
  *
- * @param devices device list to be freed.
+ * @param device_list device list to be freed.
  */
 void avdevice_free_list_devices(AVDeviceInfoList **device_list);
 
@@ -499,7 +372,7 @@ void avdevice_free_list_devices(AVDeviceInfoList **device_list);
  * List devices.
  *
  * Returns available device names and their parameters.
- * These are convinient wrappers for avdevice_list_devices().
+ * These are convenient wrappers for avdevice_list_devices().
  * Device context is allocated and deallocated internally.
  *
  * @param device           device format. May be NULL if device name is set.
@@ -512,9 +385,9 @@ void avdevice_free_list_devices(AVDeviceInfoList **device_list);
  * @return count of autodetected devices, negative on error.
  * @note device argument takes precedence over device_name when both are set.
  */
-int avdevice_list_input_sources(struct AVInputFormat *device, const char *device_name,
+int avdevice_list_input_sources(const AVInputFormat *device, const char *device_name,
                                 AVDictionary *device_options, AVDeviceInfoList **device_list);
-int avdevice_list_output_sinks(struct AVOutputFormat *device, const char *device_name,
+int avdevice_list_output_sinks(const AVOutputFormat *device, const char *device_name,
                                AVDictionary *device_options, AVDeviceInfoList **device_list);
 
 /**
