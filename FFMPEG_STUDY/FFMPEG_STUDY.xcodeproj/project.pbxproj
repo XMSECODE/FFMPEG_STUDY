@@ -811,7 +811,7 @@
 				TargetAttributes = {
 					047B7AFC1EF2C47800E4F0F8 = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = NZ6KCMA9HH;
+						DevelopmentTeam = S5BVK59226;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -1019,10 +1019,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = NZ6KCMA9HH;
+				DEVELOPMENT_TEAM = S5BVK59226;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/FFMPEG_STUDY/Vender/FFmpeg-iOS/include";
 				INFOPLIST_FILE = "$(SRCROOT)/FFMPEG_STUDY/other/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1038,10 +1038,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = NZ6KCMA9HH;
+				DEVELOPMENT_TEAM = S5BVK59226;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/FFMPEG_STUDY/Vender/FFmpeg-iOS/include";
 				INFOPLIST_FILE = "$(SRCROOT)/FFMPEG_STUDY/other/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
